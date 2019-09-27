@@ -17,7 +17,7 @@ export default class QrGen extends React.Component {
         <h1>Home</h1>
         <h3>Welcome</h3>
         {/*<Avatar src={this.state.firebaseUser.user.photoURL}/>*/}
-
+        
         <div>
           <RaisedButton>Sign Out</RaisedButton>
         </div>

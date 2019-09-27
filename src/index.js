@@ -16,7 +16,7 @@ const Root = () => (
     <div>
       <Route path="/login" component={Login} />
       <Route path="/app/home" component={Home} />
-      <Route path="/app/qr" component={QrGen} />
+      <Route path="/qr" component={QrGen} />
       <Redirect from="/" to="/login" />
     </div>
   </Router>
