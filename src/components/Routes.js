@@ -12,7 +12,7 @@ const Routes = () => (
   <Router history={createBrowserHistory()}>
     <Switch>
       <Route path="/app/home" component={wrapWithAuth(Home)} />
-      <Route path="/book/:id" component={wrapWithAuth(Book)} />
+      <Route path="/books/:id" component={wrapWithAuth(Book)} />
       <Route path="/app/qr" component={wrapWithAuth(Qr)} />
       <Route path="/implicit/callback" component={OAuthCallback} />
     </Switch>
