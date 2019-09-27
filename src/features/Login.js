@@ -40,6 +40,7 @@ export default class Login extends React.Component {
         // application specific token so that you do not have to
         // authenticate with firebase every time a user logs in
         localStorage.setItem(appTokenKey, user.uid);
+        localStorage.setItem('displayName', user.displayName)
 
         // store the token
         this.props.history.push('/app/home');
