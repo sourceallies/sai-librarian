@@ -1,8 +1,8 @@
 import firebase from 'firebase';
 
 const config = {
-  apiKey: 'AIzaSyCFRg1l-4N6JAhkLq4m33VDNtiTJPETlVs',
-  authDomain: 'hhimanshu-test.firebaseapp.com',
+  apiKey: 'AIzaSyCKDrIsxJu6b2FOMCEiAaJFyQ_J-GWR1WM',
+  authDomain: 'librarian-a2d3e.firebaseapp.com',
   databaseURL: 'https://hhimanshu-test.firebaseio.com'
 };
 

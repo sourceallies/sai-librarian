@@ -6,7 +6,6 @@ import { firebaseAuth } from '../config/constants';
 const firebaseAuthKey = 'firebaseAuthInProgress';
 const appTokenKey = 'appToken';
 
-
 export default class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -75,7 +74,10 @@ export default class Login extends React.Component {
   }
 
   render() {
-    console.log(firebaseAuthKey + '=' + localStorage.getItem(firebaseAuthKey));
+    console.log('User Info');
+    console.log(firebaseAuthKey);
+    console.log('User Info from local storage');
+    console.log(localStorage.getItem(firebaseAuthKey));
     if (localStorage.getItem(firebaseAuthKey) === '1') return <SplashScreen />;
     return <LoginPage handleGoogleLogin={this.handleGoogleLogin} />;
   }
@@ -84,12 +86,14 @@ export default class Login extends React.Component {
 const iconStyles = {
   color: '#ffffff'
 };
+
 const LoginPage = ({ handleGoogleLogin }) => (
   <div>
     <h1>Login</h1>
     <div>
-      <RaisedButton
-        onClick={handleGoogleLogin}>Sign in with Google</RaisedButton>
+      <RaisedButton onClick={handleGoogleLogin}>
+        Sign in with Google
+      </RaisedButton>
     </div>
   </div>
 );

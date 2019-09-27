@@ -5,6 +5,8 @@ import './index.css';
 import createBrowserHistory from 'history/createBrowserHistory';
 import Login from './features/Login';
 import Home from './features/Home';
+import QrGen from './features/QrGen';
+
 import * as serviceWorker from './serviceWorker';
 
 const customHistory = createBrowserHistory();
@@ -14,6 +16,7 @@ const Root = () => (
     <div>
       <Route path="/login" component={Login} />
       <Route path="/app/home" component={Home} />
+      <Route path="/app/qr" component={QrGen} />
       <Redirect from="/" to="/login" />
     </div>
   </Router>

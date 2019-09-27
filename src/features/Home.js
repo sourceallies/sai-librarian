@@ -24,6 +24,7 @@ export default class Home extends React.Component {
   }
 
   handleLogout() {
+    console.log('trying to log out')
     logout().then(
       function() {
         localStorage.removeItem(appTokenKey);
@@ -41,7 +42,7 @@ export default class Home extends React.Component {
         {/*<Avatar src={this.state.firebaseUser.user.photoURL}/>*/}
 
         <div>
-          <RaisedButton onTouchTap={this.handleLogout}>Sign Out</RaisedButton>
+          <RaisedButton onClick={this.handleLogout}>Sign Out</RaisedButton>
         </div>
       </div>
     );
