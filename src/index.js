@@ -2,22 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import './index.css';
-import createBrowserHistory from 'history/createBrowserHistory';
+// import createBrowserHistory from 'history/createBrowserHistory';
 import Login from './features/Login';
 import Home from './features/Home';
 import QrGen from './features/QrGen';
 
 import * as serviceWorker from './serviceWorker';
 
+const createBrowserHistory = require('history').createBrowserHistory;
+
 const customHistory = createBrowserHistory();
 const Root = () => (
   <Router history={customHistory}>
-    <Switch>
-        <Redirect from="/" to="/login" />
-        <Route path="/login" component={Login} />
+    {localStorage.getItem('displayName') ? (
+      <Switch>
         <Route path="/app/home" component={Home} />
         <Route path="/qr" component={QrGen} />
-    </Switch>
+      </Switch>
+    ) : (
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Redirect to="/login" />
+      </Switch>
+    )}
   </Router>
 );
 
