@@ -1,22 +1,24 @@
 const AWS = require('aws-sdk');
+const {accessKeyId, secretAccessKey} = require('../creds/creds.json');
 
-AWS.config.update({ region: 'us-west-2' });
+const credentials = new AWS.Credentials(accessKeyId, secretAccessKey);
+AWS.config.update({
+    credentials, 
+    region: 'us-east-2' 
+});
 
-const docClient = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
+const dynamoDb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
-GetById('25');
-
-function GetById(bookId) {
+export const getBookByBookId = (bookId) => {
   const params = {
     TableName: 'Librarian_Books',
     Key: { bookId: bookId }
   };
 
-  docClient.get(params, function(err, data) {
-    if (err) {
-      console.log('Error', err);
-    } else {
-      console.log('Success', data.Item);
-    }
-  });
+  return new Promise((resolve, reject) => {
+    dynamoDb.getItem(params, function(err, data) {
+      if (err) reject(err);
+      resolve(data);
+    });
+  })
 }
