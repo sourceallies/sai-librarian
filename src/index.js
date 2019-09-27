@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Redirect, Route, Router } from 'react-router';
+import { Redirect, Route, Router, Switch } from 'react-router';
 import './index.css';
 import createBrowserHistory from 'history/createBrowserHistory';
 import Login from './features/Login';
@@ -12,13 +12,12 @@ import * as serviceWorker from './serviceWorker';
 const customHistory = createBrowserHistory();
 const Root = () => (
   <Router history={customHistory}>
-    >
-    <div>
+  <Switch>
+      {/* <Redirect from="/" to="/login" /> */}
       <Route path="/login" component={Login} />
       <Route path="/app/home" component={Home} />
       <Route path="/qr" component={QrGen} />
-      <Redirect from="/" to="/login" />
-    </div>
+  </Switch>
   </Router>
 );
 
