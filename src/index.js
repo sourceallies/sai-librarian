@@ -12,12 +12,12 @@ import * as serviceWorker from './serviceWorker';
 const customHistory = createBrowserHistory();
 const Root = () => (
   <Router history={customHistory}>
-  <Switch>
-      {/* <Redirect from="/" to="/login" /> */}
-      <Route path="/login" component={Login} />
-      <Route path="/app/home" component={Home} />
-      <Route path="/qr" component={QrGen} />
-  </Switch>
+    <Switch>
+        <Redirect from="/" to="/login" />
+        <Route path="/login" component={Login} />
+        <Route path="/app/home" component={Home} />
+        <Route path="/qr" component={QrGen} />
+    </Switch>
   </Router>
 );
 
