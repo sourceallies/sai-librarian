@@ -1,4 +1,5 @@
 import React from 'react';
+import {postBook} from '../utils/postBook';
 
 export default class BookCreate extends React.Component {
   constructor(props) {
@@ -29,6 +30,14 @@ export default class BookCreate extends React.Component {
     console.log('Save this to DynamoDB somehow:');
     console.log(this.state);
     event.preventDefault();
+    postBook({
+      bookId: this.props.bookId,
+      title: this.state.bookTitle,
+      isbn: this.state.isbnNumber,
+      shelf: this.state.shelf
+    })
+    .then(data => console.log('Data: ', data))
+    .catch(err => console.log('Error: ', err));
   }
 
   render() {
