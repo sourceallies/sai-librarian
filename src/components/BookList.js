@@ -21,7 +21,11 @@ export default class BookList extends React.Component {
         getBookList(this.props.user.id_token).then((data) => {
             this.setState({
                loading: false,
-                bookList: data.Items
+                bookList: data.Items.sort((a, b) => {
+                    if (b.title > a.title) return -1;
+                    if (a.title > b.title) return 1;
+                    return 0;
+                })
             });
         }).catch((err) => console.log('Error: ', err));
     }
