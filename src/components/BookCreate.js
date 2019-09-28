@@ -32,7 +32,7 @@ export default class BookCreate extends React.Component {
       title: this.state.bookTitle,
       isbn: this.state.isbnNumber,
       shelf: this.state.shelf
-    })
+    }, this.props.token)
     .catch(err => console.log('Error: ', err));
   }
 

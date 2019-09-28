@@ -18,7 +18,7 @@ export default class BookList extends React.Component {
     }
 
     componentDidMount() {
-        getBookList().then((data) => {
+        getBookList(this.props.user.id_token).then((data) => {
             this.setState({
                loading: false,
                 bookList: data.Items

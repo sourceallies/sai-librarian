@@ -19,7 +19,8 @@ export default class BookDetail extends React.Component {
       isAvailable: !isAvailable,
       neckOfTheWoods: isAvailable ? this.props.loggedInName : 'Library'
     };
-    updateBook(newBook)
+    console.log(this.props)
+    updateBook(newBook, this.props.token)
         .then(() => {
           this.setState({
             ...this.state,

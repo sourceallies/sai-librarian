@@ -13,7 +13,7 @@ export default class Books extends React.Component {
     }
 
     componentDidMount() {
-        getBookByBookId(this.props.match.params.id).then((data) => {
+        getBookByBookId(this.props.match.params.id, this.props.user.id_token).then((data) => {
             if (data.Item) {
                 this.setState({
                     loading: false,
@@ -34,9 +34,12 @@ export default class Books extends React.Component {
             return <p>Loading</p>
         }
          if (!this.state.book.bookId) {
-             return <BookCreate bookId={this.props.match.params.id} loggedInName={this.props.user.profile.name}/>
+             return <BookCreate bookId={this.props.match.params.id} loggedInName={this.props.user.profile.name} token={this.props.user.id_token} />
          }
 
-        return <BookDetail book={this.state.book} loggedInName={this.props.user.profile.name}/>
+         console.log('here');
+         console.log(this.props.user);
+         console.log(this.props.user.id_token);
+        return <BookDetail book={this.state.book} loggedInName={this.props.user.profile.name} token={this.props.user.id_token} />
     };
 }
