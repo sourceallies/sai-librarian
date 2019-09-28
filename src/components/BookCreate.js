@@ -7,7 +7,7 @@ export default class BookCreate extends React.Component {
         super(props);
         this.state = {
             bookTitle: '',
-            complete: false,
+            complete: true,
             isbnNumber: '',
             shelf: '',
             'loggedInName': this.props.loggedInName,

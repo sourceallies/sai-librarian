@@ -57,7 +57,11 @@ export default class BookDetail extends React.Component {
                         <tr>
                             <td colSpan={2}>
                                 <button
-                                    onClick={() => this.flipStatus()}>{bookDetail.isAvailable ? 'Check Out' : 'Check In'}</button>
+                                    onClick={() => this.flipStatus()}
+                                    style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
+                                >
+                                    {bookDetail.isAvailable ? 'Check Out' : 'Return'}
+                                </button>
                             </td>
                         </tr>
                     </table>
