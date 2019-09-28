@@ -33,6 +33,7 @@ export default class BookCreate extends React.Component {
       isbn: this.state.isbnNumber,
       shelf: this.state.shelf
     }, this.props.token)
+    .then(() => this.props.history.push('/success'))
     .catch(err => console.log('Error: ', err));
   }
 

@@ -31,6 +31,7 @@ export default class BookDetail extends React.Component {
 
   render() {
 
+    console.log(this.props)
     const { book } = this.props;
     const { bookDetail } = this.state;
     return (
