@@ -40,7 +40,6 @@ export default class BookDetail extends React.Component {
         const {bookDetail} = this.state;
         if (this.state.shelf) {
             return <Shelf
-                        onCancel={() => this.setState({complete: false})}
                         onDone={() => this.setState({shelf: false})}
                         shelf={this.state.bookDetail.shelf}
                         title={this.state.bookDetail.title}
