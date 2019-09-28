@@ -1,16 +1,18 @@
 import React from 'react';
 import {updateBook} from "../utils/updateBook";
 import AfterDetails from './AfterDetails';
+import Shelf from './Shelf';
 
 export default class BookDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            complete: false,
-            isFetching: false,
             bookDetail: {
                 ...props.book
-            }
+            },
+            complete: false,
+            isFetching: false,
+            shelf: false
         };
     }
 
@@ -26,7 +28,8 @@ export default class BookDetail extends React.Component {
                 this.setState({
                     ...this.state,
                     bookDetail: newBook,
-                    complete: true
+                    complete: true,
+                    shelf: !isAvailable
                 })
             })
             .catch((err) => console.log('Error: ', err))
@@ -35,6 +38,14 @@ export default class BookDetail extends React.Component {
     render() {
         const {book} = this.props;
         const {bookDetail} = this.state;
+        if (this.state.shelf) {
+            return <Shelf
+                        onCancel={() => this.setState({complete: false})}
+                        onDone={() => this.setState({shelf: false})}
+                        shelf={this.state.bookDetail.shelf}
+                        title={this.state.bookDetail.title}
+                    />
+        }
         if (this.state.complete) {
             return <AfterDetails 
                         title={this.state.bookDetail.title}
