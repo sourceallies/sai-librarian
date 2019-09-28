@@ -1,6 +1,6 @@
 import React from 'react';
 import {getBookList} from "../utils/getBookList";
-import BookDetail from "./BookDetail";
+import BookLink from "./BookLink";
 
 export default class BookList extends React.Component {
     constructor(props) {
@@ -13,7 +13,7 @@ export default class BookList extends React.Component {
 
     generateListOfBookDetails() {
         return this.state.bookList.map((book) =>
-            <BookDetail book={book} loggedInName={this.props.user.profile.name}/>
+            <BookLink book={book} />
         );
     }
 
