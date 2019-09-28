@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
-import userManager from '../auth/user-manager';
 import wrapWithAuth from '../auth/wrap-with-auth';
 import Home from './Home';
 import Books from './Books';
