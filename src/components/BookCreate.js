@@ -7,7 +7,7 @@ export default class BookCreate extends React.Component {
         super(props);
         this.state = {
             bookTitle: '',
-            complete: true,
+            complete: false,
             isbnNumber: '',
             shelf: '',
             'loggedInName': this.props.loggedInName,
@@ -42,8 +42,9 @@ export default class BookCreate extends React.Component {
     render() {
         const {loggedInName, bookId} = this.props;
         if (this.state.complete) {
-      return <BookAddSuccess history={this.props.history} title={this.state.bookTitle} />;
-    }return (
+          return <BookAddSuccess history={this.props.history} title={this.state.bookTitle} />;
+        }
+      return (
             <form onSubmit={this.handleSubmit}>
                 <table>
                     <tr>
