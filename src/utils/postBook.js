@@ -1,13 +1,16 @@
 const AWS = require('aws-sdk');
-const {accessKeyId, secretAccessKey} = require('../creds/creds.json');
 
-const credentials = new AWS.Credentials(accessKeyId, secretAccessKey);
-AWS.config.update({
-    credentials,
-    region: 'us-east-2'
-});
-const dynamoDb = new AWS.DynamoDB();
-export const postBook = async (book) => {
+AWS.config.region = 'us-east-2';
+
+export const postBook = async (book, token) => {
+    AWS.config.region = 'us-east-2';
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-2:cf475bdd-465f-4260-ae06-7d9560f4179d',
+        Logins: {
+        'accounts.google.com': token
+        }
+    });
+    const dynamoDb = new AWS.DynamoDB();
     const {bookId, title, isbn, isAvailable = true, neckOfTheWoods = 'library', shelf} = book;
     const params = {
         TableName: 'Librarian_Books',
