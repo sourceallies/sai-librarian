@@ -26,8 +26,6 @@ export default class BookCreate extends React.Component {
   }
 
   handleSubmit(event) {
-    console.log('Save this to DynamoDB somehow:');
-    console.log(this.state);
     event.preventDefault();
     postBook({
       bookId: this.props.bookId,
@@ -35,7 +33,6 @@ export default class BookCreate extends React.Component {
       isbn: this.state.isbnNumber,
       shelf: this.state.shelf
     })
-    .then(data => console.log('Data: ', data))
     .catch(err => console.log('Error: ', err));
   }
 

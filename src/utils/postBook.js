@@ -3,12 +3,12 @@ const {accessKeyId, secretAccessKey} = require('../creds/creds.json');
 
 const credentials = new AWS.Credentials(accessKeyId, secretAccessKey);
 AWS.config.update({
-    credentials, 
-    region: 'us-east-2' 
+    credentials,
+    region: 'us-east-2'
 });
 const dynamoDb = new AWS.DynamoDB();
 export const postBook = async (book) => {
-    const {bookId, title, isbn, isAvailable = true, location = 'library', shelf} = book;
+    const {bookId, title, isbn, isAvailable = true, neckOfTheWoods = 'library', shelf} = book;
     const params = {
         TableName: 'Librarian_Books',
         Item: {
@@ -24,8 +24,8 @@ export const postBook = async (book) => {
             isAvailable: {
                 BOOL: isAvailable,
             },
-            location: {
-                S: location,
+            neckOfTheWoods: {
+                S: neckOfTheWoods,
             },
             shelf: {
                 S: shelf
@@ -39,4 +39,4 @@ export const postBook = async (book) => {
             resolve(data);
         })
     })
-}
+};

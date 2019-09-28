@@ -37,6 +37,6 @@ export default class Books extends React.Component {
              return <BookCreate bookId={this.props.match.params.id} loggedInName={this.props.user.profile.name}/>
          }
 
-        return <BookDetail book={this.state.book} />
+        return <BookDetail book={this.state.book} loggedInName={this.props.user.profile.name}/>
     };
 }

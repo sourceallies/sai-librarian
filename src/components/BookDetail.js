@@ -1,4 +1,5 @@
 import React from 'react';
+import {updateBook} from "../utils/updateBook";
 
 export default class BookDetail extends React.Component {
   constructor(props) {
@@ -11,9 +12,27 @@ export default class BookDetail extends React.Component {
     };
   }
 
+  flipStatus() {
+    const {isAvailable} = this.state.bookDetail;
+    const newBook = {
+      ...this.state.bookDetail,
+      isAvailable: !isAvailable,
+      neckOfTheWoods: isAvailable ? this.props.loggedInName : 'Library'
+    };
+    updateBook(newBook)
+        .then(() => {
+          this.setState({
+            ...this.state,
+            bookDetail: newBook
+          })
+        })
+        .catch((err) => console.log('Error: ', err))
+  }
+
   render() {
 
-    const { loggedInName, book } = this.props;
+    const { book } = this.props;
+    const { bookDetail } = this.state;
     return (
       <div>
         {this.state.isFetching ? (
@@ -24,7 +43,8 @@ export default class BookDetail extends React.Component {
             <p>Book Title: {book.bookId}</p>
             <p>Book ISBN: {book.isbn}</p>
             <p>Book shelf: {book.shelf}</p>
-            <p>Book Available: {book.isAvailable ? <button>Check Out</button> : <button>Check In</button>}</p>
+            <p>Location: {bookDetail.neckOfTheWoods}</p>
+            <p>Book Available: <button onClick={() => this.flipStatus()}>{bookDetail.isAvailable ? 'Check Out' : 'Check In'}</button></p>
           </div>
         )}
       </div>
