@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from "react-router-dom";
-import '../App.css';
+import '../overlord.css';
 
 export default class BookList extends React.Component {
     constructor(props) {
@@ -13,15 +13,15 @@ export default class BookList extends React.Component {
         };
     }
 
-    isAvailable(location) {
-        if (location === "Library") {
-            return "A"
+    isAvailable(isHere) {
+        if (isHere === true) {
+            return <td><div className='available'>√</div></td>
         }
-        return "NA"
+        return <td><div className='not-available'>X</div></td>
     }
 
     render() {
-        const {bookId, title, shelf, location } = this.props.book;
+        const {bookId, title, shelf, isAvailable } = this.props.book;
         return (
             <tr>
                 {this.state.isFetching ? (
@@ -30,7 +30,7 @@ export default class BookList extends React.Component {
                     <>
                         <td><Link to={`/books/${bookId}`}>{title}</Link></td>
                         <td>{shelf}</td>
-                        <td>{this.isAvailable(location)}</td>
+                        {this.isAvailable(isAvailable)}
                     </>
                 )}
             </tr>

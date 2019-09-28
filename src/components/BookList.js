@@ -33,11 +33,11 @@ export default class BookList extends React.Component {
         return (
             <div>
                 <h1>Source Allies Library</h1>
-                <table width="95%">
-                    <tr align="Left">
+                <table>
+                    <tr align='left'>
                         <th>Title</th>
                         <th>Shelf</th>
-                        <th>Availability</th>
+                        <th>Available</th>
                     </tr>
                     {this.generateListOfBookDetails()}
                 </table>
