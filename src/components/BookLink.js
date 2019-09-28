@@ -1,6 +1,5 @@
 import React from 'react';
 import {Link} from "react-router-dom";
-import '../overlord.css';
 
 export default class BookList extends React.Component {
     constructor(props) {
