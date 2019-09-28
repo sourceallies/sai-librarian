@@ -30,6 +30,18 @@ export default class BookList extends React.Component {
         if (this.state.loading) {
             return <p>Loading</p>
         }
-        return this.generateListOfBookDetails()
+        return (
+            <div>
+                <h1>Source Allies Library</h1>
+                <table width="95%">
+                    <tr align="Left">
+                        <th>Title</th>
+                        <th>Shelf</th>
+                        <th>Availability</th>
+                    </tr>
+                    {this.generateListOfBookDetails()}
+                </table>
+            </div>
+    )
     };
 }

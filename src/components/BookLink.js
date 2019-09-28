@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from "react-router-dom";
+import '../App.css';
 
 export default class BookList extends React.Component {
     constructor(props) {
@@ -12,18 +13,27 @@ export default class BookList extends React.Component {
         };
     }
 
+    isAvailable(location) {
+        if (location === "Library") {
+            return "A"
+        }
+        return "NA"
+    }
+
     render() {
-        const {bookId, title, shelf } = this.props.book;
+        const {bookId, title, shelf, location } = this.props.book;
         return (
-            <div>
+            <tr>
                 {this.state.isFetching ? (
-                    <h1>Loading Book...</h1>
+                    <td>Loading Book...</td>
                 ) : (
-                    <div>
-                        <p><Link to={`/books/${bookId}`}>{title}</Link> Book shelf: {shelf}</p>
-                    </div>
+                    <>
+                        <td><Link to={`/books/${bookId}`}>{title}</Link></td>
+                        <td>{shelf}</td>
+                        <td>{this.isAvailable(location)}</td>
+                    </>
                 )}
-            </div>
+            </tr>
         );
     }
 }
