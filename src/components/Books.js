@@ -33,8 +33,6 @@ export default class Books extends React.Component {
         if (this.state.loading) {
             return <p>Loading</p>
         }
-        console.log('Books');
-        console.log(this.props.history);
          if (!this.state.book.bookId) {
              return (
                 <BookCreate 
@@ -50,6 +48,7 @@ export default class Books extends React.Component {
             <BookDetail 
               book={this.state.book} 
               loggedInName={this.props.user.profile.name} 
+              history={this.props.history}
               token={this.props.user.id_token}
             />
         );

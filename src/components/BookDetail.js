@@ -1,10 +1,12 @@
 import React from 'react';
 import {updateBook} from "../utils/updateBook";
+import AfterDetails from './AfterDetails';
 
 export default class BookDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            complete: false,
             isFetching: false,
             bookDetail: {
                 ...props.book
@@ -23,7 +25,8 @@ export default class BookDetail extends React.Component {
             .then(() => {
                 this.setState({
                     ...this.state,
-                    bookDetail: newBook
+                    bookDetail: newBook,
+                    complete: true
                 })
             })
             .catch((err) => console.log('Error: ', err))
@@ -32,6 +35,13 @@ export default class BookDetail extends React.Component {
     render() {
         const {book} = this.props;
         const {bookDetail} = this.state;
+        if (this.state.complete) {
+            return <AfterDetails 
+                        title={this.state.bookDetail.title}
+                        isReturning={this.state.bookDetail.isAvailable}
+                        history={this.props.history}
+                    />
+        }
         return (
             <div>
                 {this.state.isFetching ? (
