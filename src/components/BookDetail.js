@@ -2,53 +2,67 @@ import React from 'react';
 import {updateBook} from "../utils/updateBook";
 
 export default class BookDetail extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isFetching: false,
-      bookDetail: {
-        ...props.book
-      }
-    };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            isFetching: false,
+            bookDetail: {
+                ...props.book
+            }
+        };
+    }
 
-  flipStatus() {
-    const {isAvailable} = this.state.bookDetail;
-    const newBook = {
-      ...this.state.bookDetail,
-      isAvailable: !isAvailable,
-      neckOfTheWoods: isAvailable ? this.props.loggedInName : 'Library'
-    };
-    updateBook(newBook, this.props.token)
-        .then(() => {
-          this.setState({
-            ...this.state,
-            bookDetail: newBook
-          })
-        })
-        .catch((err) => console.log('Error: ', err))
-  }
+    flipStatus() {
+        const {isAvailable} = this.state.bookDetail;
+        const newBook = {
+            ...this.state.bookDetail,
+            isAvailable: !isAvailable,
+            neckOfTheWoods: isAvailable ? this.props.loggedInName : 'Library'
+        };
+        updateBook(newBook, this.props.token)
+            .then(() => {
+                this.setState({
+                    ...this.state,
+                    bookDetail: newBook
+                })
+            })
+            .catch((err) => console.log('Error: ', err))
+    }
 
-  render() {
-
-    console.log(this.props)
-    const { book } = this.props;
-    const { bookDetail } = this.state;
-    return (
-      <div>
-        {this.state.isFetching ? (
-          <h1>Loading Book...</h1>
-        ) : (
-          <div>
-            <p>Book</p>
-            <p>Book Title: {book.title}</p>
-            <p>Book ISBN: {book.isbn}</p>
-            <p>Book shelf: {book.shelf}</p>
-            <p>Location: {bookDetail.neckOfTheWoods}</p>
-            <p>Book Available: <button onClick={() => this.flipStatus()}>{bookDetail.isAvailable ? 'Check Out' : 'Check In'}</button></p>
-          </div>
-        )}
-      </div>
-    );
-  }
+    render() {
+        const {book} = this.props;
+        const {bookDetail} = this.state;
+        return (
+            <div>
+                {this.state.isFetching ? (
+                    <h1>Loading Book...</h1>
+                ) : (
+                    <table>
+                        <tr>
+                            <td>Book Title:</td>
+                            <td>{book.title}</td>
+                        </tr>
+                        <tr>
+                            <td>Book ISBN:</td>
+                            <td>{book.isbn}</td>
+                        </tr>
+                        <tr>
+                            <td>Book shelf:</td>
+                            <td>{book.shelf}</td>
+                        </tr>
+                        <tr>
+                            <td>Location:</td>
+                            <td>{bookDetail.neckOfTheWoods}</td>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>
+                                <button
+                                    onClick={() => this.flipStatus()}>{bookDetail.isAvailable ? 'Check Out' : 'Check In'}</button>
+                            </td>
+                        </tr>
+                    </table>
+                )}
+            </div>
+        );
+    }
 }
