@@ -1,5 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom";
+import {FaCheckCircle} from 'react-icons/fa';
+import { MdDoNotDisturb } from "react-icons/md";
 
 export default class BookList extends React.Component {
     constructor(props) {
@@ -14,9 +16,9 @@ export default class BookList extends React.Component {
 
     isAvailable(isHere) {
         if (isHere === true) {
-            return <td><div className='available'>√</div></td>
+            return <td><FaCheckCircle color="green" size={20} /></td>
         }
-        return <td><div className='not-available'>X</div></td>
+        return <td><MdDoNotDisturb color="red" size={20} /></td>
     }
 
     render() {
