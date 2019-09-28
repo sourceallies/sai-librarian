@@ -26,7 +26,6 @@ export default class BookCreate extends React.Component {
   }
 
   handleSubmit(event) {
-    // alert('A name was submitted: ' + this.state.value);
     console.log('Save this to DynamoDB somehow:');
     console.log(this.state);
     event.preventDefault();
