@@ -34,11 +34,66 @@ td, th {
     padding: 2px;
 }
 
-a {
+a, p {
     color: #EAEAEA;
 }
-p {
+
+label {
+    width: 90px;
+    height: 23px;
+    left: 22px;
+    top: 157px;
+
+    font-family: "Open Sans", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 22px;
+
     color: #EAEAEA;
+}
+
+input[type=text] {
+    width: 248px;
+    height: 32px;
+    left: 103px;
+    top: 152px;
+
+    background: #EAEAEA;
+    box-shadow: inset 0px 0px 1px rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+
+    font-family: "Open Sans", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 19px;
+
+    color: #1B1B1B;
+}
+
+input[type=submit] {
+    width: 150px;
+    height: 34.2px;
+    left: 201px;
+    top: 351.5px;
+
+    font-family: "Open Sans", sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 35px;
+    text-align: center;
+
+    color: #EAEAEA;
+
+    width: 150px;
+    height: 63px;
+    left: 201px;
+    top: 338px;
+
+    background: #1876D2;
+    border-radius: 5px;
 }
 
 .available {
