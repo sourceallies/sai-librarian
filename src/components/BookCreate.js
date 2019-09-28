@@ -1,11 +1,13 @@
 import React from 'react';
 import {postBook} from '../utils/postBook';
+import BookAddSuccess from './BookAddSuccess';
 
 export default class BookCreate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       bookTitle: '',
+      complete: false,
       isbnNumber: '',
       shelf: '',
       'loggedInName': this.props.loggedInName,
@@ -33,12 +35,15 @@ export default class BookCreate extends React.Component {
       isbn: this.state.isbnNumber,
       shelf: this.state.shelf
     }, this.props.token)
-    .then(() => this.props.history.push('/success'))
+    .then(() => this.setState({complete: true}))
     .catch(err => console.log('Error: ', err));
   }
 
   render() {
     const { loggedInName, bookId } = this.props;
+    if (this.state.complete) {
+      return <BookAddSuccess history={this.props.history} title={this.state.bookTitle} />;
+    }
     return (
       <form onSubmit={this.handleSubmit}>
         <label>
