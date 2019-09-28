@@ -1,3 +1,46 @@
+# Source Allies Library App
+This project was developed during the 2019 SAI Hackathon.
+
+## Project Authors
+* Team Lead
+    * Paul Rowe
+* UX
+    * Edwin O. Martinez Velazquez
+* Developers (starring in alphabetical order)
+    * Kevin Fode
+    * Michael Leners
+    * Gene Tinderholm
+
+## User's Guide
+
+### Printing New Labels for New Books
+1. Pull down the project.
+2. On the command line, run `npm run csv`. This will generate a CSV file in the generated-files directory.
+3. Goto https://www.avery.com/software/design-and-print/
+4. Click on "Start Designing" and pick the correct label template (we used 5160 for the hackathon)
+5. Use the horizontal blank label.
+6. On the left side, choose QR codes (it may be hidden. If so, click More...)
+7. Click add QR codes
+    1. Select spreadsheet
+    2. Import the CSV file you generated earlier
+    3. The Industry Standard Format should be QR Code
+    4. Code Type should be URL
+    5. Drag the data over to the website box
+    6. Click Finish
+8. Resize the QR code so that the black parts of the image are entirely within the "Safety Area"
+9. Download the PDF and print it!
+
+### Adding a Book
+1. Scan a previously unused QR code with a phone
+2. Enter the title, ISBN, and the shelf the book will be located on in the library
+3. Click the Submit button
+
+### Checking Out/Checking In a Book
+1. Scan the label
+2. Click Check In or Check Out
+
+## General Information
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
