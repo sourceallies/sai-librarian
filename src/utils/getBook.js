@@ -8,7 +8,6 @@ export const getBookByBookId = (bookId, token) => {
       'accounts.google.com': token
     }
   });
-  console.log(AWS.config.credentials);
   const dynamoDb = new AWS.DynamoDB.DocumentClient();
   const params = {
     TableName: 'Librarian_Books',

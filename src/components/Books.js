@@ -37,9 +37,6 @@ export default class Books extends React.Component {
              return <BookCreate bookId={this.props.match.params.id} loggedInName={this.props.user.profile.name} token={this.props.user.id_token} />
          }
 
-         console.log('here');
-         console.log(this.props.user);
-         console.log(this.props.user.id_token);
         return <BookDetail book={this.state.book} loggedInName={this.props.user.profile.name} token={this.props.user.id_token} />
     };
 }
