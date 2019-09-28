@@ -6,6 +6,7 @@ import Home from './Home';
 import Books from './Books';
 import Qr from './Qr';
 import OAuthCallback from './OAuthCallback';
+import BookList from "./BookList";
 const { createBrowserHistory } = require('history');
 
 const Routes = () => (
@@ -13,7 +14,8 @@ const Routes = () => (
     <Switch>
       <Route path="/app/home" component={wrapWithAuth(Home)} />
       <Route path="/books/:id" component={wrapWithAuth(Books)} />
-      <Route path="/app/qr" component={wrapWithAuth(Qr)} />
+        <Route path="/books" component={wrapWithAuth(BookList)} />
+        <Route path="/app/qr" component={wrapWithAuth(Qr)} />
       <Route path="/implicit/callback" component={OAuthCallback} />
     </Switch>
   </Router>

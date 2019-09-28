@@ -40,7 +40,7 @@ export default class BookDetail extends React.Component {
         ) : (
           <div>
             <p>Book</p>
-            <p>Book Title: {book.bookId}</p>
+            <p>Book Title: {book.title}</p>
             <p>Book ISBN: {book.isbn}</p>
             <p>Book shelf: {book.shelf}</p>
             <p>Location: {bookDetail.neckOfTheWoods}</p>
