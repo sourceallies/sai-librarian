@@ -4,9 +4,36 @@ Parameters:
     Type: String
     NoEcho: true
     Description: OAuth token for GitHub
+
+  DevAccount:
+    Type: String
+    Value: "729161019481"
+  QualAccount:
+    Type: String
+    Value: "035409092456"
+  ProdAccount:
+    Type: String
+    Value: "487696863217"
 Resources:
   ArtifactStore:
     Type: AWS::S3::Bucket
+  ArtifactStorePolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactStore
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: s3:*
+            Resource:
+              - !Sub arn:aws:s3:::${ArtifactStore}
+              - !Sub arn:aws:s3:::${ArtifactStore}/*
+            Principal:
+              AWS:
+                - arn:aws:iam::018303830101:role/Pipeline
+                - !Sub "arn:aws:iam::${DevAccount}:role/Deployer"
+                - !Sub "arn:aws:iam::${QualAccount}:role/Deployer"
+                - !Sub "arn:aws:iam::${ProdAccount}:role/Deployer"
 
 
 
