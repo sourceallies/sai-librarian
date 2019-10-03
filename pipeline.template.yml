@@ -1,0 +1,9 @@
+Description: sai-gatekeeper pipeline
+Parameters:
+  GithubAccessToken:
+    Type: String
+    NoEcho: true
+    Description: OAuth token for GitHub
+Resources:
+  ArtifactStore:
+    Type: AWS::S3::Bucket
