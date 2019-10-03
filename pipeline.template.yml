@@ -4,15 +4,36 @@ Parameters:
     Type: String
     NoEcho: true
     Description: OAuth token for GitHub
-  DevAccount:
+  GithubUsername:
     Type: String
-    Default: "729161019481"
-  QualAccount:
+    Description: Github username containing the project's repository
+    Default: sourceallies
+  GithubRepository:
     Type: String
-    Default: "035409092456"
-  ProdAccount:
+    Description: Github repository where the project is located
+    Default: sai-librarian
+  GithubBranch:
     Type: String
-    Default: "487696863217"
+    Description: Github branch to track
+    Default: master
+Mappings:
+  Accounts:
+    Shared:
+      Name: Shared
+      Id: "018303830101"
+      PipelineRoleArn: arn:aws:iam::018303830101:role/Pipeline
+    Dev:
+      Name: Dev
+      Id: "729161019481"
+      DeployerRoleArn: arn:aws:iam::729161019481:role/Deployer
+    Qual:
+      Name: Qual
+      Id: "035409092456"
+      DeployerRoleArn: arn:aws:iam::035409092456:role/Deployer
+    Prod:
+      Name: Prod
+      Id: "487696863217"
+      DeployerRoleArn: arn:aws:iam::487696863217:role/Deployer
 Resources:
   ArtifactStore:
     Type: AWS::S3::Bucket
@@ -29,10 +50,99 @@ Resources:
               - !Sub arn:aws:s3:::${ArtifactStore}/*
             Principal:
               AWS:
-                - arn:aws:iam::018303830101:role/Pipeline
-                - !Sub "arn:aws:iam::${DevAccount}:role/Deployer"
-                - !Sub "arn:aws:iam::${QualAccount}:role/Deployer"
-                - !Sub "arn:aws:iam::${ProdAccount}:role/Deployer"
-
+                - !FindInMap [Accounts, Shared, PipelineRoleArn]
+                - !FindInMap [Accounts, Dev, DeployerRoleArn]
+                - !FindInMap [Accounts, Qual, DeployerRoleArn]
+                - !FindInMap [Accounts, Prod, DeployerRoleArn]
+  ArtifactKey: #Needed to allow Dev/Qual/Prod to decrypt artifacts in the Shared account's ArtifactStore
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Key used for encrypting artifacts
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - kms:*
+            Resource: "*"
+            Principal:
+              AWS:
+                - !FindInMap [Accounts, Shared, Id]
+                - !FindInMap [Accounts, Dev, DeployerRoleArn]
+                - !FindInMap [Accounts, Qual, DeployerRoleArn]
+                - !FindInMap [Accounts, Prod, DeployerRoleArn]
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-build
+      ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
+      EncryptionKey: !GetAtt ArtifactKey.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: ARTIFACT_STORE
+            Value: !Ref ArtifactStore
+      Source:
+        Type: CODEPIPELINE
+      Artifacts:
+        Type: CODEPIPELINE
+  PipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GithubAccessToken
+      Filters:
+        - JsonPath: $.ref
+          MatchEquals: "refs/heads/{Branch}"
+      TargetPipeline: !Ref Pipeline
+      TargetAction: Source
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: true
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Ref AWS::StackName
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactStore
+        EncryptionKey:
+          Id: !GetAtt ArtifactKey.Arn
+          Type: KMS
+      RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/Pipeline
+      RestartExecutionOnUpdate: true
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Provider: GitHub
+                Owner: ThirdParty
+                Version: 1
+              OutputArtifacts:
+                - Name: sourceCode
+              Configuration:
+                Owner: !Ref GithubUsername
+                Repo: !Ref GithubRepository
+                Branch: !Ref GithubBranch
+                OAuthToken: !Ref GithubAccessToken
+                PollForSourceChanges: false
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: sourceCode
+              OutputArtifacts:
+                - Name: buildResults
+              Configuration:
+                ProjectName: !Ref BuildProject
 
 
