@@ -7,4 +7,3 @@ Parameters:
 Resources:
   ArtifactStore:
     Type: AWS::S3::Bucket
-
