@@ -6,4 +6,4 @@ Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      Name: !Rf DomainName
+      Name: !Ref DomainName
