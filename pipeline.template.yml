@@ -150,7 +150,7 @@ Resources:
                 RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
                 Capabilities: CAPABILITY_IAM
             - Name: Build
-              RunOrder: 2
+              RunOrder: 1
               ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -158,6 +158,8 @@ Resources:
                 Version: 1
               InputArtifacts:
                 - Name: sourceCode
+              OutputArtifacts:
+                - Name: prodBuildResults
               Configuration:
                 ProjectName: !Ref BuildProdProject
 
