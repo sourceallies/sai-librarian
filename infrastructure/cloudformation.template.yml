@@ -1,5 +1,9 @@
 Description: sai-librarian
-Parameters: {}
+Parameters:
+  DomainName:
+    Type: String
 Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      Name: !Rf DomainName
