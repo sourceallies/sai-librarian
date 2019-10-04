@@ -132,7 +132,8 @@ Resources:
                 PollForSourceChanges: false
         - Name: BuildAndDeployProd
           Actions:
-            - Name: Deploy
+            - Name: DeployInfrastructure
+              RunOrder: 1
               RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
               ActionTypeId:
                 Category: Deploy
@@ -148,8 +149,8 @@ Resources:
                 TemplateConfiguration: sourceCode::infrastructure/prod.config.json
                 RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
                 Capabilities: CAPABILITY_IAM
-              RunOrder: 1
             - Name: Build
+              RunOrder: 2
               ActionTypeId:
                 Category: Build
                 Owner: AWS
