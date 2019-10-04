@@ -40,7 +40,6 @@ export default class BookCreate extends React.Component {
     }
 
     render() {
-        const {loggedInName, bookId} = this.props;
         if (this.state.complete) {
           return <BookAddSuccess history={this.props.history} title={this.state.bookTitle} />;
         }

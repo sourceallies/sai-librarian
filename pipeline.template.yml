@@ -162,6 +162,19 @@ Resources:
                 - Name: prodBuildResults
               Configuration:
                 ProjectName: !Ref BuildProdProject
+            - Name: DeploySite
+              RunOrder: 2
+              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: S3
+                Version: 1
+              InputArtifacts:
+                - Name: prodBuildResults
+              Configuration:
+                BucketName: library.sourceallies.com
+                Extract: true
 
 
 

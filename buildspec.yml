@@ -13,6 +13,5 @@ phases:
       # - npm test
       - npm run build
 artifacts:
-  name: built-app
   files:
     - 'build/**/*'
