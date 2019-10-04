@@ -74,7 +74,7 @@ Resources:
   BuildProdProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub ${AWS::StackName}-build
+      Name: !Sub ${AWS::StackName}-build-prod
       ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
       EncryptionKey: !GetAtt ArtifactKey.Arn
       Environment:
