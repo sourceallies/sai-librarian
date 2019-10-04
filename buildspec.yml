@@ -1,9 +1,18 @@
 version: 0.2
+env:
+  variables:
+    CI: "true"
 phases:
   install:
     runtime-versions:
-      docker: 18
+      nodejs: 10
+    commands:
+      - npm ci
   build:
     commands:
-      - echo "running the build"
-artifacts: {}
+      - npm test
+      - npm run build
+artifacts:
+  name: built-app
+  files:
+    - 'build/**/*'
