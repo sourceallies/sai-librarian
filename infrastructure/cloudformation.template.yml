@@ -2,6 +2,7 @@ Description: sai-librarian
 Parameters:
   DomainName:
     Type: String
+    Default: library.sourceallies.com
 Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
