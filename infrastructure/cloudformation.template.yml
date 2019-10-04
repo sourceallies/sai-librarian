@@ -1,0 +1,5 @@
+Description: sai-librarian
+Parameters: {}
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket

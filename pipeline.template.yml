@@ -1,4 +1,4 @@
-Description: sai-gatekeeper pipeline
+Description: sai-librarian pipeline
 Parameters:
   GithubAccessToken:
     Type: String
@@ -71,7 +71,7 @@ Resources:
                 - !FindInMap [Accounts, Dev, DeployerRoleArn]
                 - !FindInMap [Accounts, Qual, DeployerRoleArn]
                 - !FindInMap [Accounts, Prod, DeployerRoleArn]
-  BuildProject:
+  BuildProdProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub ${AWS::StackName}-build
@@ -130,8 +130,25 @@ Resources:
                 Branch: !Ref GithubBranch
                 OAuthToken: !Ref GithubAccessToken
                 PollForSourceChanges: false
-        - Name: Build
+        - Name: BuildAndDeployProd
           Actions:
+            - Name: Deploy
+              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: sourceCode
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: CREATE_UPDATE
+                TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
+                TemplateConfiguration: sourceCode::infrastructure/prod.config.json
+                RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM
+              RunOrder: 1
             - Name: Build
               ActionTypeId:
                 Category: Build
@@ -140,10 +157,8 @@ Resources:
                 Version: 1
               InputArtifacts:
                 - Name: sourceCode
-              OutputArtifacts:
-                - Name: buildResults
               Configuration:
-                ProjectName: !Ref BuildProject
+                ProjectName: !Ref BuildProdProject
 
 
 
