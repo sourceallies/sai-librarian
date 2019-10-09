@@ -2,6 +2,8 @@ import React from 'react';
 import {updateBook} from "../utils/updateBook";
 import AfterDetails from './AfterDetails';
 import Shelf from './Shelf';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 
 export default class BookDetail extends React.Component {
     constructor(props) {
@@ -62,6 +64,13 @@ export default class BookDetail extends React.Component {
                             <h1>
                                 {book.title}
                             </h1>
+                            <h3>
+                                <FontAwesomeIcon
+                                    icon={faCheckCircle}
+                                    size={"2x"}
+                                    color={"green"}
+                                />
+                            </h3>
                         </header>
                         <table>
                             <tr>
