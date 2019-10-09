@@ -5,6 +5,14 @@ import Shelf from './Shelf';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 
+const checkCircleStyle = {
+    paddingRight: '20px'
+};
+
+const availableHeaderStyle = {
+    color: 'green'
+}
+
 export default class BookDetail extends React.Component {
     constructor(props) {
         super(props);
@@ -64,38 +72,44 @@ export default class BookDetail extends React.Component {
                             <h1>
                                 {book.title}
                             </h1>
-                            <h3>
+                            <h2
+                                style={availableHeaderStyle}
+                            >
                                 <FontAwesomeIcon
                                     icon={faCheckCircle}
-                                    size={"2x"}
+                                    size={"1x"}
                                     color={"green"}
+                                    style={checkCircleStyle}
                                 />
-                            </h3>
+                                {'Available'}
+                            </h2>
                         </header>
-                        <table>
-                            <tr>
-                                <td>Book ISBN:</td>
-                                <td>{book.isbn}</td>
-                            </tr>
-                            <tr>
-                                <td>Book shelf:</td>
-                                <td>{book.shelf}</td>
-                            </tr>
-                            <tr>
-                                <td>Location:</td>
-                                <td>{bookDetail.neckOfTheWoods}</td>
-                            </tr>
-                            <tr>
-                                <td colSpan={2}>
-                                    <button
-                                        onClick={() => this.flipStatus()}
-                                        style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
-                                    >
-                                        {bookDetail.isAvailable ? 'Check Out' : 'Return'}
-                                    </button>
-                                </td>
-                            </tr>
-                        </table>
+                        <p>
+                            <div>
+                                <label
+                                    style={{paddingRight: '20px'}}
+                                >
+                                    Book Shelf:
+                                </label>
+                                {book.shelf}
+                            </div>
+                            <div>
+                                <label
+                                    style={{paddingRight: '20px'}}
+                                >
+                                    Book ISBN:
+                                </label>
+                                {book.isbn}
+                            </div>
+                            <div>
+                                <button
+                                    onClick={() => this.flipStatus()}
+                                    style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
+                                >
+                                    {bookDetail.isAvailable ? 'Check Out' : 'Return'}
+                                </button>
+                            </div>
+                        </p>
                     </div>
                 )}
             </div>
