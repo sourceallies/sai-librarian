@@ -1,18 +1,20 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 
-body {
-    width: 375px;
-    height: 667px;
+html, body {
+    max-width: 700px;
+    margin: auto;
+    background: rgb(35,37,38);
+    font-family: 'Montserrat', 'arial', sans-serif;
 
-    background: #272C33;
 }
 
 h1 {
-    width: 375px;
-    height: 49px;
-    left: 0px;
-    top: 84px;
+    max-width: 500px;
+    font-size: 30px;
+    margin: 60px;
     color: #EAEAEA;
+    text-align: center;
+    
 }
 
 tr {
