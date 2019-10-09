@@ -8,7 +8,7 @@ import OAuthCallback from './OAuthCallback';
 import BookList from "./BookList";
 import BookAddSuccess from "./BookAddSuccess";
 import Another from "./Another";
-import ScanToAdd from './ScanToAdd';
+import BulkAddPage from './bulk-add/BulkAddPage';
 const { createBrowserHistory } = require('history');
 
 const Routes = () => (
@@ -21,7 +21,7 @@ const Routes = () => (
       <Route path="/app/qr" component={wrapWithAuth(Qr)} />
       <Route path="/implicit/callback" component={OAuthCallback} />
       <Route path="/success" component={wrapWithAuth(BookAddSuccess)} />
-      <Route path="/scan" component={ScanToAdd} />
+      <Route path="/scan" component={BulkAddPage} />
 
     </Switch>
   </Router>
