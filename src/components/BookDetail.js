@@ -57,34 +57,37 @@ export default class BookDetail extends React.Component {
                 {this.state.isFetching ? (
                     <h1>Loading Book...</h1>
                 ) : (
-                    <table>
-                        <tr>
-                            <td>Book Title:</td>
-                            <td>{book.title}</td>
-                        </tr>
-                        <tr>
-                            <td>Book ISBN:</td>
-                            <td>{book.isbn}</td>
-                        </tr>
-                        <tr>
-                            <td>Book shelf:</td>
-                            <td>{book.shelf}</td>
-                        </tr>
-                        <tr>
-                            <td>Location:</td>
-                            <td>{bookDetail.neckOfTheWoods}</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2}>
-                                <button
-                                    onClick={() => this.flipStatus()}
-                                    style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
-                                >
-                                    {bookDetail.isAvailable ? 'Check Out' : 'Return'}
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
+                    <div>
+                        <header>
+                            <h1>
+                                {book.title}
+                            </h1>
+                        </header>
+                        <table>
+                            <tr>
+                                <td>Book ISBN:</td>
+                                <td>{book.isbn}</td>
+                            </tr>
+                            <tr>
+                                <td>Book shelf:</td>
+                                <td>{book.shelf}</td>
+                            </tr>
+                            <tr>
+                                <td>Location:</td>
+                                <td>{bookDetail.neckOfTheWoods}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan={2}>
+                                    <button
+                                        onClick={() => this.flipStatus()}
+                                        style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
+                                    >
+                                        {bookDetail.isAvailable ? 'Check Out' : 'Return'}
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 )}
             </div>
         );
