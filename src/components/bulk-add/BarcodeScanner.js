@@ -1,61 +1,40 @@
 import React, {useEffect, useRef, useReducer, useState} from 'react';
-import Quagga from 'quagga';
-
-
-
-async function initQuagga(options, onDetected) {
-    return new Promise((resolve, reject) => {
-        Quagga.init(options, (err) => {
-            if (err) {
-                console.error('Error initializing Quagga', err);
-                reject(err);
-            } else {
-                Quagga.onDetected(onDetected);
-                Quagga.start();
-                console.log('Quagga initialization finished.');
-                resolve();
-            }
-        })
-    });
-}
+// import Quagga from 'quagga';
+import { BrowserMultiFormatReader, DecodeHintType, BarcodeFormat} from '@zxing/library';
 
 export default function BarcodeScanner({onCodeScanned}) {
     const scannerRef = useRef();
     const [error, setError] = useState();
 
-    useEffect(() => {
-        const scannerOptions = {
-            inputStream : {
-                name : "Live",
-                type : "LiveStream",
-                target: scannerRef.current
-            },
-            decoder : {
-                readers: [
-                    "upc_reader",
-                    'code_128_reader',
-                    'upc_e_reader',
-                    'ean_reader',
-                    'ean_8_reader'
-                ],
-                debug: {
-                    drawBoundingBox: true,
-                    showFrequency: false,
-                    drawScanline: true,
-                    showPattern: false
-                }
-            }
-        };
+    async function doInit() {
+        const hints = new Map();
+        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+            BarcodeFormat.EAN_13,
+            BarcodeFormat.QR_CODE
+        ]);
+        const reader = new BrowserMultiFormatReader(hints);
 
-        initQuagga(scannerOptions, onCodeScanned)
-            .catch(setError);
-        return () =>  Quagga.stop();
+        while (true) {
+            const result = await reader.decodeFromInputVideoDevice(undefined, scannerRef.current);
+            console.log('got result', result);
+            onCodeScanned(result);
+        }
+    }
+
+    useEffect(() => {
+        doInit();
     }, [onCodeScanned]);
 
     return (
         <div>
             {error && <div>{error.message}</div>}
-            <div ref={scannerRef}></div>
+            <video
+                id="video"
+                width="640"
+                height="480"
+                ref={scannerRef}
+                style={{border: '1px solid gray'}}
+            />
         </div>
     );
 }

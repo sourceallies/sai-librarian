@@ -92,17 +92,18 @@ export default function BulkAddPage() {
     const [book, dispatchBookChange] = useReducer(bookReducer, {});
 
     async function onCodeScanned(scanResult) {
-        const {code, format} = scanResult.codeResult;
-        console.log(`Scanned ${format}: ${code}`);
+        const {text, format} = scanResult;
+        console.log(`Scanned ${format}: ${text}`);
 
         dispatchBookChange({
-            isbn: code
+            isbn: text,
+            shelf: format
         });
-        const bookData = await getBookData(code);
+        const bookData = await getBookData(text);
         if (bookData) {
             dispatchBookChange({
                 isbn: bookData.identifiers.isbn_13,
-                title: bookData.title
+                title: bookData.title,
             });
         }
     }
