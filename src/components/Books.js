@@ -31,7 +31,7 @@ export default class Books extends React.Component {
 
     render() {
         if (this.state.loading) {
-            return <p>Loading</p>
+            return <h1>Loading...</h1>
         }
          if (!this.state.book.bookId) {
              return (
