@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Router, Switch } from 'react-router-dom';
+import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import wrapWithAuth from '../auth/wrap-with-auth';
 import Home from './Home';
 import Books from './Books';
@@ -13,6 +13,9 @@ const { createBrowserHistory } = require('history');
 const Routes = () => (
   <Router history={createBrowserHistory()}>
     <Switch>
+      <Route exact path="/">
+        <Redirect to="/books" />
+      </Route>
       <Route path="/app/home" component={wrapWithAuth(Home)} />
       <Route path="/another" component={wrapWithAuth(Another)} />
       <Route path="/books/:id" component={wrapWithAuth(Books)} />
