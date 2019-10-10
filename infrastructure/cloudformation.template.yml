@@ -3,8 +3,102 @@ Parameters:
   DomainName:
     Type: String
     Default: library.sourceallies.com
+  HostedZone:
+    Type: String
+    Default: sourceallies.com.
+  CloudFrontHostedZoneId:
+    Type: String
+    Default: Z2FDTNDATAQYW2
+    Description: The default HostedZoneId for CloudFront. This is set by AWS.
 Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref DomainName
+  CloudfrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Origin access identity for the SAI Library
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - DomainName: !GetAtt SiteBucket.DomainName
+            Id: S3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
+        # Aliases:
+        #   - !Ref DomainName
+        Comment: "Cloudfront for SAI Library"
+        DefaultRootObject: index.html
+        # CustomErrorResponses:
+        #   - ErrorCode: 404
+        #     ResponseCode: 200
+        #     ResponsePagePath: "/index.html"
+        DefaultCacheBehavior:
+          AllowedMethods: ["GET", "HEAD", "OPTIONS"]
+          DefaultTTL: 0
+          ForwardedValues:
+            QueryString: true
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: allow-all
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: CloudFrontDistribution
+    Properties:
+        Bucket: !Ref SiteBucket
+        PolicyDocument:
+            Statement:
+              - Sid: CloudFrontRead
+                Effect: Allow
+                Principal:
+                  CanonicalUser: !GetAtt CloudfrontOriginAccessIdentity.S3CanonicalUserId
+                Action:
+                  - s3:ListBucket
+                  - s3:GetObject
+                Resource:
+                  - !Sub arn:aws:s3:::${SiteBucket}
+                  - !Sub arn:aws:s3:::${SiteBucket}/*
+  Certificate:
+    Type: Custom::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  IssuedCertificate:
+    Type: Custom::IssuedCertificate
+    Properties:
+      CertificateArn: !Ref Certificate
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  SSLCertificateDNSRecord:
+    Type: Custom::CertificateDNSRecord
+    Properties:
+      CertificateArn: !Ref Certificate
+      DomainName: !Ref DomainName
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      RecordSets:
+        - Name: !GetAtt SSLCertificateDNSRecord.Name
+          Type: !GetAtt SSLCertificateDNSRecord.Type
+          TTL: 60
+          Weight: 1
+          SetIdentifier: !Ref Certificate
+          ResourceRecords:
+            - !GetAtt SSLCertificateDNSRecord.Value
+        - Name: !Ref DomainName
+          Type: A
+          AliasTarget:
+            DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
+            HostedZoneId: !Ref CloudFrontHostedZoneId
+        - Name: !Ref DomainName
+          Type: AAAA
+          AliasTarget:
+            DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
+            HostedZoneId: !Ref CloudFrontHostedZoneId
