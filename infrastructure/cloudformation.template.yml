@@ -5,6 +5,7 @@ Parameters:
     Default: library.sourceallies.com
   HostedZone:
     Type: String
+    Default: sourceallies.com.
   CloudFrontHostedZoneId:
     Type: String
     Default: Z2FDTNDATAQYW2
