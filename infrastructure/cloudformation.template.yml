@@ -46,11 +46,11 @@ Resources:
           ViewerProtocolPolicy: allow-all
         Enabled: true
         PriceClass: PriceClass_100
-  WebsiteBucketPolicy:
+  SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     DependsOn: CloudFrontDistribution
     Properties:
-        Bucket: !Ref WebsiteBucket
+        Bucket: !Ref SiteBucket
         PolicyDocument:
             Statement:
               - Sid: CloudFrontRead
