@@ -3,8 +3,58 @@ Parameters:
   DomainName:
     Type: String
     Default: library.sourceallies.com
+  HostedZone:
+    Type: String
+  CloudFrontHostedZoneId:
+    Type: String
+    Default: Z2FDTNDATAQYW2
+    Description: The default HostedZoneId for CloudFront. This is set by AWS.
 Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref DomainName
+  CloudfrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Origin access identity for the SAI Library
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt SiteBucket.DomainName
+            Id: S3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
+        Aliases:
+          - !Ref DomainName
+        Comment: "Cloudfront for SAI Library"
+        DefaultCacheBehavior:
+          AllowedMethods: ["GET", "HEAD", "OPTIONS"]
+          DefaultTTL: 0
+          ForwardedValues:
+            QueryString: true
+          TargetOriginId: S3Origin
+          # ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        PriceClass: PriceClass_100
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: CloudFrontDistribution
+    Properties:
+        Bucket: !Ref WebsiteBucket
+        PolicyDocument:
+            Statement:
+              - Sid: CloudFrontRead
+                Effect: Allow
+                Principal:
+                  CanonicalUser: !GetAtt CloudfrontOriginAccessIdentity.S3CanonicalUserId
+                Action:
+                  - s3:ListBucket
+                  - s3:GetObject
+                Resource:
+                  - !Sub arn:aws:s3:::${SiteBucket}
+                  - !Sub arn:aws:s3:::${SiteBucket}/*
