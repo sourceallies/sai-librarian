@@ -62,3 +62,19 @@ Resources:
                 Resource:
                   - !Sub arn:aws:s3:::${SiteBucket}
                   - !Sub arn:aws:s3:::${SiteBucket}/*
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      RecordSets:
+        - Name: !Ref DomainName
+          Type: A
+          AliasTarget:
+            DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
+            HostedZoneId: !Ref CloudFrontHostedZoneId
+        - Name: !Ref DomainName
+          Type: AAAA
+          HostedZoneName: !Ref HostedZone
+          AliasTarget:
+            DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
+            HostedZoneId: !Ref CloudFrontHostedZoneId
