@@ -78,20 +78,23 @@ Resources:
     Type: Custom::CertificateDNSRecord
     Properties:
       CertificateArn: !Ref Certificate
-      DomainName: !Ref DomainName
       ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  SSLValidationRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      Name: !GetAtt SSLCertificateDNSRecord.Name
+      Type: !GetAtt SSLCertificateDNSRecord.Type
+      SetIdentifier: !Ref Certificate
+      TTL: 60
+      Weight: 1
+      ResourceRecords:
+        - !GetAtt SSLCertificateDNSRecord.Value
   RecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneName: !Ref HostedZone
       RecordSets:
-        - Name: !GetAtt SSLCertificateDNSRecord.Name
-          Type: !GetAtt SSLCertificateDNSRecord.Type
-          TTL: 60
-          Weight: 1
-          SetIdentifier: !Ref Certificate
-          ResourceRecords:
-            - !GetAtt SSLCertificateDNSRecord.Value
         - Name: !Ref DomainName
           Type: A
           AliasTarget:
