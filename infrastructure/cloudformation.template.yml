@@ -46,8 +46,6 @@ Resources:
             QueryString: true
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: allow-all
-
-
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     DependsOn: CloudFrontDistribution
@@ -65,11 +63,35 @@ Resources:
                 Resource:
                   - !Sub arn:aws:s3:::${SiteBucket}
                   - !Sub arn:aws:s3:::${SiteBucket}/*
+  Certificate:
+    Type: Custom::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  IssuedCertificate:
+    Type: Custom::IssuedCertificate
+    Properties:
+      CertificateArn: !Ref Certificate
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  SSLCertificateDNSRecord:
+    Type: Custom::CertificateDNSRecord
+    Properties:
+      CertificateArn: !Ref Certificate
+      DomainName: !Ref DomainName
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
   RecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneName: !Ref HostedZone
       RecordSets:
+        - Name: !GetAtt SSLCertificateDNSRecord.Name
+          Type: !GetAtt SSLCertificateDNSRecord.Type
+          TTL: 60
+          Weight: 1
+          SetIdentifier: !Ref Certificate
+          ResourceRecords:
+            - !GetAtt SSLCertificateDNSRecord.Value
         - Name: !Ref DomainName
           Type: A
           AliasTarget:
@@ -80,8 +102,3 @@ Resources:
           AliasTarget:
             DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
             HostedZoneId: !Ref CloudFrontHostedZoneId
-  Certificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: !Ref DomainName
-      ValidationMethod: DNS
