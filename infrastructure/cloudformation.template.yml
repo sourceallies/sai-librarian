@@ -77,7 +77,6 @@ Resources:
             HostedZoneId: !Ref CloudFrontHostedZoneId
         - Name: !Ref DomainName
           Type: AAAA
-          HostedZoneName: !Ref HostedZone
           AliasTarget:
             DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
             HostedZoneId: !Ref CloudFrontHostedZoneId
