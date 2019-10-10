@@ -29,11 +29,11 @@ export default function BarcodeScanner({onCodeScanned}) {
         <div>
             {error && <div>{error.message}</div>}
             <video
-                id="video"
-                width="640"
-                height="480"
                 ref={scannerRef}
-                style={{border: '1px solid gray'}}
+                style={{
+                    border: '1px solid gray',
+                    width: '100%'
+                }}
             />
         </div>
     );
