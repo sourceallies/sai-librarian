@@ -33,8 +33,6 @@ Resources:
             Id: S3Origin
             S3OriginConfig:
               OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
-        # Aliases:
-        #   - !Ref DomainName
         Comment: "Cloudfront for SAI Library"
         DefaultRootObject: index.html
         # CustomErrorResponses:
