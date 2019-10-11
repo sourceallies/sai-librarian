@@ -26,6 +26,8 @@ Resources:
       DistributionConfig:
         Enabled: true
         PriceClass: PriceClass_100
+        Aliases:
+          - !Ref DomainName
         Origins:
           - DomainName: !GetAtt SiteBucket.DomainName
             Id: S3Origin
@@ -45,7 +47,10 @@ Resources:
           ForwardedValues:
             QueryString: true
           TargetOriginId: S3Origin
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: sni-only
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     DependsOn: CloudFrontDistribution
