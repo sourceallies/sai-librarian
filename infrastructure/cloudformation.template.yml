@@ -35,10 +35,10 @@ Resources:
               OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
         Comment: "Cloudfront for SAI Library"
         DefaultRootObject: index.html
-        # CustomErrorResponses:
-        #   - ErrorCode: 404
-        #     ResponseCode: 200
-        #     ResponsePagePath: "/index.html"
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
         DefaultCacheBehavior:
           AllowedMethods: ["GET", "HEAD", "OPTIONS"]
           DefaultTTL: 0

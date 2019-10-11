@@ -84,6 +84,8 @@ Resources:
         EnvironmentVariables:
           - Name: ARTIFACT_STORE
             Value: !Ref ArtifactStore
+          - Name: BUCKET_NAME
+            Value: "library.sourceallies.com"
       Source:
         Type: CODEPIPELINE
       Artifacts:
@@ -149,7 +151,7 @@ Resources:
                 TemplateConfiguration: sourceCode::infrastructure/prod.config.json
                 RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
                 Capabilities: CAPABILITY_IAM
-            - Name: Build
+            - Name: BuildAndPush
               RunOrder: 2
               RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
               ActionTypeId:
@@ -163,19 +165,4 @@ Resources:
                 - Name: prodBuildResults
               Configuration:
                 ProjectName: !Ref BuildProdProject
-            - Name: DeploySite
-              RunOrder: 2
-              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: S3
-                Version: 1
-              InputArtifacts:
-                - Name: prodBuildResults
-              Configuration:
-                BucketName: library.sourceallies.com
-                Extract: true
-
-
 
