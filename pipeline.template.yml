@@ -153,7 +153,6 @@ Resources:
                 Capabilities: CAPABILITY_IAM
             - Name: BuildAndPush
               RunOrder: 2
-              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
               ActionTypeId:
                 Category: Build
                 Owner: AWS
