@@ -116,3 +116,16 @@ Resources:
           AliasTarget:
             DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
             HostedZoneId: !Ref CloudFrontHostedZoneId
+  BooksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${AWS::StackName}-books"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: bookId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: bookId
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
