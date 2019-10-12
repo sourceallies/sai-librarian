@@ -39,11 +39,17 @@ Resources:
           - ErrorCode: 404
             ResponseCode: 200
             ResponsePagePath: "/index.html"
+        CacheBehaviors:
+          - AllowedMethods: ["GET", "HEAD", "OPTIONS"]
+            DefaultTTL: 0
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
         DefaultCacheBehavior:
+          PathPattern: "*.html"
           AllowedMethods: ["GET", "HEAD", "OPTIONS"]
-          DefaultTTL: 0
+          DefaultTTL: 300
           ForwardedValues:
-            QueryString: true
+            QueryString: false
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
