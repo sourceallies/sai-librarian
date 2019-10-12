@@ -81,9 +81,6 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
-        EnvironmentVariables:
-          - Name: ARTIFACT_STORE
-            Value: !Ref ArtifactStore
       Source:
         Type: CODEPIPELINE
       Artifacts:
