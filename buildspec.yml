@@ -2,7 +2,6 @@ version: 0.2
 env:
   variables:
     CI: "true"
-    AWS_PROFILE: "target"
 phases:
   install:
     runtime-versions:
@@ -14,19 +13,6 @@ phases:
       # - npm test
       - npm run build
 
-      - aws configure --profile=target set role_arn $TARGET_ROLE_ARN
-      - aws sts get-caller-identity
-      - |
-        aws s3 sync \
-          --cache-control='max-age=604800' \
-          --exclude=index.html \
-          build/ s3://$BUCKET_NAME
-      - |
-        aws s3 sync \
-          --cache-control='no-cache' \
-          --include=index.html \
-          --exclude='*' \
-          build/ s3://$BUCKET_NAME
 artifacts:
   base-directory: build
   files:
