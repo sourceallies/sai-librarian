@@ -41,15 +41,17 @@ Resources:
             ResponsePagePath: "/index.html"
         CacheBehaviors:
           - AllowedMethods: ["GET", "HEAD", "OPTIONS"]
+            PathPattern: "*.html"
             DefaultTTL: 0
+            ForwardedValues:
+              QueryString: true
             TargetOriginId: S3Origin
             ViewerProtocolPolicy: redirect-to-https
         DefaultCacheBehavior:
-          PathPattern: "*.html"
           AllowedMethods: ["GET", "HEAD", "OPTIONS"]
           DefaultTTL: 300
           ForwardedValues:
-            QueryString: false
+            QueryString: true
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
