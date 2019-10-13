@@ -2,10 +2,10 @@ Description: sai-librarian
 Parameters:
   DomainName:
     Type: String
-    # Default: library.sourceallies.com
   HostedZone:
     Type: String
-    Default: sourceallies.com.
+  OpenIdAud:
+    Type: String
   CloudFrontHostedZoneId:
     Type: String
     Default: Z2FDTNDATAQYW2
@@ -143,9 +143,9 @@ Resources:
             Action: "sts:AssumeRoleWithWebIdentity"
             Condition:
               StringEquals:
-                "accounts.google.com:aud": "242865329519-oa7lva9ueokgomi7ehlrdk0meuvu9nfb.apps.googleusercontent.com"
+                "accounts.google.com:aud": !Ref openIdAud
       Policies:
-        - PolicyName: "dynamo access"
+        - PolicyName: "dynamo-access"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
