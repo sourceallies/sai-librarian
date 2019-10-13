@@ -159,4 +159,4 @@ Resources:
                   - dynamodb:Query
                   - dynamodb:Scan
                   - dynamodb:UpdateItem
-                Resource: !Ref BooksTable
+                Resource: !GetAtt [ BooksTable, Arn ]
