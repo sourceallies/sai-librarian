@@ -1,22 +1,17 @@
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
+import userManager from '../auth/user-manager';
 
-AWS.config.region = 'us-east-2';
-export const getBookList = (token) => {
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-2:cf475bdd-465f-4260-ae06-7d9560f4179d',
-        Logins: {
-        'accounts.google.com': token
-        }
+export default async function getBookList() {
+    const user = await userManager.getUser();
+
+    AWS.config.region = 'us-east-1';
+    AWS.config.credentials = new AWS.WebIdentityCredentials({
+        RoleArn: process.env.REACT_APP_ROLE_ARN,
+        WebIdentityToken: user.id_token
     });
     const dynamoDb = new AWS.DynamoDB.DocumentClient();
-    const params = {
-        TableName: 'Librarian_Books'
-    };
 
-    return new Promise((resolve, reject) => {
-        dynamoDb.scan(params, function(err, data) {
-            if (err) reject(err);
-            resolve(data);
-        });
-    })
-};
+    return await dynamoDb.scan({
+        TableName: process.env.REACT_APP_BOOK_TABLE
+    }).promise();
+}
