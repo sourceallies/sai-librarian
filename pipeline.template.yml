@@ -141,7 +141,7 @@ Resources:
                 - Name: sourceCode
               Configuration:
                 StackName: sai-librarian
-                ActionMode: CREATE_UPDATE
+                ActionMode: REPLACE_ON_FAILURE
                 TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
                 TemplateConfiguration: sourceCode::infrastructure/dev.config.json
                 RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]

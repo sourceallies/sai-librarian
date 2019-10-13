@@ -22,6 +22,8 @@ Resources:
         Comment: Origin access identity for the SAI Library
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
+    DependsOn:
+      - IssuedCertificate
     Properties:
       DistributionConfig:
         Enabled: true
