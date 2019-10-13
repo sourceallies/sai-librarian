@@ -2,7 +2,7 @@ Description: sai-librarian
 Parameters:
   DomainName:
     Type: String
-    Default: library.sourceallies.com
+    # Default: library.sourceallies.com
   HostedZone:
     Type: String
     Default: sourceallies.com.
