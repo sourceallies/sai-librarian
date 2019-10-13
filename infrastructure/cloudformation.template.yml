@@ -143,7 +143,7 @@ Resources:
             Action: "sts:AssumeRoleWithWebIdentity"
             Condition:
               StringEquals:
-                "accounts.google.com:aud": !Ref openIdAud
+                "accounts.google.com:aud": !Ref OpenIdAud
       Policies:
         - PolicyName: "dynamo-access"
           PolicyDocument:
