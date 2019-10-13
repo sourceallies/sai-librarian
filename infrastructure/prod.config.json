@@ -1,3 +1,5 @@
 {
-    "DomainName": "library.sourceallies.com"
+    "Parameters": {
+        "DomainName": "library.sourceallies.com"
+    }
 }
