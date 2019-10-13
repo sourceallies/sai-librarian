@@ -145,7 +145,7 @@ Resources:
                 TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
                 TemplateConfiguration: sourceCode::infrastructure/prod.config.json
                 RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-                Capabilities: CAPABILITY_IAM
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
             - Name: Build
               RunOrder: 1
               ActionTypeId:
