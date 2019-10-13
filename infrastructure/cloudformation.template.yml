@@ -147,16 +147,16 @@ Resources:
       Policies:
         - PolicyName: "dynamo access"
           PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: "Allow"
-              Action:
-                - dynamodb:BatchGetItem
-                - dynamodb:BatchWriteItem
-                - dynamodb:ConditionCheck
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:Query
-                - dynamodb:Scan
-                - dynamodb:UpdateItem
-              Resource: !Ref BooksTable
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:ConditionCheck
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource: !Ref BooksTable
