@@ -23,7 +23,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "csv": "node ./src/csvGenerator.js"
+    "csv": "node ./src/csvGenerator.js",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix"
   },
   "eslintConfig": {
     "extends": "react-app"
