@@ -56,7 +56,7 @@ export default class BookDetail extends React.Component {
                     />
         }
         if (this.state.complete) {
-            return <AfterDetails 
+            return <AfterDetails
                         title={this.state.bookDetail.title}
                         isReturning={this.state.bookDetail.isAvailable}
                         history={this.props.history}

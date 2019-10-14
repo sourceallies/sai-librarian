@@ -35,22 +35,22 @@ export default class Books extends React.Component {
         }
          if (!this.state.book.bookId) {
              return (
-                <BookCreate 
+                <BookCreate
                     bookId={this.props.match.params.id}
-                    loggedInName={this.props.user.profile.name} 
-                    token={this.props.user.id_token} 
+                    loggedInName={this.props.user.profile.name}
+                    token={this.props.user.id_token}
                     history={this.props.history}
                 />
              );
          }
 
         return (
-            <BookDetail 
-              book={this.state.book} 
-              loggedInName={this.props.user.profile.name} 
+            <BookDetail
+              book={this.state.book}
+              loggedInName={this.props.user.profile.name}
               history={this.props.history}
               token={this.props.user.id_token}
             />
         );
-    };
+    }
 }

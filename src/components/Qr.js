@@ -1,2 +1,4 @@
 import React from 'react';
-export default () => <p>QR!</p>
+const Qr = () => <p>QR!</p>
+
+export default Qr
