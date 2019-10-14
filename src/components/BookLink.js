@@ -32,7 +32,7 @@ export default class BookList extends React.Component {
                         <div> <Link to={`/books/${bookId}`}>{title}</Link> </div>
                         <p>
                         {this.isAvailable(isAvailable)}
-                        in Shelf {shelf}
+                        on Shelf {shelf}
                         <hr/> 
                         </p>
                     </>
