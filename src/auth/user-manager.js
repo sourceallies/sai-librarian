@@ -10,4 +10,5 @@ const userManager = new UserManager({
     automaticSilentRenew: true
 });
 
+window.userManager = userManager;
 export default userManager;
