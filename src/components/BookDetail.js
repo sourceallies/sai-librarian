@@ -10,7 +10,7 @@ const checkCircleStyle = {
 };
 
 const availableHeaderStyle = {
-    color: 'green'
+    color: '#2AF598'
 }
 
 export default class BookDetail extends React.Component {
@@ -72,13 +72,14 @@ export default class BookDetail extends React.Component {
                             <h1>
                                 {book.title}
                             </h1>
+                            <hr/> 
                             <h2
                                 style={availableHeaderStyle}
                             >
                                 <FontAwesomeIcon
                                     icon={faCheckCircle}
-                                    size={"1x"}
-                                    color={"green"}
+                                    size={20}
+                                    color={"#2AF598"}
                                     style={checkCircleStyle}
                                 />
                                 {'Available'}
@@ -101,7 +102,8 @@ export default class BookDetail extends React.Component {
                                 </label>
                                 {book.isbn}
                             </div>
-                            <div>
+                        </p>
+                        <div>
                                 <button
                                     onClick={() => this.flipStatus()}
                                     style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
@@ -109,7 +111,6 @@ export default class BookDetail extends React.Component {
                                     {bookDetail.isAvailable ? 'Check Out' : 'Return'}
                                 </button>
                             </div>
-                        </p>
                     </div>
                 )}
             </div>
