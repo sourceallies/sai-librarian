@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default ({ user }) => {
+export default function Home({ user }) {
   const userName = user.profile.name;
   return (
     <div>
@@ -8,4 +8,4 @@ export default ({ user }) => {
       <p>HI!</p>
     </div>
   );
-};
+}

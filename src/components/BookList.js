@@ -9,11 +9,11 @@ export default class BookList extends React.Component {
             loading: true,
             bookList: []
         }
-    };
+    }
 
     generateListOfBookDetails() {
         return this.state.bookList.map((book) =>
-            <BookLink book={book} />
+            <BookLink key={book.bookId} book={book} />
         );
     }
 
@@ -42,5 +42,5 @@ export default class BookList extends React.Component {
                 </div>
             </div>
     )
-    };
+    }
 }
