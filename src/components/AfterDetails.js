@@ -19,12 +19,14 @@ class AfterDetails extends React.Component {
         }
 
         return (
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start'}}>
-                <FaCheckCircle color="green" size={50} />
-                <p>{mainText}</p>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', marginTop: '40px'}}>
+                <FaCheckCircle color="#2AF598" size={100} />
+                <h3>{mainText}</h3>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <button style={{fontSize: 14, margin: 4}} onClick={() => history.push('/books')}>Continue to Library</button>
-                    <button style={{fontSize: 14, margin: 4}} onClick={() => this.setState({complete: true})}>{`${buttonText} Another`}</button>
+                    <button style={{fontSize: 20, margin: 10, width: 250}} onClick={() => history.push('/books')}>Continue to Library</button>
+                    </div>
+                <div style={{display: 'flex', alignItems: 'center'}}>    
+                    <button style={{fontSize: 20, margin: 10, width: 250, color: "#2185d0", backgroundColor: "#EAEAEA"}} onClick={() => this.setState({complete: true})}>{`${buttonText} another book`}</button>
                 </div>
                 <p>If you are done close the tab/app</p>
             </div>

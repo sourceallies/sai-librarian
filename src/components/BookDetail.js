@@ -2,6 +2,16 @@ import React from 'react';
 import {updateBook} from "../utils/updateBook";
 import AfterDetails from './AfterDetails';
 import Shelf from './Shelf';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+
+const checkCircleStyle = {
+    paddingRight: '20px'
+};
+
+const availableHeaderStyle = {
+    color: '#2AF598'
+}
 
 export default class BookDetail extends React.Component {
     constructor(props) {
@@ -46,7 +56,7 @@ export default class BookDetail extends React.Component {
                     />
         }
         if (this.state.complete) {
-            return <AfterDetails 
+            return <AfterDetails
                         title={this.state.bookDetail.title}
                         isReturning={this.state.bookDetail.isAvailable}
                         history={this.props.history}
@@ -57,34 +67,51 @@ export default class BookDetail extends React.Component {
                 {this.state.isFetching ? (
                     <h1>Loading Book...</h1>
                 ) : (
-                    <table>
-                        <tr>
-                            <td>Book Title:</td>
-                            <td>{book.title}</td>
-                        </tr>
-                        <tr>
-                            <td>Book ISBN:</td>
-                            <td>{book.isbn}</td>
-                        </tr>
-                        <tr>
-                            <td>Book shelf:</td>
-                            <td>{book.shelf}</td>
-                        </tr>
-                        <tr>
-                            <td>Location:</td>
-                            <td>{bookDetail.neckOfTheWoods}</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2}>
+                    <div>
+                        <header>
+                            <h1>
+                                {book.title}
+                            </h1>
+                            <hr/> 
+                            <h2
+                                style={availableHeaderStyle}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faCheckCircle}
+                                    size={20}
+                                    color={"#2AF598"}
+                                    style={checkCircleStyle}
+                                />
+                                {'Available'}
+                            </h2>
+                        </header>
+                        <p>
+                            <div>
+                                <label
+                                    style={{paddingRight: '20px'}}
+                                >
+                                    Book Shelf:
+                                </label>
+                                {book.shelf}
+                            </div>
+                            <div>
+                                <label
+                                    style={{paddingRight: '20px'}}
+                                >
+                                    Book ISBN:
+                                </label>
+                                {book.isbn}
+                            </div>
+                        </p>
+                        <div>
                                 <button
                                     onClick={() => this.flipStatus()}
                                     style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
                                 >
                                     {bookDetail.isAvailable ? 'Check Out' : 'Return'}
                                 </button>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                    </div>
                 )}
             </div>
         );

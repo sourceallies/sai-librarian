@@ -1,7 +1,7 @@
 {
     "Parameters": {
-        "DomainName": "library.sourceallies.com",
-        "HostedZone": "sourceallies.com.",
+        "DomainName": "library.dev.sourceallies.com",
+        "HostedZone": "dev.sourceallies.com.",
         "OpenIdAud": "242865329519-oa7lva9ueokgomi7ehlrdk0meuvu9nfb.apps.googleusercontent.com"
     }
 }

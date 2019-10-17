@@ -24,3 +24,4 @@ yarn-error.log*
 /src/generated-files/
 creds.json
 /src/creds
+.idea/

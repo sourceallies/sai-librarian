@@ -16,25 +16,28 @@ export default class BookList extends React.Component {
 
     isAvailable(isHere) {
         if (isHere === true) {
-            return <td><FaCheckCircle color="green" size={20} /></td>
+            return <label><FaCheckCircle color="#2AF598" size={16} /> Available </label>
         }
-        return <td><MdDoNotDisturb color="red" size={20} /></td>
+        return <label><MdDoNotDisturb color="#FF0000" size={16} /> Not Available </label>
     }
 
     render() {
         const {bookId, title, shelf, isAvailable } = this.props.book;
         return (
-            <tr>
+            <div>
                 {this.state.isFetching ? (
-                    <td>Loading Book...</td>
+                    <h1>Loading Book...</h1>
                 ) : (
                     <>
-                        <td><Link to={`/books/${bookId}`}>{title}</Link></td>
-                        <td>{shelf}</td>
+                        <div> <Link to={`/books/${bookId}`}>{title}</Link> </div>
+                        <p>
                         {this.isAvailable(isAvailable)}
+                        on Shelf {shelf}
+                        <hr/> 
+                        </p>
                     </>
                 )}
-            </tr>
+            </div>
         );
     }
 }
