@@ -7,6 +7,7 @@ import Qr from './Qr';
 import OAuthCallback from './OAuthCallback';
 import BookList from "./BookList";
 import BookAddSuccess from "./BookAddSuccess";
+import GenerateLabelFile from './GenerateLabelFile';
 import Another from "./Another";
 const { createBrowserHistory } = require('history');
 
@@ -21,8 +22,9 @@ const Routes = () => (
       <Route path="/books/:id" component={wrapWithAuth(Books)} />
       <Route path="/books" component={wrapWithAuth(BookList)} />
       <Route path="/app/qr" component={wrapWithAuth(Qr)} />
-      <Route path="/implicit/callback" component={OAuthCallback} />
       <Route path="/success" component={wrapWithAuth(BookAddSuccess)} />
+      <Route path="/label-file" component={wrapWithAuth(GenerateLabelFile)} />
+      <Route path="/implicit/callback" component={OAuthCallback} />
     </Switch>
   </Router>
 );
