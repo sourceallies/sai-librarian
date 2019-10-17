@@ -13,7 +13,7 @@ export default class Books extends React.Component {
     }
 
     componentDidMount() {
-        getBookByBookId(this.props.match.params.id, this.props.user.id_token).then((data) => {
+        getBookByBookId(this.props.match.params.id).then((data) => {
             if (data.Item) {
                 this.setState({
                     loading: false,
