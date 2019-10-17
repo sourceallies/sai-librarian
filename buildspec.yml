@@ -12,6 +12,7 @@ phases:
     commands:
       # - npm test
       - npm run build
+
 artifacts:
   base-directory: build
   files:

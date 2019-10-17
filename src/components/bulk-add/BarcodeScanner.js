@@ -1,5 +1,4 @@
-import React, {useEffect, useRef, useReducer, useState} from 'react';
-// import Quagga from 'quagga';
+import React, {useEffect, useRef, useState} from 'react';
 import { BrowserMultiFormatReader, DecodeHintType, BarcodeFormat} from '@zxing/library';
 
 export default function BarcodeScanner({onCodeScanned}) {
