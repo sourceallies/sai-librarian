@@ -1,12 +1,14 @@
-import React, {useEffect, useRef, useReducer, useState} from 'react';
+import React, {useReducer} from 'react';
+import { postBook } from '../../utils/postBook';
+import { BarcodeFormat} from '@zxing/library';
 import BarcodeScanner from './BarcodeScanner';
 
 async function getBookData(isbn) {
-    const url = new URL('/api/books?jscmd=data', window.location.href);
-    url.searchParams.set('bibkeys', `ISBN:${isbn}`);
-    url.searchParams.set('jscmd', 'data');
-    url.searchParams.set('format', 'json');
-    const response = await fetch(url.href, {
+    const searchParams = new URLSearchParams();
+    searchParams.set('bibkeys', `ISBN:${isbn}`);
+    searchParams.set('jscmd', 'data');
+    searchParams.set('format', 'json');
+    const response = await fetch(`/api/books?${searchParams}`, {
         headers: {
             'accept': 'application/json'
         }
@@ -16,9 +18,28 @@ async function getBookData(isbn) {
         return body[`ISBN:${isbn}`];
     }
     if (response.status === 404) {
-        return undefined;
+        return '';
     }
     throw new Error('Error: ' + response.status);
+}
+
+async function handleISBNScan(isbn, dispatchBookChange) {
+    dispatchBookChange({isbn});
+    const bookData = await getBookData(isbn);
+    if (bookData) {
+        dispatchBookChange({
+            isbn: bookData.identifiers.isbn_13,
+            title: bookData.title,
+        });
+    }
+}
+
+function handleUrlScanned(url, dispatchBookChange) {
+    // const prefix = `${window.location.origin}/books/`;
+    // if (url.startsWith(prefix)) {
+        // const id = url.replace(prefix, '');
+        dispatchBookChange(url);
+    // }
 }
 
 function bookReducer(currentState, event) {
@@ -28,93 +49,75 @@ function bookReducer(currentState, event) {
     };
 }
 
-function IdInput({book, dispatchBookChange}) {
-    function onChange(e) {
-        dispatchBookChange({
-            id: e.target.value
-        });
-    }
-
-    return (
-        <label>
-            Id:
-            <input value={book.id} onChange={onChange} />
-        </label>
-    );
-}
-
-function IsbnInput({book, dispatchBookChange}) {
-    function onChange(e) {
-        dispatchBookChange({
-            isbn: e.target.value
-        });
-    }
-
-    return (
-        <label>
-            ISBN:
-            <input value={book.isbn} onChange={onChange} />
-        </label>
-    );
-}
-
-function TitleInput({book, dispatchBookChange}) {
-    function onChange(e) {
-        dispatchBookChange({
-            title: e.target.value
-        });
-    }
-
-    return (
-        <label>
-            Title:
-            <input value={book.title} onChange={onChange} />
-        </label>
-    );
-}
-
-function ShelfInput({book, dispatchBookChange}) {
-    function onChange(e) {
-        dispatchBookChange({
-            shelf: e.target.value
-        });
-    }
-
-    return (
-        <label>
-            Shelf:
-            <input value={book.shelf} onChange={onChange} />
-        </label>
-    );
-}
-
 export default function BulkAddPage() {
-    const [book, dispatchBookChange] = useReducer(bookReducer, {});
+    const [book, dispatchBookChange] = useReducer(bookReducer, {
+        isbn: '',
+        title: '',
+        id: '',
+        shelf: ''
+    });
 
     async function onCodeScanned(scanResult) {
         const {text, format} = scanResult;
         console.log(`Scanned ${format}: ${text}`);
 
-        dispatchBookChange({
-            isbn: text,
-            shelf: format
-        });
-        const bookData = await getBookData(text);
-        if (bookData) {
-            dispatchBookChange({
-                isbn: bookData.identifiers.isbn_13,
-                title: bookData.title,
-            });
+        if (format === BarcodeFormat.EAN_13) {
+            await handleISBNScan(text, dispatchBookChange);
+        }
+        if (format === BarcodeFormat.QR_CODE) {
+            handleUrlScanned(text, dispatchBookChange);
         }
     }
 
+    function onFieldChange(e) {
+        dispatchBookChange({
+            [e.target.name]: e.target.value
+        });
+    }
+
+    async function onSubmit(event) {
+        event.preventDefault();
+        await postBook(book);
+        dispatchBookChange({
+            isbn: '',
+            title: '',
+            id: ''
+        });
+    }
+
     return (
-        <form>
+        <form onSubmit={onSubmit}>
             <h1>Add a book</h1>
-            <IdInput book={book} dispatchBookChange={dispatchBookChange} />
-            <IsbnInput book={book} dispatchBookChange={dispatchBookChange} />
-            <TitleInput book={book} dispatchBookChange={dispatchBookChange} />
-            <ShelfInput book={book} dispatchBookChange={dispatchBookChange} />
+            <label>
+                Id:
+                <input required
+                    name='id'
+                    value={book.id}
+                    onChange={onFieldChange} />
+            </label>
+            <label>
+                ISBN:
+                <input required
+                    name='isbn'
+                    value={book.isbn}
+                    onChange={onFieldChange} />
+            </label>
+            <label>
+                Title:
+                <input required
+                    name='title'
+                    value={book.title}
+                    onChange={onFieldChange} />
+            </label>
+            <label>
+                Shelf:
+                <input required
+                    name='shelf'
+                    value={book.shelf}
+                    onChange={onFieldChange} />
+            </label>
+
+            <button type='submit'>Save</button>
 
             <BarcodeScanner onCodeScanned={onCodeScanned} />
         </form>
