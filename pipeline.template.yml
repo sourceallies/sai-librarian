@@ -81,6 +81,9 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: REACT_APP_ROLE_ARN
+            Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
       Source:
         Type: CODEPIPELINE
       Artifacts:
@@ -95,6 +98,9 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: REACT_APP_ROLE_ARN
+            Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
       Source:
         Type: CODEPIPELINE
       Artifacts:
