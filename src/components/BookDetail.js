@@ -3,15 +3,43 @@ import {updateBook} from "../utils/updateBook";
 import AfterDetails from './AfterDetails';
 import Shelf from './Shelf';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faBan } from '@fortawesome/free-solid-svg-icons'
 
-const checkCircleStyle = {
+const fontAwesomeIconStyle = {
     paddingRight: '20px'
 };
 
 const availableHeaderStyle = {
     color: '#2AF598'
 }
+
+const unavailableHeaderStyle = {
+    color: '#EF5350'
+}
+
+const AvailabilityHeader = (props) => props.isAvailable ? (
+    <h2
+        style={availableHeaderStyle}
+    >
+        <FontAwesomeIcon
+            icon={faCheckCircle}
+            size={20}
+            style={fontAwesomeIconStyle}
+        />
+        {'Available'}
+    </h2>
+) : (
+    <h2
+        style={unavailableHeaderStyle}
+    >
+        <FontAwesomeIcon
+            icon={faBan}
+            size={20}
+            style={fontAwesomeIconStyle}
+        />
+        {'Unvailable'}
+    </h2>
+);
 
 export default class BookDetail extends React.Component {
     constructor(props) {
@@ -73,17 +101,7 @@ export default class BookDetail extends React.Component {
                                 {book.title}
                             </h1>
                             <hr/> 
-                            <h2
-                                style={availableHeaderStyle}
-                            >
-                                <FontAwesomeIcon
-                                    icon={faCheckCircle}
-                                    size={20}
-                                    color={"#2AF598"}
-                                    style={checkCircleStyle}
-                                />
-                                {'Available'}
-                            </h2>
+                            <AvailabilityHeader isAvailable={bookDetail.isAvailable} />
                         </header>
                         <p>
                             <div>
