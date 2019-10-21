@@ -1,4 +1,5 @@
 import React, { useReducer, useState } from 'react';
+import documentClient from '../../configuredDocumentClient';
 
 async function getBookData(isbn) {
     const searchParams = new URLSearchParams();
@@ -20,29 +21,29 @@ async function getBookData(isbn) {
     throw new Error('Error: ' + response.status);
 }
 
+function isISBN(maybeIsbn) {
+    return /[0-9]{10}/.test(maybeIsbn);
+}
+
 async function handleISBNScan(isbn, dispatchBookChange) {
     dispatchBookChange({isbn});
     const bookData = await getBookData(isbn);
     if (bookData) {
         dispatchBookChange({
-            // isbn: bookData.identifiers.isbn_13,
             title: bookData.title,
         });
     }
 }
 
-function isISBN(value) {
-    return /^[0-9]+$/.test(value);
-}
-
-function handleUrlScanned(url, dispatchBookChange) {
-    // const prefix = `${window.location.origin}/books/`;
-    // if (url.startsWith(prefix)) {
-        // const id = url.replace(prefix, '');
-        dispatchBookChange({
-            id: url
-        });
-    // }
+function handlePossibleUrl(possibleUrl, dispatchBookChange) {
+    try {
+        const url = new URL(possibleUrl);
+        const id = url.pathname.split('/').pop();
+        dispatchBookChange({id});
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 function bookReducer(currentState, event) {
@@ -50,6 +51,10 @@ function bookReducer(currentState, event) {
         ...currentState,
         ...event
     };
+}
+
+function submittedReducer(list, book) {
+    return [book, ...list];
 }
 
 export default function BulkAddPage() {
@@ -60,6 +65,7 @@ export default function BulkAddPage() {
         id: '',
         shelf: ''
     });
+    const [submitted, dispatchSubmitted] = useReducer(submittedReducer, []);
 
     function onFieldChange(e) {
         dispatchBookChange({
@@ -69,22 +75,29 @@ export default function BulkAddPage() {
 
     async function onSubmit(event) {
         event.preventDefault();
-        console.log("handling submit: ", scannerValue);
-        if (scannerValue.length) {
-            if (isISBN(scannerValue)) {
-                handleISBNScan(scannerValue, dispatchBookChange);
-            } else {
-                handleUrlScanned(scannerValue);
-            }
-            setScannerValue('');
-        }
 
-        // await postBook(book);
-        // dispatchBookChange({
-        //     isbn: '',
-        //     title: '',
-        //     id: ''
-        // });
+        await documentClient.put({
+            TableName: process.env.REACT_APP_BOOK_TABLE,
+            Item: book
+        }).promise();
+        dispatchSubmitted(book);
+        dispatchBookChange({
+            isbn: '',
+            title: '',
+            id: ''
+        });
+    }
+
+    async function handleScannerChange(event) {
+        const value = event.target.value;
+        if (isISBN(value)) {
+            await handleISBNScan(value, dispatchBookChange);
+            setScannerValue('');
+        } else if (handlePossibleUrl(value, dispatchBookChange)) {
+            setScannerValue('');
+        } else {
+            setScannerValue(value);
+        }
     }
 
     return (
@@ -96,7 +109,7 @@ export default function BulkAddPage() {
                     Scanner Input
                     <input
                         value={scannerValue}
-                        onChange={(e) => setScannerValue(e.target.value)}
+                        onChange={handleScannerChange}
                     />
                 </label>
 
@@ -105,7 +118,7 @@ export default function BulkAddPage() {
                     <input required
                         name='id'
                         value={book.id}
-                        // onChange={onFieldChange}
+                        onChange={onFieldChange}
                     />
                 </label>
                 <label>
@@ -113,7 +126,7 @@ export default function BulkAddPage() {
                     <input required
                         name='isbn'
                         value={book.isbn}
-                        // onChange={onFieldChange}
+                        onChange={onFieldChange}
                     />
                 </label>
                 <label>
@@ -121,7 +134,7 @@ export default function BulkAddPage() {
                     <input required
                         name='title'
                         value={book.title}
-                        // onChange={onFieldChange}
+                        onChange={onFieldChange}
                     />
                 </label>
                 <label>
@@ -129,12 +142,23 @@ export default function BulkAddPage() {
                     <input required
                         name='shelf'
                         value={book.shelf}
-                        // onChange={onFieldChange}
+                        onChange={onFieldChange}
                     />
                 </label>
 
                 <button type='submit'>Save</button>
             </form>
+
+            <table>
+                <tbody>
+                    {submitted.map(({id, isbn, title, shelf}) => <tr key={id}>
+                        <td>{id}</td>
+                        <td>{isbn}</td>
+                        <td>{title}</td>
+                        <td>{shelf}</td>
+                    </tr>)}
+                </tbody>
+            </table>
         </main>
     );
 }

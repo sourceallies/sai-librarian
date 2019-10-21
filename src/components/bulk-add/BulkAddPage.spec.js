@@ -35,7 +35,7 @@ describe('Bulk Add Page', () => {
 
             fireEvent.change(getScannerInput(), {target: {value: '0201634554'}});
             fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
-            await waitForDomChange();
+            await wait();
         });
 
         it('should populate the ISBN field', () => {
@@ -47,11 +47,34 @@ describe('Bulk Add Page', () => {
         });
 
         it('should attempt to fetch the book title', () => {
-            expect(fetch).toHaveBeenCalledWith('/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json');
+            expect(fetch).toHaveBeenCalledWith('/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json', expect.anything());
         });
 
         it('should not attempt to save', () => {
-            expect(documentClient.put).notToHaveBeenCalled();
+            expect(documentClient.put).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('User enters a partial ISBN', () => {
+        beforeEach(async () => {
+            fireEvent.change(getScannerInput(), {target: {value: '020163'}});
+            await wait();
+        });
+
+        it('should not populate the ISBN field', () => {
+            expect(rendered.getByLabelText('ISBN')).toHaveValue('');
+        });
+
+        it('should populate the scanner input', () => {
+            expect(getScannerInput()).toHaveValue('020163');
+        });
+
+        it('should not attempt to fetch the book title', () => {
+            expect(fetch).not.toHaveBeenCalled();
+        });
+
+        it('should not attempt to save', () => {
+            expect(documentClient.put).not.toHaveBeenCalled();
         });
     });
 
@@ -59,7 +82,7 @@ describe('Bulk Add Page', () => {
         beforeEach(async () => {
             fireEvent.change(getScannerInput(), {target: {value: 'http://localhost/books/abc123'}});
             fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
-            await waitForDomChange();
+            await wait();
         });
 
         it('should populate the Id field', () => {
@@ -75,7 +98,7 @@ describe('Bulk Add Page', () => {
         });
 
         it('should not attempt to save', () => {
-            expect(documentClient.put).notToHaveBeenCalled();
+            expect(documentClient.put).not.toHaveBeenCalled();
         });
     });
 
@@ -88,23 +111,26 @@ describe('Bulk Add Page', () => {
             }));
 
             fireEvent.change(rendered.getByLabelText('Shelf'), {target: {value: 'Alpha'}});
+            await wait();
             fireEvent.change(getScannerInput(), {target: {value: '0201634554'}});
             fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
+            await wait();
             fireEvent.change(getScannerInput(), {target: {value: 'http://localhost/books/abc123'}});
             fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
             await wait();
+            fireEvent.click(rendered.getByText('Save'));
+            await wait();
         });
 
-        it.only('should submit the payload to dynamo', () => {
-            rendered.debug();
-            expect(documentClient.put).toHaveBeenCalledWith({
+        it('should submit the payload to dynamo', () => {
+            expect(documentClient.put).toHaveBeenCalledWith(expect.objectContaining({
                 Item: {
                     id: 'abc123',
                     isbn: '0201634554',
                     title: 'Java',
                     shelf: 'Alpha'
                 }
-            });
+            }));
         });
 
         it('should clear out the title field', () => {
@@ -124,19 +150,19 @@ describe('Bulk Add Page', () => {
         });
 
         it('should display the id in the recently added list', () => {
-            expect(rendered.getByRole('table')).toContainText('abc123');
+            expect(rendered.getByRole('table')).toHaveTextContent('abc123');
         });
 
         it('should display the isbn in the recently added list', () => {
-            expect(rendered.getByRole('table')).toContainText('0201634554');
+            expect(rendered.getByRole('table')).toHaveTextContent('0201634554');
         });
 
         it('should display the title in the recently added list', () => {
-            expect(rendered.getByRole('table')).toContainText('Java');
+            expect(rendered.getByRole('table')).toHaveTextContent('Java');
         });
 
         it('should display the shelf in the recently added list', () => {
-            expect(rendered.getByRole('table')).toContainText('Alpha');
+            expect(rendered.getByRole('table')).toHaveTextContent('Alpha');
         });
     });
 });
