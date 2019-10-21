@@ -1,17 +1,8 @@
-const AWS = require('aws-sdk');
+import documentClient from '../configuredDocumentClient';
 
-AWS.config.region = 'us-east-2';
-
-export const updateBook = (book, token) => {
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-2:cf475bdd-465f-4260-ae06-7d9560f4179d',
-        Logins: {
-        'accounts.google.com': token
-        }
-    });
-    const dynamoDb = new AWS.DynamoDB.DocumentClient();
+export const updateBook = (book) => {
     const params = {
-        TableName: 'Librarian_Books',
+        TableName: process.env.REACT_APP_BOOK_TABLE,
         Key: {
             bookId: book.bookId
         },
@@ -28,10 +19,5 @@ export const updateBook = (book, token) => {
         ReturnValues: 'UPDATED_NEW'
     };
 
-    return new Promise((resolve, reject) => {
-        dynamoDb.update(params, function(err, data) {
-           if (err) reject(err);
-           resolve(data);
-        });
-    })
+    return documentClient.update(params).promise();
 };
