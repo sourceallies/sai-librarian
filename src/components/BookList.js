@@ -32,7 +32,7 @@ export default class BookList extends React.Component {
 
     render() {
         if (this.state.loading) {
-            return <p>Loading...</p>
+            return <h1>Loading...</h1>
         }
         return (
             <div>

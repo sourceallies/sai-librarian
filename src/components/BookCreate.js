@@ -45,52 +45,44 @@ export default class BookCreate extends React.Component {
         }
       return (
             <form onSubmit={this.handleSubmit}>
+                <h1> Book Information </h1>
+                <hr/>
                 <table>
                     <tr>
-                        <td>
-                            <label>Title</label>
-                        </td>
-                        <td>
-                            <input
-                                name="bookTitle"
-                                type="text"
-                                placeholder="Book Title"
-                                value={this.state.bookTitle}
-                                onChange={this.handleInputChange}
-                            />
-                        </td>
+                        <h4>Title</h4>
+                        <h5>Enter the book's title </h5>
+                        <input
+                            name="bookTitle"
+                            type="text"
+                            placeholder="The Senior Software Engineer"
+                            value={this.state.bookTitle}
+                            onChange={this.handleInputChange}
+                        />
                     </tr>
                     <tr>
-                        <td>
-                            <label>ISBN</label>
-                        </td>
-                        <td>
-                            <input
-                                name="isbnNumber"
-                                type="text"
-                                placeholder="978-3-16-148410-0"
-                                value={this.state.isbnNumber}
-                                onChange={this.handleInputChange}
-                            />
-                        </td>
+                        <h4>ISBN</h4>
+                        <h5>Enter the book's 10 or 13 digit code number </h5>
+                        <input
+                            name="isbnNumber"
+                            type="text"
+                            placeholder="978-0990702801" 
+                            value={this.state.isbnNumber}
+                            onChange={this.handleInputChange}
+                        />
                     </tr>
                     <tr>
-                        <td>
-                            <label>Shelf</label>
-                        </td>
-                        <td>
-                            <input
-                                name="shelf"
-                                type="text"
-                                placeholder="A1"
-                                value={this.state.shelf}
-                                onChange={this.handleInputChange}
-                            />
-                        </td>
+                        <h4>Shelf</h4>
+                        <h5>Enter which Shelf you will be placing the book on</h5>
+                        <input
+                            name="shelf"
+                            type="text"
+                            placeholder="A1"
+                            value={this.state.shelf}
+                            onChange={this.handleInputChange}
+                        />
                     </tr>
                 </table>
-                <br/>
-                <input type="submit" value="Submit"/>
+                <input type="submit" value="Add book"/>
             </form>
         );
     }
