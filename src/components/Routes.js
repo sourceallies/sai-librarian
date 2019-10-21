@@ -24,7 +24,7 @@ const Routes = () => (
       <Route path="/app/qr" component={wrapWithAuth(Qr)} />
       <Route path="/implicit/callback" component={OAuthCallback} />
       <Route path="/success" component={wrapWithAuth(BookAddSuccess)} />
-      <Route path="/scan" component={BulkAddPage} />
+      <Route path="/bulk-add" component={wrapWithAuth(BulkAddPage)} />
 
     </Switch>
   </Router>

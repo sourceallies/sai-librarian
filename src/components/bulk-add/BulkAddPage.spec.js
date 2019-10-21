@@ -1,15 +1,18 @@
 import React from 'react';
-import { render, wait, fireEvent, waitForDomChange } from '@testing-library/react';
+import { render, wait, fireEvent, act } from '@testing-library/react';
 import documentClient from '../../configuredDocumentClient';
 import BulkAddPage from './BulkAddPage';
+import ScannerInput from './ScannerInput';
 
 jest.mock('../../configuredDocumentClient');
+jest.mock('./ScannerInput', () => jest.fn());
 
 describe('Bulk Add Page', () => {
     let rendered;
 
-    function getScannerInput() {
-        return rendered.getByLabelText('Scanner Input');
+    function getScannerInputProps() {
+        const calls = ScannerInput.mock.calls;
+        return calls[calls.length - 1][0];
     }
 
     beforeEach(() => {
@@ -17,6 +20,7 @@ describe('Bulk Add Page', () => {
         documentClient.put.mockReturnValue({
             promise: () => wait()
         });
+        ScannerInput.mockReturnValue(<div />);
 
         rendered = render(<BulkAddPage/>);
     });
@@ -31,10 +35,9 @@ describe('Bulk Add Page', () => {
                 'ISBN:0201634554': {
                     title: 'Java'
                 }
-            }))
+            }));
 
-            fireEvent.change(getScannerInput(), {target: {value: '0201634554'}});
-            fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
+            await act(() =>  getScannerInputProps().onIsbnScanned('0201634554'));
             await wait();
         });
 
@@ -42,36 +45,13 @@ describe('Bulk Add Page', () => {
             expect(rendered.getByLabelText('ISBN')).toHaveValue('0201634554');
         });
 
-        it('should clear the scanner input', () => {
-            expect(getScannerInput()).toHaveValue('');
-        });
-
         it('should attempt to fetch the book title', () => {
             expect(fetch).toHaveBeenCalledWith('/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json', expect.anything());
         });
 
-        it('should not attempt to save', () => {
-            expect(documentClient.put).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('User enters a partial ISBN', () => {
-        beforeEach(async () => {
-            fireEvent.change(getScannerInput(), {target: {value: '020163'}});
-            await wait();
-        });
-
-        it('should not populate the ISBN field', () => {
-            expect(rendered.getByLabelText('ISBN')).toHaveValue('');
-        });
-
-        it('should populate the scanner input', () => {
-            expect(getScannerInput()).toHaveValue('020163');
-        });
-
-        it('should not attempt to fetch the book title', () => {
-            expect(fetch).not.toHaveBeenCalled();
-        });
+        it('should populate the book title', () => wait(() => {
+            expect(rendered.getByLabelText('Title')).toHaveValue('Java');
+        }));
 
         it('should not attempt to save', () => {
             expect(documentClient.put).not.toHaveBeenCalled();
@@ -80,17 +60,12 @@ describe('Bulk Add Page', () => {
 
     describe('User scans a book URL', () => {
         beforeEach(async () => {
-            fireEvent.change(getScannerInput(), {target: {value: 'http://localhost/books/abc123'}});
-            fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
+            act(() => getScannerInputProps().onIdScanned('abc123'));
             await wait();
         });
 
         it('should populate the Id field', () => {
             expect(rendered.getByLabelText('Id')).toHaveValue('abc123');
-        });
-
-        it('should clear the scanner input', () => {
-            expect(getScannerInput()).toHaveValue('');
         });
 
         it('should not attempt to fetch the book title', () => {
@@ -111,13 +86,9 @@ describe('Bulk Add Page', () => {
             }));
 
             fireEvent.change(rendered.getByLabelText('Shelf'), {target: {value: 'Alpha'}});
-            await wait();
-            fireEvent.change(getScannerInput(), {target: {value: '0201634554'}});
-            fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
-            await wait();
-            fireEvent.change(getScannerInput(), {target: {value: 'http://localhost/books/abc123'}});
-            fireEvent.keyPress(getScannerInput(), {key: 'Enter'});
-            await wait();
+            await act(() => getScannerInputProps().onIsbnScanned('0201634554'));
+            act(() => getScannerInputProps().onIdScanned('abc123'));
+            await wait(() => expect(rendered.getByLabelText('Title')).not.toHaveValue(''));
             fireEvent.click(rendered.getByText('Save'));
             await wait();
         });
@@ -125,7 +96,7 @@ describe('Bulk Add Page', () => {
         it('should submit the payload to dynamo', () => {
             expect(documentClient.put).toHaveBeenCalledWith(expect.objectContaining({
                 Item: {
-                    id: 'abc123',
+                    bookId: 'abc123',
                     isbn: '0201634554',
                     title: 'Java',
                     shelf: 'Alpha'

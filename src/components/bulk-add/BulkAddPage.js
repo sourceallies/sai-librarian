@@ -1,5 +1,7 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer } from 'react';
+import ScannerInput from './ScannerInput';
 import documentClient from '../../configuredDocumentClient';
+import styles from './BulkAddPage.module.css';
 
 async function getBookData(isbn) {
     const searchParams = new URLSearchParams();
@@ -21,31 +23,6 @@ async function getBookData(isbn) {
     throw new Error('Error: ' + response.status);
 }
 
-function isISBN(maybeIsbn) {
-    return /[0-9]{10}/.test(maybeIsbn);
-}
-
-async function handleISBNScan(isbn, dispatchBookChange) {
-    dispatchBookChange({isbn});
-    const bookData = await getBookData(isbn);
-    if (bookData) {
-        dispatchBookChange({
-            title: bookData.title,
-        });
-    }
-}
-
-function handlePossibleUrl(possibleUrl, dispatchBookChange) {
-    try {
-        const url = new URL(possibleUrl);
-        const id = url.pathname.split('/').pop();
-        dispatchBookChange({id});
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
 function bookReducer(currentState, event) {
     return {
         ...currentState,
@@ -58,11 +35,10 @@ function submittedReducer(list, book) {
 }
 
 export default function BulkAddPage() {
-    const [scannerValue, setScannerValue] = useState('');
     const [book, dispatchBookChange] = useReducer(bookReducer, {
+        bookId: '',
         isbn: '',
         title: '',
-        id: '',
         shelf: ''
     });
     const [submitted, dispatchSubmitted] = useReducer(submittedReducer, []);
@@ -71,6 +47,20 @@ export default function BulkAddPage() {
         dispatchBookChange({
             [e.target.name]: e.target.value
         });
+    }
+
+    function onIdScanned(bookId) {
+        dispatchBookChange({bookId});
+    }
+
+    async function onIsbnScanned(isbn) {
+        dispatchBookChange({isbn});
+        const bookData = await getBookData(isbn);
+        if (bookData) {
+            dispatchBookChange({
+                title: bookData.title,
+            });
+        }
     }
 
     async function onSubmit(event) {
@@ -84,81 +74,76 @@ export default function BulkAddPage() {
         dispatchBookChange({
             isbn: '',
             title: '',
-            id: ''
+            bookId: ''
         });
     }
 
-    async function handleScannerChange(event) {
-        const value = event.target.value;
-        if (isISBN(value)) {
-            await handleISBNScan(value, dispatchBookChange);
-            setScannerValue('');
-        } else if (handlePossibleUrl(value, dispatchBookChange)) {
-            setScannerValue('');
-        } else {
-            setScannerValue(value);
-        }
-    }
-
     return (
-        <main>
-            <form onSubmit={onSubmit}>
-                <h1>Add a book</h1>
+        <form onSubmit={onSubmit}>
+            <h1>Bulk Add Books</h1>
 
-                <label>
-                    Scanner Input
-                    <input
-                        value={scannerValue}
-                        onChange={handleScannerChange}
-                    />
-                </label>
+            <ScannerInput
+                onIdScanned={onIdScanned}
+                onIsbnScanned={onIsbnScanned} />
 
-                <label>
-                    Id
-                    <input required
-                        name='id'
-                        value={book.id}
-                        onChange={onFieldChange}
-                    />
-                </label>
-                <label>
-                    ISBN
-                    <input required
-                        name='isbn'
-                        value={book.isbn}
-                        onChange={onFieldChange}
-                    />
-                </label>
-                <label>
-                    Title
-                    <input required
-                        name='title'
-                        value={book.title}
-                        onChange={onFieldChange}
-                    />
-                </label>
-                <label>
-                    Shelf
-                    <input required
-                        name='shelf'
-                        value={book.shelf}
-                        onChange={onFieldChange}
-                    />
-                </label>
+            <table className={styles.bookTable}>
+                <thead>
+                    <tr>
+                        <th>
+                            <label>
+                                Id
+                                <input required
+                                    name='bookId'
+                                    value={book.bookId}
+                                    onChange={onFieldChange}
+                                />
+                            </label>
+                        </th>
+                        <th>
+                            <label>
+                                ISBN
+                                <input required
+                                    name='isbn'
+                                    value={book.isbn}
+                                    onChange={onFieldChange}
+                                />
+                            </label>
+                        </th>
+                        <th>
+                            <label>
+                                Title
+                                <input required
+                                    name='title'
+                                    value={book.title}
+                                    onChange={onFieldChange}
+                                />
+                            </label>
+                        </th>
+                        <th>
+                            <label>
+                                Shelf
+                                <input required
+                                    name='shelf'
+                                    value={book.shelf}
+                                    onChange={onFieldChange}
+                                />
+                            </label>
+                        </th>
+                        <th>
+                            <button type='submit'>Save</button>
+                        </th>
+                    </tr>
+                </thead>
 
-                <button type='submit'>Save</button>
-            </form>
-
-            <table>
                 <tbody>
-                    {submitted.map(({id, isbn, title, shelf}) => <tr key={id}>
-                        <td>{id}</td>
+                    {submitted.map(({bookId, isbn, title, shelf}) => <tr key={bookId}>
+                        <td>{bookId}</td>
                         <td>{isbn}</td>
                         <td>{title}</td>
                         <td>{shelf}</td>
                     </tr>)}
                 </tbody>
             </table>
-        </main>
+        </form>
     );
 }
