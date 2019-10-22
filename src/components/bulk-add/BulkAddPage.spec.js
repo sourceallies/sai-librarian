@@ -99,7 +99,9 @@ describe('Bulk Add Page', () => {
                     bookId: 'abc123',
                     isbn: '0201634554',
                     title: 'Java',
-                    shelf: 'Alpha'
+                    shelf: 'Alpha',
+                    neckOfTheWoods: 'Library',
+                    isAvailable: true
                 }
             }));
         });

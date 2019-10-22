@@ -34,13 +34,19 @@ function submittedReducer(list, book) {
     return [book, ...list];
 }
 
-export default function BulkAddPage() {
-    const [book, dispatchBookChange] = useReducer(bookReducer, {
+function createEmptyBookWithShelf(shelf) {
+    return {
+        neckOfTheWoods: 'Library',
+        isAvailable: true,
         bookId: '',
         isbn: '',
         title: '',
-        shelf: ''
-    });
+        shelf
+    }
+}
+
+export default function BulkAddPage() {
+    const [book, dispatchBookChange] = useReducer(bookReducer, '', createEmptyBookWithShelf);
     const [submitted, dispatchSubmitted] = useReducer(submittedReducer, []);
 
     function onFieldChange(e) {
@@ -71,11 +77,7 @@ export default function BulkAddPage() {
             Item: book
         }).promise();
         dispatchSubmitted(book);
-        dispatchBookChange({
-            isbn: '',
-            title: '',
-            bookId: ''
-        });
+        dispatchBookChange(createEmptyBookWithShelf(book.shelf));
     }
 
     return (

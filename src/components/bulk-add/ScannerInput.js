@@ -17,7 +17,6 @@ export default function ScannerInput({onIsbnScanned, onIdScanned}) {
     const [scannerValue, setScannerValue] = useState('');
 
     function handleScannerChange(value) {
-        // const value = event.target.value;
         if (isISBN(value)) {
             onIsbnScanned(value);
             setScannerValue('');
