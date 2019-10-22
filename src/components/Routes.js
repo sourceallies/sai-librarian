@@ -1,14 +1,11 @@
 import React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import wrapWithAuth from '../auth/wrap-with-auth';
-import Home from './Home';
 import Books from './Books';
-import Qr from './Qr';
 import OAuthCallback from './OAuthCallback';
 import BookList from "./BookList";
 import BookAddSuccess from "./BookAddSuccess";
 import GenerateLabelFile from './GenerateLabelFile';
-import Another from "./Another";
 const { createBrowserHistory } = require('history');
 
 const Routes = () => (
@@ -17,11 +14,9 @@ const Routes = () => (
       <Route exact path="/">
         <Redirect to="/books" />
       </Route>
-      <Route path="/app/home" component={wrapWithAuth(Home)} />
-      <Route path="/another" component={wrapWithAuth(Another)} />
       <Route path="/books/:id" component={wrapWithAuth(Books)} />
       <Route path="/books" component={wrapWithAuth(BookList)} />
-      <Route path="/app/qr" component={wrapWithAuth(Qr)} />
+      <Route path="/implicit/callback" component={OAuthCallback} />
       <Route path="/success" component={wrapWithAuth(BookAddSuccess)} />
       <Route path="/label-file" component={wrapWithAuth(GenerateLabelFile)} />
       <Route path="/implicit/callback" component={OAuthCallback} />
