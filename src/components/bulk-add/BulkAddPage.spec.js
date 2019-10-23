@@ -88,8 +88,6 @@ describe('Bulk Add Page', () => {
             fireEvent.change(rendered.getByLabelText('Shelf'), {target: {value: 'Alpha'}});
             await act(() => getScannerInputProps().onIsbnScanned('0201634554'));
             act(() => getScannerInputProps().onIdScanned('abc123'));
-            await wait(() => expect(rendered.getByLabelText('Title')).not.toHaveValue(''));
-            fireEvent.click(rendered.getByText('Save'));
             await wait();
         });
 

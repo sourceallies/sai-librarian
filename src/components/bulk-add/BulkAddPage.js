@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useState } from 'react';
 import ScannerInput from './ScannerInput';
 import documentClient from '../../configuredDocumentClient';
 import styles from './BulkAddPage.module.css';
@@ -23,17 +23,6 @@ async function getBookData(isbn) {
     throw new Error('Error: ' + response.status);
 }
 
-function bookReducer(currentState, event) {
-    return {
-        ...currentState,
-        ...event
-    };
-}
-
-function submittedReducer(list, book) {
-    return [book, ...list];
-}
-
 function createEmptyBookWithShelf(shelf) {
     return {
         neckOfTheWoods: 'Library',
@@ -45,39 +34,71 @@ function createEmptyBookWithShelf(shelf) {
     }
 }
 
+function isComplete({bookId, isbn, title, shelf}) {
+    return bookId && isbn && title && shelf;
+}
+
 export default function BulkAddPage() {
-    const [book, dispatchBookChange] = useReducer(bookReducer, '', createEmptyBookWithShelf);
-    const [submitted, dispatchSubmitted] = useReducer(submittedReducer, []);
+    const [book, setBook] = useState(createEmptyBookWithShelf(''));
+    const [submitted, setSubmitted] = useState([]);
 
     function onFieldChange(e) {
-        dispatchBookChange({
-            [e.target.name]: e.target.value
-        });
+        const key = e.target.name;
+        const value = e.target.value
+        setBook((previousState) => ({
+            ...previousState,
+            [key]: value
+        }));
+    }
+
+    function submitIfComplete(bookToSubmit) {
+        if (!isComplete(bookToSubmit)) {
+            return bookToSubmit;
+        }
+
+        documentClient.put({
+            TableName: process.env.REACT_APP_BOOK_TABLE,
+            Item: bookToSubmit
+        }).promise().then(() => {
+            setSubmitted((previouslySubmitted) => [bookToSubmit, ...previouslySubmitted]);
+        }, (err) => console.error(err));
+
+        return createEmptyBookWithShelf(book.shelf);
     }
 
     function onIdScanned(bookId) {
-        dispatchBookChange({bookId});
+        setBook((previousState) => {
+            const newState = {
+                ...previousState,
+                bookId
+            };
+            return submitIfComplete(newState);
+        });
     }
 
     async function onIsbnScanned(isbn) {
-        dispatchBookChange({isbn});
+        setBook((previousState) => {
+            return {
+                ...previousState,
+                isbn
+            };
+        });
+
         const bookData = await getBookData(isbn);
         if (bookData) {
-            dispatchBookChange({
-                title: bookData.title,
+            setBook((previousState) => {
+                const newState = {
+                    ...previousState,
+                    title: bookData.title,
+                };
+                return submitIfComplete(newState);
             });
         }
     }
 
-    async function onSubmit(event) {
+    function onSubmit(event) {
         event.preventDefault();
-
-        await documentClient.put({
-            TableName: process.env.REACT_APP_BOOK_TABLE,
-            Item: book
-        }).promise();
-        dispatchSubmitted(book);
-        dispatchBookChange(createEmptyBookWithShelf(book.shelf));
+        submitIfComplete(book);
     }
 
     return (
