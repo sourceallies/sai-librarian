@@ -1,5 +1,5 @@
 import React from 'react';
-import {getBookList} from "../utils/getBookList";
+import getBookList from "../utils/getBookList";
 import BookLink from "./BookLink";
 
 export default class BookList extends React.Component {
@@ -18,7 +18,7 @@ export default class BookList extends React.Component {
     }
 
     componentDidMount() {
-        getBookList(this.props.user.id_token).then((data) => {
+        getBookList().then((data) => {
             this.setState({
                loading: false,
                 bookList: data.Items.sort((a, b) => {

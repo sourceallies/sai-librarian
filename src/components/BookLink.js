@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import {FaCheckCircle} from 'react-icons/fa';
 import { MdDoNotDisturb } from "react-icons/md";
 
-export default class BookList extends React.Component {
+export default class BookLink extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

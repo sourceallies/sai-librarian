@@ -71,6 +71,36 @@ Resources:
                 - !FindInMap [Accounts, Dev, DeployerRoleArn]
                 - !FindInMap [Accounts, Qual, DeployerRoleArn]
                 - !FindInMap [Accounts, Prod, DeployerRoleArn]
+  BranchBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-branch-build
+      ServiceRole: !Sub arn:aws:iam::${AWS::AccountId}:role/Pipeline
+      EncryptionKey: !GetAtt ArtifactKey.Arn
+      BadgeEnabled: true
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+      Cache:
+        Type: LOCAL
+        Modes:
+          - LOCAL_CUSTOM_CACHE
+          - LOCAL_DOCKER_LAYER_CACHE
+      Source:
+        Type: GITHUB
+        Location: !Sub https://github.com/${GithubUsername}/${GithubRepository}.git
+        ReportBuildStatus: true
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Pattern: ^refs/heads/master$
+              ExcludeMatchedPattern: true
+              Type: HEAD_REF
+            - Pattern: PUSH,PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED
+              Type: EVENT
   BuildProdProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -81,6 +111,9 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: REACT_APP_ROLE_ARN
+            Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
       Source:
         Type: CODEPIPELINE
       Artifacts:
@@ -95,6 +128,9 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: REACT_APP_ROLE_ARN
+            Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
       Source:
         Type: CODEPIPELINE
       Artifacts:
