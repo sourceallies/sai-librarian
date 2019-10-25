@@ -101,36 +101,17 @@ Resources:
               Type: HEAD_REF
             - Pattern: PUSH,PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED
               Type: EVENT
-  BuildProdProject:
+  BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub ${AWS::StackName}-build-prod
+      Name: !Sub ${AWS::StackName}-build
       ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
       EncryptionKey: !GetAtt ArtifactKey.Arn
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
-        EnvironmentVariables:
-          - Name: REACT_APP_ROLE_ARN
-            Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
-      Source:
-        Type: CODEPIPELINE
-      Artifacts:
-        Type: CODEPIPELINE
-  BuildDevProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Sub ${AWS::StackName}-build-dev
-      ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
-      EncryptionKey: !GetAtt ArtifactKey.Arn
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:2.0
-        EnvironmentVariables:
-          - Name: REACT_APP_ROLE_ARN
-            Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
+
       Source:
         Type: CODEPIPELINE
       Artifacts:
@@ -208,7 +189,10 @@ Resources:
               OutputArtifacts:
                 - Name: devBuildResults
               Configuration:
-                ProjectName: !Ref BuildDevProject
+                ProjectName: !Ref BuildProject
+                EnvironmentVariables:
+                  - Name: REACT_APP_ROLE_ARN
+                    Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
             - Name: DeploySite
               RunOrder: 2
               RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
@@ -253,7 +237,10 @@ Resources:
               OutputArtifacts:
                 - Name: prodBuildResults
               Configuration:
-                ProjectName: !Ref BuildProdProject
+                ProjectName: !Ref BuildProject
+                EnvironmentVariables:
+                  - Name: REACT_APP_ROLE_ARN
+                    Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
             - Name: DeploySite
               RunOrder: 2
               RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
