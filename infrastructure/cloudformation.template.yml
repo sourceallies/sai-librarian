@@ -35,6 +35,10 @@ Resources:
             Id: S3Origin
             S3OriginConfig:
               OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
+          - Id: OpenLibrary
+            DomainName: openlibrary.org
+            CustomOriginConfig:
+              OriginProtocolPolicy: http-only
         Comment: "Cloudfront for SAI Library"
         DefaultRootObject: index.html
         CustomErrorResponses:
@@ -42,6 +46,13 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: "/index.html"
         CacheBehaviors:
+          - AllowedMethods: ["GET", "HEAD", "OPTIONS"]
+            PathPattern: "/api/books*"
+            DefaultTTL: 0
+            ForwardedValues:
+              QueryString: true
+            TargetOriginId: OpenLibrary
+            ViewerProtocolPolicy: redirect-to-https
           - AllowedMethods: ["GET", "HEAD", "OPTIONS"]
             PathPattern: "*.html"
             DefaultTTL: 0
