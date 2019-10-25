@@ -136,4 +136,66 @@ describe('Bulk Add Page', () => {
             expect(rendered.getByRole('table')).toHaveTextContent('Alpha');
         });
     });
+
+    describe('User enters all pieces and clicks Save', () => {
+        beforeEach(async () => {
+            fetch.mockResponse(JSON.stringify({
+                'ISBN:0201634554': {
+                    title: 'Java'
+                }
+            }));
+
+            fireEvent.change(rendered.getByLabelText('Shelf'), {target: {value: 'Alpha'}});
+            fireEvent.change(rendered.getByLabelText('ISBN'), {target: {value: '0201634554'}});
+            fireEvent.change(rendered.getByLabelText('Id'), {target: {value: 'abc123'}});
+            fireEvent.change(rendered.getByLabelText('Title'), {target: {value: 'Java'}});
+            fireEvent.click(rendered.getByText('Save'));
+            await wait();
+        });
+
+        it('should submit the payload to dynamo', () => {
+            expect(documentClient.put).toHaveBeenCalledWith(expect.objectContaining({
+                Item: {
+                    bookId: 'abc123',
+                    isbn: '0201634554',
+                    title: 'Java',
+                    shelf: 'Alpha',
+                    neckOfTheWoods: 'Library',
+                    isAvailable: true
+                }
+            }));
+        });
+
+        it('should clear out the title field', () => {
+            expect(rendered.getByLabelText('Title')).toHaveValue('');
+        });
+
+        it('should clear out the isbn field', () => {
+            expect(rendered.getByLabelText('ISBN')).toHaveValue('');
+        });
+
+        it('should clear out the Id field', () => {
+            expect(rendered.getByLabelText('Id')).toHaveValue('');
+        });
+
+        it('should not clear out the shelf field', () => {
+            expect(rendered.getByLabelText('Shelf')).toHaveValue('Alpha');
+        });
+
+        it('should display the id in the recently added list', () => {
+            expect(rendered.getByRole('table')).toHaveTextContent('abc123');
+        });
+
+        it('should display the isbn in the recently added list', () => {
+            expect(rendered.getByRole('table')).toHaveTextContent('0201634554');
+        });
+
+        it('should display the title in the recently added list', () => {
+            expect(rendered.getByRole('table')).toHaveTextContent('Java');
+        });
+
+        it('should display the shelf in the recently added list', () => {
+            expect(rendered.getByRole('table')).toHaveTextContent('Alpha');
+        });
+    });
 });

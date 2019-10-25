@@ -98,7 +98,7 @@ export default function BulkAddPage() {
 
     function onSubmit(event) {
         event.preventDefault();
-        submitIfComplete(book);
+        setBook(submitIfComplete(book));
     }
 
     return (
