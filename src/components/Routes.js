@@ -16,7 +16,6 @@ const Routes = () => (
       </Route>
       <Route path="/books/:id" component={wrapWithAuth(Books)} />
       <Route path="/books" component={wrapWithAuth(BookList)} />
-      <Route path="/implicit/callback" component={OAuthCallback} />
       <Route path="/success" component={wrapWithAuth(BookAddSuccess)} />
       <Route path="/label-file" component={wrapWithAuth(GenerateLabelFile)} />
       <Route path="/implicit/callback" component={OAuthCallback} />
