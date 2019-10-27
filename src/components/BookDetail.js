@@ -44,7 +44,6 @@ const AvailabilityHeader = (props) => props.isAvailable ? (
 const BookDetail = (props) => {
     const [bookDetail, setBookDetail] = useState({...props.book});
     const [complete, setComplete] = useState(false);
-    const [isFetching, setIsFetching] = useState(false);
     const [shelf, setShelf] = useState(false);
 
    const flipStatus = () => {
@@ -57,68 +56,68 @@ const BookDetail = (props) => {
         updateBook(newBook, props.token)
             .then(() => {
                 setBookDetail(newBook);
-                setComplete(true);
                 setShelf(!isAvailable);
+                setComplete(true);
             })
-            .catch((err) => console.log('Error: ', err))
+            .catch((err) => console.log('Error: ', err));
     }
 
         const {book} = props;
         if (shelf) {
-            return <Shelf
-                        onDone={() => setShelf(false)}
-                        shelf={bookDetail.shelf}
-                        title={bookDetail.title}
-                    />
+            return (
+                <Shelf
+                    onDone={() => setShelf(false)}
+                    shelf={bookDetail.shelf}
+                    title={bookDetail.title}
+                />
+            );
         }
         if (complete) {
-            return <AfterDetails
-                        title={bookDetail.title}
-                        isReturning={bookDetail.isAvailable}
-                        history={props.history}
-                    />
+            return (
+                <AfterDetails
+                    title={bookDetail.title}
+                    isReturning={bookDetail.isAvailable}
+                    history={props.history}
+                />
+            );
         }
         return (
             <div>
-                {isFetching ? (
-                    <h1>Loading Book...</h1>
-                ) : (
-                    <div>
-                        <header>
-                            <h1>
-                                {book.title}
-                            </h1>
-                            <hr/> 
-                            <AvailabilityHeader isAvailable={bookDetail.isAvailable} />
-                        </header>
-                        <p>
-                            <div>
-                                <label
-                                    style={{paddingRight: '20px'}}
-                                >
-                                    Book Shelf:
-                                </label>
-                                {book.shelf}
-                            </div>
-                            <div>
-                                <label
-                                    style={{paddingRight: '20px'}}
-                                >
-                                    Book ISBN:
-                                </label>
-                                {book.isbn}
-                            </div>
-                        </p>
+                <div>
+                    <header>
+                        <h1>
+                            {book.title}
+                        </h1>
+                        <hr/>
+                        <AvailabilityHeader isAvailable={bookDetail.isAvailable} />
+                    </header>
+                    <p>
                         <div>
-                                <button
-                                    onClick={flipStatus}
-                                    style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
-                                >
-                                    {bookDetail.isAvailable ? 'Check Out' : 'Return'}
-                                </button>
-                            </div>
+                            <label
+                                style={{paddingRight: '20px'}}
+                            >
+                                Book Shelf:
+                            </label>
+                            {book.shelf}
+                        </div>
+                        <div>
+                            <label
+                                style={{paddingRight: '20px'}}
+                            >
+                                Book ISBN:
+                            </label>
+                            {book.isbn}
+                        </div>
+                    </p>
+                    <div>
+                        <button
+                            onClick={flipStatus}
+                            style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
+                        >
+                            {bookDetail.isAvailable ? 'Check Out' : 'Return'}
+                        </button>
                     </div>
-                )}
+                </div>
             </div>
         );
     }

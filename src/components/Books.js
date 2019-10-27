@@ -14,7 +14,7 @@ const Books = (props) => {
             }
             setLoading(false);
         }).catch((err) => console.log('Error: ', err));
-    }, []);
+    }, [props.match.params.id]);
 
     if (loading) {
         return (<h1>Loading...</h1>);

@@ -45,7 +45,7 @@ const BookCreate = (props) => {
             <table>
                 <tr>
                     <h4>Title</h4>
-                    <h5>Enter the book's title </h5>
+                    <h5>Enter the book&apos;s title </h5>
                     <input
                         name="bookTitle"
                         type="text"
@@ -56,7 +56,7 @@ const BookCreate = (props) => {
                 </tr>
                 <tr>
                     <h4>ISBN</h4>
-                    <h5>Enter the book's 10 or 13 digit code number </h5>
+                    <h5>Enter the book&apos;s 10 or 13 digit code number </h5>
                     <input
                         name="isbnNumber"
                         type="text"

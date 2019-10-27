@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Link} from "react-router-dom";
 import {FaCheckCircle} from 'react-icons/fa';
 import { MdDoNotDisturb } from "react-icons/md";
@@ -8,27 +8,19 @@ const isAvailable = (isHere) => isHere ?
         (<label><MdDoNotDisturb color="#FF0000" size={16} /> Not Available </label>);
 
 const BookLink = (props) => {
-    // Similar to AfterDetails, we're finding other unused state after switching to functional components...
-    const [isFetching, setIsFetching] = useState(false);
-    const [bookDetail, setBookDetail] = useState({...props.book});
-
-        const {bookId, title, shelf, isAvailable: available } = props.book;
-        return (
+    const {bookId, title, shelf, isAvailable: available } = props.book;
+    return (
+        <div>
             <div>
-                {isFetching ? (
-                    <h1>Loading Book...</h1>
-                ) : (
-                    <>
-                        <div> <Link to={`/books/${bookId}`}>{title}</Link> </div>
-                        <p>
-                        {isAvailable(available)}
-                        on Shelf {shelf}
-                        <hr/> 
-                        </p>
-                    </>
-                )}
+                <Link to={`/books/${bookId}`}>{title}</Link>
             </div>
-        );
-    }
+            <p>
+                {isAvailable(available)}
+                on Shelf {shelf}
+                <hr/>
+            </p>
+        </div>
+    );
+}
 
 export default BookLink;
