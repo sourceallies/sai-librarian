@@ -28,8 +28,25 @@ h3 {
     text-align: center;
 }
 
-hr {
+h4 {
+    font-size: 18px;
+    color: #EAEAEA;
+    text-align: left;
+    margin-top: 0px;
+    margin-bottom: 8px;
+}
 
+h5 {
+    font-size: 14px;
+    font-weight: normal;
+    font-style: italic;
+    color: #EAEAEA;
+    text-align: left;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+hr {
     height: 1.5px;
     background-color: #08AEEA;
     background-image: linear-gradient(90deg, #08AEEA 0%, #2AF598 100%);
@@ -39,6 +56,10 @@ hr {
     align-self: center;
 }
 
+table {
+    width: 100%;
+}
+
 tr {
     font-size: 18px;
     color: #EAEAEA;
@@ -46,7 +67,6 @@ tr {
 
 
 td, th {
-    padding: 2px;
 }
 
 a {
@@ -75,23 +95,22 @@ label {
     line-height: 1.75;
 }
 
+form {
+    margin-top: 25px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
 input[type=text] {
-    width: 248px;
-    height: 32px;
-    left: 103px;
-    top: 152px;
-
-    background: #EAEAEA;
-    box-shadow: inset 0px 0px 1px rgba(0, 0, 0, 0.25);
-    border-radius: 2px;
-
-    font-family: "Open Sans", sans-serif;
-    font-style: normal;
-    font-weight: normal;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 35px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
     font-size: 14px;
-    line-height: 19px;
-
-    color: #1B1B1B;
 }
 
 input[type=submit], button {
@@ -114,7 +133,6 @@ input[type=submit], button {
     height: 20px;
     left: 335px;
     top: 198px;
-
     background: #26D9D2;
     border-radius: 5px;
 }
@@ -124,7 +142,6 @@ input[type=submit], button {
     height: 20px;
     left: 335px;
     top: 230px;
-
     background: #EF5350;
     border-radius: 5px;
 }
