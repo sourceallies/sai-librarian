@@ -1,56 +1,44 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {getBookByBookId} from "../utils/getBook";
 import BookDetail from "./BookDetail";
 import BookCreate from "./BookCreate";
 
-export default class Books extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            loading: true,
-            book: {}
-        }
-    }
+const Books = (props) => {
+    const [loading, setLoading] = useState(true);
+    const [book, setBook] = useState({});
 
-    componentDidMount() {
-        getBookByBookId(this.props.match.params.id).then((data) => {
+    useEffect(() => {
+        getBookByBookId(props.match.params.id).then((data) => {
             if (data.Item) {
-                this.setState({
-                    loading: false,
-                    book: data.Item
-                });
-            } else {
-                this.setState({
-                    loading: false
-                })
+                setBook(data.Item);
             }
-
+            setLoading(false);
         }).catch((err) => console.log('Error: ', err));
+    }, []);
 
+    if (loading) {
+        return (<h1>Loading...</h1>);
     }
 
-    render() {
-        if (this.state.loading) {
-            return <h1>Loading...</h1>
-        }
-         if (!this.state.book.bookId) {
-             return (
-                <BookCreate
-                    bookId={this.props.match.params.id}
-                    loggedInName={this.props.user.profile.name}
-                    token={this.props.user.id_token}
-                    history={this.props.history}
-                />
-             );
-         }
-
+    if (!book.bookId) {
         return (
-            <BookDetail
-              book={this.state.book}
-              loggedInName={this.props.user.profile.name}
-              history={this.props.history}
-              token={this.props.user.id_token}
-            />
+        <BookCreate
+            bookId={props.match.params.id}
+            loggedInName={props.user.profile.name}
+            token={props.user.id_token}
+            history={props.history}
+        />
         );
     }
-}
+
+    return (
+        <BookDetail
+            book={book}
+            loggedInName={props.user.profile.name}
+            history={props.history}
+            token={props.user.id_token}
+        />
+    );
+    }
+
+export default Books;

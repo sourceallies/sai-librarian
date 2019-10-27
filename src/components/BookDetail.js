@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {updateBook} from "../utils/updateBook";
 import AfterDetails from './AfterDetails';
 import Shelf from './Shelf';
@@ -41,58 +41,46 @@ const AvailabilityHeader = (props) => props.isAvailable ? (
     </h2>
 );
 
-export default class BookDetail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            bookDetail: {
-                ...props.book
-            },
-            complete: false,
-            isFetching: false,
-            shelf: false
-        };
-    }
+const BookDetail = (props) => {
+    const [bookDetail, setBookDetail] = useState({...props.book});
+    const [complete, setComplete] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
+    const [shelf, setShelf] = useState(false);
 
-    flipStatus() {
-        const {isAvailable} = this.state.bookDetail;
+   const flipStatus = () => {
+        const {isAvailable} = bookDetail;
         const newBook = {
-            ...this.state.bookDetail,
+            ...bookDetail,
             isAvailable: !isAvailable,
-            neckOfTheWoods: isAvailable ? this.props.loggedInName : 'Library'
+            neckOfTheWoods: isAvailable ? props.loggedInName : 'Library'
         };
-        updateBook(newBook, this.props.token)
+        updateBook(newBook, props.token)
             .then(() => {
-                this.setState({
-                    ...this.state,
-                    bookDetail: newBook,
-                    complete: true,
-                    shelf: !isAvailable
-                })
+                setBookDetail(newBook);
+                setComplete(true);
+                setShelf(!isAvailable);
             })
             .catch((err) => console.log('Error: ', err))
     }
 
-    render() {
-        const {book} = this.props;
-        const {bookDetail} = this.state;
-        if (this.state.shelf) {
+        const {book} = props;
+        if (shelf) {
             return <Shelf
-                        onDone={() => this.setState({shelf: false})}
-                        shelf={this.state.bookDetail.shelf}
-                        title={this.state.bookDetail.title}
+                        onDone={() => setShelf(false)}
+                        shelf={bookDetail.shelf}
+                        title={bookDetail.title}
                     />
         }
-        if (this.state.complete) {
+        if (complete) {
             return <AfterDetails
-                        title={this.state.bookDetail.title}
-                        isReturning={this.state.bookDetail.isAvailable}
-                        history={this.props.history}
+                        title={bookDetail.title}
+                        isReturning={bookDetail.isAvailable}
+                        history={props.history}
                     />
         }
         return (
             <div>
-                {this.state.isFetching ? (
+                {isFetching ? (
                     <h1>Loading Book...</h1>
                 ) : (
                     <div>
@@ -123,7 +111,7 @@ export default class BookDetail extends React.Component {
                         </p>
                         <div>
                                 <button
-                                    onClick={() => this.flipStatus()}
+                                    onClick={flipStatus}
                                     style={bookDetail.isAvailable ? {} : {background: '#EF5350'}}
                                 >
                                     {bookDetail.isAvailable ? 'Check Out' : 'Return'}
@@ -134,4 +122,5 @@ export default class BookDetail extends React.Component {
             </div>
         );
     }
-}
+
+export default BookDetail;
