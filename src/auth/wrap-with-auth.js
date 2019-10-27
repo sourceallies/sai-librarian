@@ -11,7 +11,7 @@ export default function wrapWithAuth(WrappedComponent) {
     const [ isAuthenticated, setIsAuthenticated ] = useState(false);
     const [thing, setUser] = useState(null);
 
-    async function checkAuth() {
+    const checkAuth = async () => {
       const user = await userManager.getUser();
       if (user && !user.expired) {
         userManager.events._userLoaded.raise(user);
