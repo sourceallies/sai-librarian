@@ -14,8 +14,8 @@ This project was developed during the 2019 SAI Hackathon.
 ## User's Guide
 
 ### Printing New Labels for New Books
-1. Pull down the project.
-2. On the command line, run `npm run csv`. This will generate a CSV file in the generated-files directory.
+1. Navigate to `/label-file`
+2. Enter the number of labels you need and click Download to save a CSV
 3. Goto https://www.avery.com/software/design-and-print/
 4. Click on "Start Designing" and pick the correct label template (we used 5160 for the hackathon)
 5. Use the horizontal blank label.
