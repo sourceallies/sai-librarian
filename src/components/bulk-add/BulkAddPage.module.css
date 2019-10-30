@@ -1,0 +1,11 @@
+.bookTable {
+    width: 100%;
+}
+.bookTable th {
+    padding: .5rem;
+}
+
+.bookTable thead input {
+    display: block;
+    width: 100%;
+}

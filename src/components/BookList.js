@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import getBookList from "../utils/getBookList";
 import BookLink from "./BookLink";
 
-const BookList = (props) => {
+const BookList = () => {
     const [loading, setLoading] = useState(true);
     const [bookList, setBookList] = useState([]);
 

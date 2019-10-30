@@ -30,6 +30,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "proxy": "http://openlibrary.org",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -43,7 +44,11 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.1.2",
+    "@testing-library/react": "^9.3.0",
     "eslint": "^6.5.1",
-    "eslint-plugin-react": "^7.16.0"
+    "eslint-plugin-jest": "^22.20.0",
+    "eslint-plugin-react": "^7.16.0",
+    "jest-fetch-mock": "^2.1.2"
   }
 }
