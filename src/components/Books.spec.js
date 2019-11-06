@@ -1,8 +1,7 @@
 import React from 'react';
-import { render, wait, fireEvent, act } from '@testing-library/react';
+import { render, wait, fireEvent } from '@testing-library/react';
 import documentClient from '../configuredDocumentClient';
 import Books from './Books';
-import configuredDocumentClient from '../configuredDocumentClient';
 
 jest.mock('../configuredDocumentClient');
 
@@ -27,8 +26,10 @@ describe('Book detail page', () => {
             bookId: 'abc123',
             title: 'A Great Project',
             isbn: '0201634554',
-            isAvailable: true
+            shelf: 'Alpha',
+            checkedOutBy: undefined
         };
+        process.env.REACT_APP_BOOK_TABLE = 'books';
         documentClient.get.mockReturnValue({
             async promise() {
                 await wait();
@@ -40,7 +41,11 @@ describe('Book detail page', () => {
         documentClient.update.mockReturnValue({
             async promise() {
                 await wait();
-                return {};
+                return {
+                    Attributes: {
+                        checkedOutBy: book.checkedOutBy ? undefined : 'Ben'
+                    }
+                };
             }
         })
     });
@@ -61,6 +66,7 @@ describe('Book detail page', () => {
         let rendered;
 
         beforeEach(async () => {
+            book.checkedOutBy = undefined;
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
         });
@@ -77,6 +83,10 @@ describe('Book detail page', () => {
             expect(rendered.container).toHaveTextContent('Available');
         });
 
+        it('should show the shelf the book is on', () => {
+            expect(rendered.container).toHaveTextContent('This book is located on shelf Alpha');
+        });
+
         it('should have a checkout button', () => {
             expect(rendered.queryByText('Check Out')).toBeInTheDocument();
         });
@@ -86,21 +96,19 @@ describe('Book detail page', () => {
         let rendered;
 
         beforeEach(async () => {
-            process.env.REACT_APP_BOOK_TABLE = 'books';
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
             fireEvent.click(rendered.getByText('Check Out'));
         });
 
         it('should submit an update to dynamo', () => {
-            expect(configuredDocumentClient.update).toHaveBeenCalledWith({
+            expect(documentClient.update).toHaveBeenCalledWith({
                 TableName: 'books',
                 Key: {
                     bookId: 'abc123'
                 },
-                UpdateExpression: "set isAvailable=:a, neckOfTheWoods=:l",
+                UpdateExpression: "set checkedOutBy=:l",
                 ExpressionAttributeValues: {
-                    ':a': false,
                     ':l': 'Ben'
                 },
                 ReturnValues: 'UPDATED_NEW'
@@ -108,7 +116,19 @@ describe('Book detail page', () => {
         });
 
         it('should show the check out success message', () => wait(() => {
-            expect(rendered.queryByText('You have checked out A Great Project')).toBeInTheDocument();
+            expect(rendered.queryByText('Book successfully checked out')).toBeInTheDocument();
+        }));
+
+        it('should show the book is Unvailable', () => wait(() => {
+            expect(rendered.container).toHaveTextContent('Currently checked out by Ben');
+        }));
+
+        it('should show the shelf the book', () => wait(() => {
+            expect(rendered.container).toHaveTextContent('Return this book to shelf Alpha');
+        }));
+
+        it('should have a return button', () => wait(() => {
+            expect(rendered.queryByText('Return')).toBeInTheDocument();
         }));
     });
 
@@ -116,9 +136,17 @@ describe('Book detail page', () => {
         let rendered;
 
         beforeEach(async () => {
-            book.isAvailable = false;
+            book.checkedOutBy = 'Ben';
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
+        });
+
+        it('should show the book title', () => {
+            expect(rendered.container).toHaveTextContent('A Great Project');
+        });
+
+        it('should show the book isbn', () => {
+            expect(rendered.container).toHaveTextContent('0201634554');
         });
 
         it('should show the book is not available', () => {
@@ -126,7 +154,11 @@ describe('Book detail page', () => {
         });
 
         it('should show the book is Unvailable', () => {
-            expect(rendered.container).toHaveTextContent('Unvailable');
+            expect(rendered.container).toHaveTextContent('Currently checked out by Ben');
+        });
+
+        it('should show the shelf the book', () => {
+            expect(rendered.container).toHaveTextContent('Return this book to shelf Alpha');
         });
 
         it('should have a return button', () => {
@@ -138,32 +170,40 @@ describe('Book detail page', () => {
         let rendered;
 
         beforeEach(async () => {
-            book.isAvailable = false;
-            book.neckOfTheWoods = 'Ben';
-            process.env.REACT_APP_BOOK_TABLE = 'books';
+            book.checkedOutBy = 'Ben';
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
             fireEvent.click(rendered.getByText('Return'));
         });
 
         it('should submit an update to dynamo', () => {
-            expect(configuredDocumentClient.update).toHaveBeenCalledWith({
+            expect(documentClient.update).toHaveBeenCalledWith({
                 TableName: 'books',
                 Key: {
                     bookId: 'abc123'
                 },
-                UpdateExpression: "set isAvailable=:a, neckOfTheWoods=:l",
+                UpdateExpression: "set checkedOutBy=:l",
                 ExpressionAttributeValues: {
-                    ':a': true,
-                    ':l': 'Library'
+                    ':l': null
                 },
                 ReturnValues: 'UPDATED_NEW'
             });
         });
 
-        it.only('should show the return success message', () => wait(() => {
-            rendered.debug();
-            expect(rendered.queryByText('A Great Project has been returned')).toBeInTheDocument();
+        it('should show the check out success message', () => wait(() => {
+            expect(rendered.queryByText('Book successfully returned')).toBeInTheDocument();
+        }));
+
+        it('should show the book as available', () => wait(() => {
+            expect(rendered.container).toHaveTextContent('Available');
+        }));
+
+        it('should show the shelf the book is on', () => wait(() => {
+            expect(rendered.container).toHaveTextContent('This book is located on shelf Alpha');
+        }));
+
+        it('should have a checkout button', () => wait(() => {
+            expect(rendered.queryByText('Check Out')).toBeInTheDocument();
         }));
     });
 });
