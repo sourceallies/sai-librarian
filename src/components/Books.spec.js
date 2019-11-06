@@ -80,7 +80,7 @@ describe('Book detail page', () => {
         });
 
         it('should show the book as available', () => {
-            expect(rendered.container).toHaveTextContent('Available');
+            expect(rendered.container).toHaveTextContent('This book is available');
         });
 
         it('should show the shelf the book is on', () => {
@@ -150,7 +150,7 @@ describe('Book detail page', () => {
         });
 
         it('should show the book is not available', () => {
-            expect(rendered.container).not.toHaveTextContent('Available');
+            expect(rendered.container).not.toHaveTextContent('This book is available');
         });
 
         it('should show the book is Unvailable', () => {
@@ -195,7 +195,7 @@ describe('Book detail page', () => {
         }));
 
         it('should show the book as available', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('Available');
+            expect(rendered.container).toHaveTextContent('This book is available');
         }));
 
         it('should show the shelf the book is on', () => wait(() => {

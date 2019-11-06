@@ -1,8 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import documentClient from '../configuredDocumentClient';
-import {getBookByBookId} from "../utils/getBook";
-import BookDetail from "./BookDetail";
-import BookCreate from "./BookCreate";
 
 function useGetBook(bookId) {
     const [loading, setLoading] = useState(true);
@@ -27,68 +24,32 @@ function useGetBook(bookId) {
     };
 }
 
-function AvailableBookDetails({book, setBook, setSuccessMessage, currentUser}) {
-    async function onCheckout() {
-        const response = await documentClient.update({
-            TableName: process.env.REACT_APP_BOOK_TABLE,
-            Key: {
-                bookId: book.bookId
-            },
-            UpdateExpression: "set checkedOutBy=:l",
-            ExpressionAttributeValues: {
-                ':l': currentUser
-            },
-            ReturnValues: 'UPDATED_NEW'
-        }).promise();
-        setBook((prevState) => {
-            return {
-                ...prevState,
-                ...response.Attributes
-            };
-        });
-        setSuccessMessage('Book successfully checked out');
-        console.log(response);
-    }
-
-    return (
-        <>
-            <p>Available</p>
-            <p>This book is located on shelf {book.shelf}</p>
-            <button onClick={onCheckout}>Check Out</button>
-        </>
-    );
+async function updateBookStatus(bookId, checkedOutBy) {
+    return await documentClient.update({
+        TableName: process.env.REACT_APP_BOOK_TABLE,
+        Key: {
+            bookId
+        },
+        UpdateExpression: "set checkedOutBy=:l",
+        ExpressionAttributeValues: {
+            ':l': checkedOutBy
+        },
+        ReturnValues: 'UPDATED_NEW'
+    }).promise();
 }
 
-function CheckedOutBookDetails({book, setBook, setSuccessMessage}) {
-    async function onReturn() {
-        const response = await documentClient.update({
-            TableName: process.env.REACT_APP_BOOK_TABLE,
-            Key: {
-                bookId: book.bookId
-            },
-            UpdateExpression: "set checkedOutBy=:l",
-            ExpressionAttributeValues: {
-                ':l': null
-            },
-            ReturnValues: 'UPDATED_NEW'
-        }).promise();
-        setSuccessMessage('Book successfully returned');
-        setBook((prevState) => {
-            return {
-                ...prevState,
-                ...response.Attributes
-            };
-        });
-        console.log(response);
+function AvailablityParagraph({book}) {
+    if (book.checkedOutBy) {
+        return <p>Currently checked out by {book.checkedOutBy}</p>;
     }
+    return <p>This book is available</p>;
+}
 
-    return (
-        <>
-            <p>Currently checked out by {book.checkedOutBy}</p>
-            <p>Return this book to shelf {book.shelf}</p>
-            <button onClick={onReturn}>Return</button>
-        </>
-    );
+function ShelfParagraph({book}) {
+    if (book.checkedOutBy) {
+        return <p>Return this book to shelf {book.shelf}</p>;
+    }
+    return <p>This book is located on shelf {book.shelf}</p>;
 }
 
 const Books = (props) => {
@@ -99,15 +60,32 @@ const Books = (props) => {
         return (<h1>Loading...</h1>);
     }
 
+    async function onToggleAvailability() {
+        const newCheckedOutBy = book.checkedOutBy ? null : props.user.profile.name;
+        const response = await updateBookStatus(book.bookId, newCheckedOutBy);
+        setBook((prevState) => {
+            return {
+                ...prevState,
+                ...response.Attributes
+            };
+        });
+        if (newCheckedOutBy) {
+            setSuccessMessage('Book successfully checked out');
+        } else {
+            setSuccessMessage('Book successfully returned');
+        }
+    }
+
     return (
         <main>
             <h1>{book.title} <small>{book.isbn}</small></h1>
 
             <p>{successMessage}</p>
 
-            {book.checkedOutBy ?
-                <CheckedOutBookDetails book={book} setBook={setBook} setSuccessMessage={setSuccessMessage} /> :
-                <AvailableBookDetails book={book} setBook={setBook} setSuccessMessage={setSuccessMessage} currentUser={props.user.profile.name} />}
+            <AvailablityParagraph book={book} />
+            <ShelfParagraph book={book} />
+
+            <button onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
         </main>
     );
 
@@ -121,14 +99,6 @@ const Books = (props) => {
     //     />
     //     );
     // }
-
-    // return (
-    //     <BookDetail
-    //         book={book}
-    //         loggedInName={props.user.profile.name}
-    //         history={props.history}
-    //     />
-    // );
 };
 
 export default Books;
