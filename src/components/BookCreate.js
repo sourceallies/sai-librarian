@@ -1,83 +1,78 @@
 import React, {useState} from 'react';
-import {postBook} from '../utils/postBook';
-import BookAddSuccess from './BookAddSuccess';
+import documentClient from '../configuredDocumentClient';
 
-const BookCreate = (props) => {
-    const [bookState, setBookState] = useState({
-        bookTitle: '',
-        complete: false,
-        isbnNumber: '',
+const BookCreate = ({match, history}) => {
+    const [book, setbook] = useState({
+        bookId: match.params.id,
+        title: '',
+        isbn: '',
         shelf: '',
-        loggedInName: props.loggedInName,
     });
-
-    const setState = (state) => setBookState({...bookState, state});
 
     const handleInputChange = (event) => {
         const target = event.target;
         const value = target.value;
         const name = target.name;
 
-        setState({
-            [name]: value
+        setbook((prevState) => {
+            return {
+                ...prevState,
+                [name]: value
+            };
         });
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        postBook({
-            bookId: props.bookId,
-            title: bookState.bookTitle,
-            isbn: bookState.isbnNumber,
-            shelf: bookState.shelf
-        }, props.token)
-            .then(() => setState({complete: true}))
-            .catch(err => console.log('Error: ', err));
+        await documentClient.put({
+            TableName: process.env.REACT_APP_BOOK_TABLE,
+            Item: book
+        }).promise();
+
+        history.push(`/books/${book.bookId}`);
     }
 
-    if (bookState.complete) {
-        return <BookAddSuccess history={props.history} title={bookState.bookTitle} />;
-    }
     return (
         <form onSubmit={handleSubmit}>
             <h1> Book Information </h1>
-            <hr/>
-            <table>
-                <tr>
-                    <h4>Title</h4>
-                    <h5>Enter the book&apos;s title </h5>
-                    <input
-                        name="bookTitle"
-                        type="text"
-                        placeholder="The Senior Software Engineer"
-                        value={bookState.bookTitle}
-                        onChange={handleInputChange}
-                    />
-                </tr>
-                <tr>
-                    <h4>ISBN</h4>
-                    <h5>Enter the book&apos;s 10 or 13 digit code number </h5>
-                    <input
-                        name="isbnNumber"
-                        type="text"
-                        placeholder="978-0990702801"
-                        value={bookState.isbnNumber}
-                        onChange={handleInputChange}
-                    />
-                </tr>
-                <tr>
-                    <h4>Shelf</h4>
-                    <h5>Enter which Shelf you will be placing the book on</h5>
-                    <input
-                        name="shelf"
-                        type="text"
-                        placeholder="A1"
-                        value={bookState.shelf}
-                        onChange={handleInputChange}
-                    />
-                </tr>
-            </table>
-            <input type="submit" value="Add book"/>
+
+            <label>
+                Title
+                <small>Enter the book&apos;s title </small>
+                <input
+                    name="title"
+                    type="text"
+                    placeholder="The Senior Software Engineer"
+                    value={book.bookTitle}
+                    onChange={handleInputChange}
+                />
+            </label>
+
+            <label>
+                ISBN
+                <small>Enter the book&apos;s 10 or 13 digit code number </small>
+                <input
+                    name="isbn"
+                    type="text"
+                    placeholder="978-0990702801"
+                    value={book.isbnNumber}
+                    onChange={handleInputChange}
+                />
+            </label>
+
+            <label>
+                Shelf
+                <small>Enter which Shelf you will be placing the book on</small>
+                <input
+                    name="shelf"
+                    type="text"
+                    placeholder="A1"
+                    value={book.shelf}
+                    onChange={handleInputChange}
+                />
+            </label>
+
+            <button type="submit">Add book</button>
         </form>
     );
 }
