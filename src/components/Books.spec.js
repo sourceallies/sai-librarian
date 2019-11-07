@@ -20,6 +20,9 @@ describe('Book detail page', () => {
                 profile: {
                     name: 'Ben'
                 }
+            },
+            history: {
+                push: jest.fn()
             }
         };
         book = {
@@ -59,6 +62,43 @@ describe('Book detail page', () => {
 
         it('should show the loading indicator', () => {
             expect(rendered.container).toHaveTextContent('Loading...');
+        });
+    });
+
+    describe('The book with the given Id does not exist', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            book = undefined;
+            rendered = render(<Books {...props} />);
+            await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
+        });
+
+        it('should navigate to the book create page', () => {
+            expect(props.history.push).toHaveBeenCalledWith('/books/abc123/create');
+        });
+    });
+
+    describe('The book fails to load', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            documentClient.get.mockReturnValue({
+                async promise() {
+                    await wait();
+                    throw new Error('Error loading book');
+                }
+            });
+            rendered = render(<Books {...props} />);
+            await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
+        });
+
+        it('should not navigate the user', () => {
+            expect(props.history.push).not.toHaveBeenCalled();
+        });
+
+        it('should show the error message', () => {
+            expect(rendered.container).toHaveTextContent('Error loading book');
         });
     });
 

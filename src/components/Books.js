@@ -4,6 +4,7 @@ import documentClient from '../configuredDocumentClient';
 function useGetBook(bookId) {
     const [loading, setLoading] = useState(true);
     const [book, setBook] = useState();
+    const [error, setError] = useState();
 
     useEffect(() => {
         documentClient.get({
@@ -13,12 +14,16 @@ function useGetBook(bookId) {
             }
         }).promise()
             .then(({Item}) => setBook(Item))
-            .catch((err) => console.log('Error getting book: ', err))
+            .catch((e) => {
+                console.error(e);
+                setError(e);
+            })
             .finally(() => setLoading(false));
     }, [bookId]);
 
     return {
         loading,
+        error,
         book,
         setBook
     };
@@ -52,16 +57,25 @@ function ShelfParagraph({book}) {
     return <p>This book is located on shelf {book.shelf}</p>;
 }
 
-const Books = (props) => {
-    const {loading, book, setBook} = useGetBook(props.match.params.id);
+const Books = ({match, history, user}) => {
+    const {loading, book, error, setBook} = useGetBook(match.params.id);
     const [successMessage, setSuccessMessage] = useState();
 
     if (loading) {
-        return (<h1>Loading...</h1>);
+        return (<div>Loading...</div>);
+    }
+
+    if (error) {
+        return (<div>Error: {error.message}</div>);
+    }
+
+    if (!book) {
+        history.push(`/books/${match.params.id}/create`);
+        return null;
     }
 
     async function onToggleAvailability() {
-        const newCheckedOutBy = book.checkedOutBy ? null : props.user.profile.name;
+        const newCheckedOutBy = book.checkedOutBy ? null : user.profile.name;
         const response = await updateBookStatus(book.bookId, newCheckedOutBy);
         setBook((prevState) => {
             return {
@@ -88,17 +102,6 @@ const Books = (props) => {
             <button onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
         </main>
     );
-
-    // if (!book.bookId) {
-    //     return (
-    //     <BookCreate
-    //         bookId={props.match.params.id}
-    //         loggedInName={props.user.profile.name}
-    //         token={props.user.id_token}
-    //         history={props.history}
-    //     />
-    //     );
-    // }
 };
 
 export default Books;
