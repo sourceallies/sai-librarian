@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import documentClient from '../configuredDocumentClient';
 
-function useGetBook(bookId) {
+const useGetBook = (bookId) => {
     const [loading, setLoading] = useState(true);
     const [book, setBook] = useState();
     const [error, setError] = useState();
@@ -27,9 +27,9 @@ function useGetBook(bookId) {
         book,
         setBook
     };
-}
+};
 
-async function updateBookStatus(bookId, checkedOutBy) {
+const updateBookStatus = async (bookId, checkedOutBy) => {
     return await documentClient.update({
         TableName: process.env.REACT_APP_BOOK_TABLE,
         Key: {
@@ -41,21 +41,21 @@ async function updateBookStatus(bookId, checkedOutBy) {
         },
         ReturnValues: 'UPDATED_NEW'
     }).promise();
-}
+};
 
-function AvailablityParagraph({book}) {
+const AvailablityParagraph = ({book}) => {
     if (book.checkedOutBy) {
         return <p>Currently checked out by {book.checkedOutBy}</p>;
     }
     return <p>This book is available</p>;
-}
+};
 
-function ShelfParagraph({book}) {
+const ShelfParagraph = ({book}) => {
     if (book.checkedOutBy) {
         return <p>Return this book to shelf {book.shelf}</p>;
     }
     return <p>This book is located on shelf {book.shelf}</p>;
-}
+};
 
 const Books = ({match, history, user}) => {
     const {loading, book, error, setBook} = useGetBook(match.params.id);
@@ -74,7 +74,7 @@ const Books = ({match, history, user}) => {
         return null;
     }
 
-    async function onToggleAvailability() {
+    const onToggleAvailability = async () => {
         const newCheckedOutBy = book.checkedOutBy ? null : user.profile.name;
         const response = await updateBookStatus(book.bookId, newCheckedOutBy);
         setBook((prevState) => {
@@ -88,7 +88,7 @@ const Books = ({match, history, user}) => {
         } else {
             setSuccessMessage('Book successfully returned');
         }
-    }
+    };
 
     return (
         <main>

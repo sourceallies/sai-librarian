@@ -23,6 +23,10 @@ const BookCreate = ({match, history}) => {
     }
 
     const handleSubmit = async (event) => {
+        if (!event.target.reportValidity()) {
+            return;
+        }
+
         event.preventDefault();
         await documentClient.put({
             TableName: process.env.REACT_APP_BOOK_TABLE,
@@ -38,31 +42,29 @@ const BookCreate = ({match, history}) => {
 
             <label>
                 Title
-                <small>Enter the book&apos;s title </small>
                 <input
                     name="title"
                     type="text"
+                    required
                     placeholder="The Senior Software Engineer"
-                    value={book.bookTitle}
+                    value={book.title}
                     onChange={handleInputChange}
                 />
             </label>
 
             <label>
                 ISBN
-                <small>Enter the book&apos;s 10 or 13 digit code number </small>
                 <input
                     name="isbn"
                     type="text"
                     placeholder="978-0990702801"
-                    value={book.isbnNumber}
+                    value={book.isbn}
                     onChange={handleInputChange}
                 />
             </label>
 
             <label>
                 Shelf
-                <small>Enter which Shelf you will be placing the book on</small>
                 <input
                     name="shelf"
                     type="text"

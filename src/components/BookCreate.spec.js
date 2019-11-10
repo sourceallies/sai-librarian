@@ -62,4 +62,54 @@ describe('Book detail page', () => {
             expect(props.history.push).toHaveBeenCalledWith('/books/abc123');
         });
     });
+
+    describe('The user submits the form without pupulating the title', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            rendered = render(<BookCreate {...props} />);
+
+            fireEvent.change(rendered.getByLabelText(/ISBN.*/), {target: {value: '0201634554'}});
+            await wait(() => expect(rendered.getByLabelText(/ISBN.*/)).toHaveValue('0201634554'));
+
+            fireEvent.change(rendered.getByLabelText(/Shelf.*/), {target: {value: 'Alpha'}});
+            await wait(() => expect(rendered.getByLabelText(/Shelf.*/)).toHaveValue('Alpha'));
+
+            fireEvent.click(rendered.getByText('Add book'));
+            await wait();
+        });
+
+        it('should not call dynamo', () => {
+            expect(documentClient.put).not.toHaveBeenCalled();
+        });
+
+        it('should not navigate', () => {
+            expect(props.history.push).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('The user submits the form without pupulating the shelf', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            rendered = render(<BookCreate {...props} />);
+
+            fireEvent.change(rendered.getByLabelText(/ISBN.*/), {target: {value: '0201634554'}});
+            await wait(() => expect(rendered.getByLabelText(/ISBN.*/)).toHaveValue('0201634554'));
+
+            fireEvent.change(rendered.getByLabelText(/Title.*/), {target: {value: 'A Great Project'}});
+            await wait(() => expect(rendered.getByLabelText(/Title.*/)).toHaveValue('A Great Project'));
+
+            fireEvent.click(rendered.getByText('Add book'));
+            await wait();
+        });
+
+        it('should not call dynamo', () => {
+            expect(documentClient.put).not.toHaveBeenCalled();
+        });
+
+        it('should not navigate', () => {
+            expect(props.history.push).not.toHaveBeenCalled();
+        });
+    });
 });
