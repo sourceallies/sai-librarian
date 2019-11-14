@@ -5,7 +5,7 @@ import BookCreate from './BookCreate';
 
 jest.mock('../configuredDocumentClient');
 
-describe('Book detail page', () => {
+describe('Book create page', () => {
     let props;
 
     beforeEach(() => {

@@ -23,11 +23,12 @@ const BookCreate = ({match, history}) => {
     }
 
     const handleSubmit = async (event) => {
+        event.preventDefault();
+
         if (!event.target.reportValidity()) {
             return;
         }
 
-        event.preventDefault();
         await documentClient.put({
             TableName: process.env.REACT_APP_BOOK_TABLE,
             Item: book
@@ -68,6 +69,7 @@ const BookCreate = ({match, history}) => {
                 <input
                     name="shelf"
                     type="text"
+                    required
                     placeholder="A1"
                     value={book.shelf}
                     onChange={handleInputChange}
