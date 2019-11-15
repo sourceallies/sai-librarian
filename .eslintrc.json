@@ -30,6 +30,7 @@
         "jest"
     ],
     "rules": {
-        "react/prop-types": 0
+        "react/prop-types": 0,
+        "jest/no-standalone-expect": 0
     }
 }
