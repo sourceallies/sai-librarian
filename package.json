@@ -12,7 +12,7 @@
     "js-file-download": "^0.4.8",
     "oidc-client": "^1.9.1",
     "react": "^16.9.0",
-    "react-dom": "^16.11.0",
+    "react-dom": "^16.12.0",
     "react-icons": "^3.8.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
