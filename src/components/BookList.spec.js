@@ -61,12 +61,8 @@ describe('Book list page', () => {
             expect(rendered.container).toHaveTextContent('A Great Project');
         });
 
-        it('should show the shelf', () => {
-            expect(rendered.container).toHaveTextContent('Alpha');
-        });
-
         it('should show that the book is available', () => {
-            expect(rendered.container).toHaveTextContent('Available');
+            expect(rendered.queryByTitle('Available')).toBeInTheDocument();
         });
     });
 
@@ -80,7 +76,7 @@ describe('Book list page', () => {
         });
 
         it('should show that the book is not available', () => {
-            expect(rendered.container).toHaveTextContent('Not Available');
+            expect(rendered.queryByTitle('Not Available')).toBeInTheDocument();
         });
     });
 

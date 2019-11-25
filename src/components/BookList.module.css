@@ -1,0 +1,21 @@
+
+.bookList {
+    list-style: none;
+    margin: 1rem;
+    padding: 0;
+}
+
+.listItem {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: #EAEAEA solid thin;
+}
+
+.bookLink {
+    color: #EAEAEA;
+    text-decoration: none;
+    margin-left: .5rem;
+}
