@@ -15,7 +15,7 @@ const BookLink = (props) => {
     const { bookId, title, checkedOutBy } = props.book;
     return (
         <li className={styles.listItem}>
-            <div className={styles.availablityIcon}>
+            <div>
                 {checkedOutBy
                     ? <MdDoNotDisturb color="#FF0000" size={16} title="Not Available" />
                     : <FaCheckCircle color="#2AF598" size={16} title="Available" /> }
