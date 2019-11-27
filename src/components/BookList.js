@@ -10,14 +10,18 @@ async function getBookList() {
     }).promise();
 }
 
+const AvailablilityIcon = ({checkedOutBy}) => {
+    if (checkedOutBy) {
+        return <div className={styles.checkedOutIcon} title="Not Available"><MdDoNotDisturb/></div>;
+    }
+    return <div className={styles.availableIcon} title="Available"><MdCheckCircle/></div>;
+}
+
 const BookLink = (props) => {
     const { bookId, title, checkedOutBy } = props.book;
     return (
         <li className={styles.listItem}>
-            {checkedOutBy
-                ? <div className={styles.checkedOutIcon}><MdDoNotDisturb title="Not Available" /></div>
-                : <div className={styles.availableIcon}><MdCheckCircle title="Available" /></div>
-            }
+            <AvailablilityIcon checkedOutBy={checkedOutBy} />
             <Link to={`/books/${bookId}`} className={styles.bookLink}>{title}</Link>
         </li>
     );
