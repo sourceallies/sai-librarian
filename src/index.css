@@ -17,6 +17,14 @@ html, body {
     background: #272C33;
 }
 
+h1 {
+
+    font-size: 30px;
+    margin: 25px 15px 35px 15px;
+    color: #EAEAEA;
+    text-align: center;
+}
+
 h2 {
     font-size: 25px;
     margin: 25px 15px 25px 15px;
