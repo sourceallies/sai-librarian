@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from "react-router-dom";
-import {FaCheckCircle} from 'react-icons/fa';
-import { MdDoNotDisturb } from "react-icons/md";
+import { MdDoNotDisturb, MdCheckCircle } from "react-icons/md";
 import documentClient from '../configuredDocumentClient';
+import styles from './BookList.module.css';
 
 async function getBookList() {
     return await documentClient.scan({
@@ -10,23 +10,20 @@ async function getBookList() {
     }).promise();
 }
 
-const isAvailable = (isHere) => isHere ?
-        (<label><FaCheckCircle color="#2AF598" size={16} /> Available </label>) :
-        (<label><MdDoNotDisturb color="#FF0000" size={16} /> Not Available </label>);
+const AvailablilityIcon = ({checkedOutBy}) => {
+    if (checkedOutBy) {
+        return <div className={styles.checkedOutIcon} title="Not Available"><MdDoNotDisturb/></div>;
+    }
+    return <div className={styles.availableIcon} title="Available"><MdCheckCircle/></div>;
+}
 
 const BookLink = (props) => {
-    const {bookId, title, shelf, isAvailable: available } = props.book;
+    const { bookId, title, checkedOutBy } = props.book;
     return (
-        <div>
-            <div>
-                <Link to={`/books/${bookId}`}>{title}</Link>
-            </div>
-            <p>
-                {isAvailable(available)}
-                on Shelf {shelf}
-                <hr/>
-            </p>
-        </div>
+        <li className={styles.listItem}>
+            <AvailablilityIcon checkedOutBy={checkedOutBy} />
+            <Link to={`/books/${bookId}`} className={styles.bookLink}>{title}</Link>
+        </li>
     );
 }
 
@@ -55,9 +52,9 @@ const BookList = () => {
     return (
         <div>
             <h1>Source Allies Library</h1>
-            <div>
+            <ul className={styles.bookList}>
                 {generateListOfBookDetails()}
-            </div>
+            </ul>
         </div>
     );
 }
