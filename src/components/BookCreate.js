@@ -1,88 +1,84 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import documentClient from '../configuredDocumentClient';
-import Layout from '../components/layout/Layout'
 
-const BookCreate = ({ match, history }) => {
-  const [book, setbook] = useState({
-    bookId: match.params.id,
-    title: '',
-    isbn: '',
-    shelf: ''
-  });
-
-  const handleInputChange = event => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-
-    setbook(prevState => {
-      return {
-        ...prevState,
-        [name]: value
-      };
+const BookCreate = ({match, history}) => {
+    const [book, setbook] = useState({
+        bookId: match.params.id,
+        title: '',
+        isbn: '',
+        shelf: '',
     });
-  };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+    const handleInputChange = (event) => {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
 
-    if (!event.target.reportValidity()) {
-      return;
+        setbook((prevState) => {
+            return {
+                ...prevState,
+                [name]: value
+            };
+        });
     }
 
-    await documentClient
-      .put({
-        TableName: process.env.REACT_APP_BOOK_TABLE,
-        Item: book
-      })
-      .promise();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-    history.push(`/books/${book.bookId}`);
-  };
+        if (!event.target.reportValidity()) {
+            return;
+        }
 
-  return (
-    <Layout title="Book Information">
-      <form onSubmit={handleSubmit}>
+        await documentClient.put({
+            TableName: process.env.REACT_APP_BOOK_TABLE,
+            Item: book
+        }).promise();
 
-        <label>
-          Title
-          <input
-            name="title"
-            type="text"
-            required
-            placeholder="The Senior Software Engineer"
-            value={book.title}
-            onChange={handleInputChange}
-          />
-        </label>
+        history.push(`/books/${book.bookId}`);
+    }
 
-        <label>
-          ISBN
-          <input
-            name="isbn"
-            type="text"
-            placeholder="978-0990702801"
-            value={book.isbn}
-            onChange={handleInputChange}
-          />
-        </label>
+    return (
+        <form onSubmit={handleSubmit}>
+            <h1> Book Information </h1>
 
-        <label>
-          Shelf
-          <input
-            name="shelf"
-            type="text"
-            required
-            placeholder="A1"
-            value={book.shelf}
-            onChange={handleInputChange}
-          />
-        </label>
+            <label>
+                Title
+                <input
+                    name="title"
+                    type="text"
+                    required
+                    placeholder="The Senior Software Engineer"
+                    value={book.title}
+                    onChange={handleInputChange}
+                />
+            </label>
 
-        <button type="submit">Add book</button>
-      </form>
-    </Layout>
-  );
-};
+            <label>
+                ISBN
+                <input
+                    name="isbn"
+                    type="text"
+                    placeholder="978-0990702801"
+                    value={book.isbn}
+                    onChange={handleInputChange}
+                />
+            </label>
+
+            <label>
+                Shelf
+                <input
+                    name="shelf"
+                    type="text"
+                    required
+                    placeholder="A1"
+                    value={book.shelf}
+                    onChange={handleInputChange}
+                />
+            </label>
+
+            <button type="submit">Add book</button>
+        </form>
+    );
+}
 
 export default BookCreate;

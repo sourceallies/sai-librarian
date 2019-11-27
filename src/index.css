@@ -12,10 +12,9 @@
 }
 
 
-html, body, #root {
+html, body {
     margin: auto;
-    height: 100%;
-    width: 100%;
+    background: #272C33;
 }
 
 h2 {
