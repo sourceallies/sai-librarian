@@ -62,7 +62,7 @@ describe('Book list page', () => {
         });
 
         it('should show that the book is available', () => {
-            expect(rendered.queryByTitle('Available')).toBeInTheDocument();
+            expect(rendered.queryByTitle('Available')).toBeVisible();
         });
     });
 
@@ -76,7 +76,7 @@ describe('Book list page', () => {
         });
 
         it('should show that the book is not available', () => {
-            expect(rendered.queryByTitle('Not Available')).toBeInTheDocument();
+            expect(rendered.queryByTitle('Not Available')).toBeVisible();
         });
     });
 
