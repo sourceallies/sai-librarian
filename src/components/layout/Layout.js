@@ -1,11 +1,14 @@
 import React from 'react';
 import styles from './Layout.module.css';
+import { Link } from 'react-router-dom';
 
 const Header = ({ children, title }) => (
   <>
     <nav className={styles.header}>
       <div className={styles.logoContainer}>
-        <img src="library-logo.png" alt="" />
+        <Link to="/">
+          <img src="/library-logo.png" alt="" />
+        </Link>
       </div>
     </nav>
     <main className={styles.mainContent}>
