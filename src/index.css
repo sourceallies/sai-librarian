@@ -4,6 +4,11 @@
     font-family: 'Lato', sans-serif;
     font-size: 18px;
     font-weight: 300;
+
+    --green: #2AF598;
+    --red: #FF0000;
+    --blue: #1a80c7;
+    --off-white: #EAEAEA;
 }
 
 

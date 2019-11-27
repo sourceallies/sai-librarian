@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCheckCircle } from 'react-icons/fa';
-import { MdDoNotDisturb } from 'react-icons/md';
+import { MdDoNotDisturb, MdCheckCircle } from 'react-icons/md';
 import documentClient from '../configuredDocumentClient';
 import styles from './BookList.module.css';
-import Header from './layout/Layout';
+import Layout from './layout/Layout';
 
 async function getBookList() {
   return await documentClient
@@ -14,17 +13,26 @@ async function getBookList() {
     .promise();
 }
 
+const AvailablilityIcon = ({ checkedOutBy }) => {
+  if (checkedOutBy) {
+    return (
+      <div className={styles.checkedOutIcon} title="Not Available">
+        <MdDoNotDisturb />
+      </div>
+    );
+  }
+  return (
+    <div className={styles.availableIcon} title="Available">
+      <MdCheckCircle />
+    </div>
+  );
+};
+
 const BookLink = props => {
   const { bookId, title, checkedOutBy } = props.book;
   return (
     <li className={styles.listItem}>
-      <div>
-        {checkedOutBy ? (
-          <MdDoNotDisturb color="#FF0000" size={16} title="Not Available" />
-        ) : (
-          <FaCheckCircle color="#2AF598" size={16} title="Available" />
-        )}
-      </div>
+      <AvailablilityIcon checkedOutBy={checkedOutBy} />
       <Link to={`/books/${bookId}`} className={styles.bookLink}>
         {title}
       </Link>
@@ -55,12 +63,12 @@ const BookList = () => {
   }, []);
 
   if (loading) {
-    return <h1>Loading...</h1>;
+    return <Layout title="Loading...." />;
   }
   return (
-    <Header title="Source Allies Library">
+    <Layout title="Source Allies Library">
       <ul className={styles.bookList}>{generateListOfBookDetails()}</ul>
-    </Header>
+    </Layout>
   );
 };
 
