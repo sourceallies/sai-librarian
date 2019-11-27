@@ -52,39 +52,6 @@ h5 {
     margin-bottom: 16px;
 }
 
-hr {
-    height: 1.5px;
-    background-color: #08AEEA;
-    background-image: linear-gradient(90deg, #08AEEA 0%, #2AF598 100%);
-    border: none;
-    border-radius: 5px 5px 5px 5px;
-    margin-bottom: 25px;
-    align-self: center;
-}
-
-table {
-    width: 100%;
-}
-
-tr {
-    font-size: 18px;
-    color: #EAEAEA;
-}
-
-
-td, th {
-}
-
-a {
-    color: #EAEAEA;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 18px;
-    margin-left: 20px;
-    margin-right: 20px;
-    text-align: left;
-    display: inline-block;
-}
 
 p {
     color: #EAEAEA;
