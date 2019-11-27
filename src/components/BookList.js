@@ -50,12 +50,12 @@ const BookList = () => {
         return <h1>Loading...</h1>
     }
     return (
-        <div>
-            <h1>Source Allies Library</h1>
+        <main>
+            <h1 className={styles.heading}>Source Allies Library</h1>
             <ul className={styles.bookList}>
                 {generateListOfBookDetails()}
             </ul>
-        </div>
+        </main>
     );
 }
 

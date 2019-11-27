@@ -1,22 +1,26 @@
 @import url('http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext');
 
 :root {
+    --green: #2AF598;
+    --dark-green: #19B95C;
+    --red: #FF0000;
+    --blue: #1a80c7;
+    --dark-blue: #061A40;
+    --white: white;
+    --off-white: #EAEAEA;
+
     font-family: 'Lato', sans-serif;
     font-size: 18px;
     font-weight: 300;
-
-    --green: #2AF598;
-    --red: #FF0000;
-    --blue: #1a80c7;
-    --off-white: #EAEAEA;
+    color: var(--off-white);
 }
-
 
 html, body {
-    margin: auto;
-    background: #272C33;
+    margin: 0;
+    background: var(--dark-blue);
 }
 
+/*
 h1 {
 
     font-size: 30px;
@@ -104,22 +108,4 @@ input[type=submit], button {
     display: block;
     margin-left: auto;
     margin-right: auto;
-}
-
-.available {
-    width: 20px;
-    height: 20px;
-    left: 335px;
-    top: 198px;
-    background: #26D9D2;
-    border-radius: 5px;
-}
-
-.not-available {
-    width: 20px;
-    height: 20px;
-    left: 335px;
-    top: 230px;
-    background: #EF5350;
-    border-radius: 5px;
-}
+} */
