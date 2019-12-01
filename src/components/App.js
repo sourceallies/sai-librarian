@@ -7,10 +7,12 @@ import OAuthCallback from './OAuthCallback';
 import BookList from "./BookList";
 import BulkAddPage from './bulk-add/BulkAddPage';
 import GenerateLabelFile from './GenerateLabelFile';
+import Header from './Header';
 const { createBrowserHistory } = require('history');
 
-const Routes = () => (
+const App = () => (
   <Router history={createBrowserHistory()}>
+    <Header />
     <Switch>
       <Route exact path="/">
         <Redirect to="/books" />
@@ -25,4 +27,4 @@ const Routes = () => (
   </Router>
 );
 
-export default Routes;
+export default App;
