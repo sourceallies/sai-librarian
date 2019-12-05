@@ -47,6 +47,12 @@ describe('Book list page', () => {
         it('should show the loading indicator', () => {
             expect(rendered.container).toHaveTextContent('Loading...');
         });
+
+        it('should fetch books from the table', () => wait(() => {
+            expect(documentClient.scan).toHaveBeenCalledWith(expect.objectContaining({
+                TableName: 'books'
+            }));
+        }));
     });
 
     describe('Books have successfully loaded', () => {
@@ -94,6 +100,44 @@ describe('Book list page', () => {
 
         it('should navigate the user to the book detail page', () => {
             expect(history.location.pathname).toEqual('/books/abc123');
+        });
+    });
+
+    describe('Dynamo response has an LastEvaluatedKey indicating more records are available', () => {
+        let rendered;
+
+        beforeEach(() => {
+            documentClient.scan.mockReturnValueOnce({
+                async promise() {
+                    await wait();
+                    return {
+                        Items: [
+                            {
+                                bookId: 'abc123',
+                                title: 'First page Book'
+                            }
+                        ],
+                        LastEvaluatedKey: {foo: 'bar'}
+                    };
+                }
+            });
+            rendered = render(<BookList {...props} />, {wrapper: MemoryRouter});
+        });
+
+        it('should show the books that have loaded', () => wait(() => {
+            expect(rendered.container).toHaveTextContent('A Great Project');
+        }));
+
+        it('should fetch the next page of books', () => wait( () => {
+            expect(documentClient.scan).toHaveBeenCalledWith({
+                TableName: 'books',
+                ExclusiveStartKey: {foo: 'bar'}
+            });
+        }));
+
+        it('should show the loading indicator', async () => {
+            await wait();
+            expect(rendered.container).toHaveTextContent('Loading...');
         });
     });
 });
