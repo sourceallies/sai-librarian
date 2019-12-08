@@ -24,6 +24,13 @@ describe('Book list page', () => {
                 isbn: '0201634554',
                 shelf: 'Alpha',
                 checkedOutBy: undefined
+            },
+            {
+                bookId: 'def456',
+                title: 'The Senior Software Engineer',
+                isbn: '12323124',
+                shelf: 'Alpha',
+                checkedOutBy: undefined
             }
         ];
         process.env.REACT_APP_BOOK_TABLE = 'books';
@@ -62,8 +69,34 @@ describe('Book list page', () => {
         });
 
         it('should show that the book is available', () => {
-            expect(rendered.queryByTitle('Available')).toBeVisible();
+            rendered.queryAllByTitle('Available').forEach((availableTag) => {
+                expect(availableTag).toBeVisible();
+            });
         });
+
+        it('should let a user filter for books by title', async () => {
+            fireEvent.change(rendered.getByPlaceholderText('Search'), {
+                target: {
+                    value: 'the'
+                }
+            });
+
+            await wait(() => {
+                expect(rendered.getByText('The Senior Software Engineer')).toBeVisible();
+                expect(rendered.queryByText('A Great Project')).not.toBeInTheDocument();
+            });
+
+            fireEvent.change(rendered.getByPlaceholderText('Search'), {
+                target: {
+                    value: 'project'
+                }
+            });
+
+            await wait(() => {
+                expect(rendered.getByText('A Great Project')).toBeVisible();
+                expect(rendered.queryByText('The Senior Software Engineer')).not.toBeInTheDocument();
+            })
+        })
     });
 
     describe('Books are unavailable', () => {
