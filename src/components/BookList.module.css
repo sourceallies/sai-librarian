@@ -40,3 +40,7 @@
 .bookLink:hover {
     color: var(--blue);
 }
+
+.loading {
+    text-align: center;
+}

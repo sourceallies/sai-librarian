@@ -4,12 +4,6 @@ import { MdDoNotDisturb, MdCheckCircle } from "react-icons/md";
 import documentClient from '../configuredDocumentClient';
 import styles from './BookList.module.css';
 
-async function getBookList() {
-    return await documentClient.scan({
-        TableName: process.env.REACT_APP_BOOK_TABLE
-    }).promise();
-}
-
 const AvailablilityIcon = ({checkedOutBy}) => {
     if (checkedOutBy) {
         return <div className={styles.checkedOutIcon} title="Not Available"><MdDoNotDisturb/></div>;
@@ -36,25 +30,30 @@ const BookList = () => {
     );
 
     useEffect(() => {
-        getBookList().then((data) => {
-            setBookList(data.Items.sort((a, b) => {
-                if (b.title > a.title) return -1;
-                if (a.title > b.title) return 1;
-                return 0;
-            }));
+        async function getBooks() {
+            let ExclusiveStartKey = undefined;
+            do {
+                const result = await documentClient.scan({
+                    TableName: process.env.REACT_APP_BOOK_TABLE,
+                    ExclusiveStartKey
+                }).promise();
+
+                setBookList((books) => [...books, ...result.Items]);
+                ExclusiveStartKey = result.LastEvaluatedKey;
+            } while (ExclusiveStartKey);
             setLoading(false);
-        }).catch((err) => console.log('Error: ', err));
+        }
+
+        getBooks().catch((err) => console.log('Error: ', err));
     }, []);
 
-    if (loading) {
-        return <h1>Loading...</h1>
-    }
     return (
         <main>
             <h1 className={styles.heading}>Source Allies Library</h1>
             <ul className={styles.bookList}>
                 {generateListOfBookDetails()}
             </ul>
+            {loading && <div className={styles.loading}>Loading...</div>}
         </main>
     );
 }
