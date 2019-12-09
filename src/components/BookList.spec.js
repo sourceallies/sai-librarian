@@ -113,7 +113,7 @@ describe('Book list page', () => {
                     return {
                         Items: [
                             {
-                                bookId: 'abc123',
+                                bookId: 'first1',
                                 title: 'First page Book'
                             }
                         ],
@@ -125,7 +125,7 @@ describe('Book list page', () => {
         });
 
         it('should show the books that have loaded', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('A Great Project');
+            expect(rendered.container).toHaveTextContent('First page Book');
         }));
 
         it('should fetch the next page of books', () => wait( () => {
@@ -138,6 +138,41 @@ describe('Book list page', () => {
         it('should show the loading indicator', async () => {
             await wait();
             expect(rendered.container).toHaveTextContent('Loading...');
+        });
+    });
+
+    describe('The second page of results is loaded from Dynamo', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            documentClient.scan.mockReturnValueOnce({
+                async promise() {
+                    return {
+                        Items: [
+                            {
+                                bookId: 'first1',
+                                title: 'First page Book'
+                            }
+                        ],
+                        LastEvaluatedKey: {foo: 'bar'}
+                    };
+                }
+            });
+            rendered = render(<BookList {...props} />, {wrapper: MemoryRouter});
+            await wait();
+            await wait();
+        });
+
+        it('should not show the loading indicator', () => {
+            expect(rendered.container).not.toHaveTextContent('Loading...');
+        });
+
+        it('should show the books from the first page', () => {
+            expect(rendered.container).toHaveTextContent('First page Book');
+        });
+
+        it('should show the book from the second page', () => {
+            expect(rendered.container).toHaveTextContent('A Great Project');
         });
     });
 });
