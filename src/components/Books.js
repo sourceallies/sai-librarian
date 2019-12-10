@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import styles from './Books.module.css';
 import documentClient from '../configuredDocumentClient';
 
 const useGetBook = (bookId) => {
@@ -91,15 +92,17 @@ const Books = ({match, history, user}) => {
     };
 
     return (
-        <main>
-            <h1>{book.title} <small>{book.isbn}</small></h1>
+        <main className={styles.bookDetails}>
+            <h1>{book.title}</h1>
 
-            <p>{successMessage}</p>
+            <p><strong>ISBN:</strong> {book.isbn}</p>
+
+            {successMessage && <p>{successMessage}</p>}
 
             <AvailablityParagraph book={book} />
             <ShelfParagraph book={book} />
 
-            <button onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
+            <button className={styles.checkInOutButton} onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
         </main>
     );
 };

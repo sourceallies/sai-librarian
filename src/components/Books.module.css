@@ -1,0 +1,28 @@
+.bookDetails {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bookDetails > * {
+    margin: 1rem 1rem 0 1rem;
+}
+
+.checkInOutButton {
+    max-width: 30rem;
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    border: solid 2px var(--dark-green);
+    background-color: var(--dark-green);
+    border-radius: 3px;
+    font-size: 20px;
+    padding: 18px 30px;
+    cursor: pointer;
+}
+
+.checkInOutButton:hover {
+    background-color: white;
+    color: var(--dark-green);
+    text-decoration: underline;
+}
