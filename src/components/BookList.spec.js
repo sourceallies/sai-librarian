@@ -71,7 +71,7 @@ describe('Book list page', () => {
         });
 
         it('should show the book title', () => {
-            expect(rendered.container).toHaveTextContent('A Great Project');
+            books.forEach((book) => expect(rendered.container).toHaveTextContent(book.title));
         });
 
         it('should show that the book is available', () => {
@@ -80,29 +80,10 @@ describe('Book list page', () => {
             });
         });
 
-        it('should let a user filter for books by title', async () => {
-            fireEvent.change(rendered.getByPlaceholderText('Search'), {
-                target: {
-                    value: 'the'
-                }
-            });
-
-            await wait(() => {
-                expect(rendered.getByText('The Senior Software Engineer')).toBeVisible();
-                expect(rendered.queryByText('A Great Project')).not.toBeInTheDocument();
-            });
-
-            fireEvent.change(rendered.getByPlaceholderText('Search'), {
-                target: {
-                    value: 'project'
-                }
-            });
-
-            await wait(() => {
-                expect(rendered.getByText('A Great Project')).toBeVisible();
-                expect(rendered.queryByText('The Senior Software Engineer')).not.toBeInTheDocument();
-            })
+        it('should automatically focus on the search box', () => {
+            expect(rendered.getByPlaceholderText('Search')).toHaveFocus();
         })
+
     });
 
     describe('Books are unavailable', () => {
@@ -133,6 +114,30 @@ describe('Book list page', () => {
 
         it('should navigate the user to the book detail page', () => {
             expect(history.location.pathname).toEqual('/books/abc123');
+        });
+    });
+
+    describe('The user types into the search box', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            rendered = render(<BookList {...props} />, {wrapper: MemoryRouter});
+
+            await wait(() =>  expect(rendered.container).not.toHaveTextContent('Loading...'));
+
+            fireEvent.change(rendered.getByPlaceholderText('Search'), {
+                target: {
+                    value: 'project'
+                }
+            });
+        });
+
+        it('should show titles containing the entered text', () => {
+            expect(rendered.getByText(books[0].title)).toBeVisible();
+        });
+
+        it('should not show books if their title does not contain the entered query', () => {
+            expect(rendered.queryByText(books[1].title)).not.toBeInTheDocument();
         });
     });
 

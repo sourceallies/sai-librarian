@@ -61,7 +61,7 @@ const BookList = () => {
         <main>
             <h1 className={styles.heading}>Source Allies Library</h1>
             <input className={styles.search} type="text" placeholder={'Search'} value={search} onChange={(e) => setSearch(e.target.value)} ref={searchInput} />
-            <span className={styles.searchIcon} title="Serach"><MdSearch/></span>
+            <span className={styles.searchIcon} title="Search"><MdSearch/></span>
             <ul className={styles.bookList}>
                 {generateListOfBookDetails()}
             </ul>
