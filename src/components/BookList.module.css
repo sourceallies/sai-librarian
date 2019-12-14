@@ -1,42 +1,62 @@
-
 .heading {
-    color: var(--white);
-    margin: 1rem 1rem 0 1rem;
-    text-transform: uppercase;
+  color: var(--white);
+  margin: 1rem 1rem 0 1rem;
+  text-transform: uppercase;
 }
 
 .bookList {
-    list-style: none;
-    margin: 1rem;
-    padding: 0;
+  list-style: none;
+  margin: 1rem;
+  padding: 0;
 }
 
 .listItem {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin: 0;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: var(--off-white) solid thin;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: var(--off-white) solid thin;
 }
 
 .checkedOutIcon {
-    height: 1rem;
-    color: var(--red);
+  height: 1rem;
+  color: var(--red);
 }
 
 .availableIcon {
-    height: 1rem;
-    color: var(--green);
+  height: 1rem;
+  color: var(--green);
 }
 
 .bookLink {
-    color: var(--off-white);
-    text-decoration: none;
-    margin-left: .5rem;
+  color: var(--off-white);
+  text-decoration: none;
+  margin-left: 0.5rem;
 }
 
 .bookLink:hover {
-    color: var(--blue);
+  color: var(--blue);
+}
+
+.search {
+  margin: 1rem 1rem 0;
+  padding: 0.5rem;
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--off-white);
+  font-size: 1.25rem;
+}
+
+.searchIcon {
+  color: var(--white);
+  height: 1rem;
+
+  position: relative;
+  left: -2.5rem;
+}
+
+.loading {
+    text-align: center;
 }
