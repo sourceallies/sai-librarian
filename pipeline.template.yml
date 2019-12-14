@@ -82,6 +82,9 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: ArtifactBucketName
+            Value: !Ref ArtifactStorage
       Cache:
         Type: LOCAL
         Modes:
@@ -114,10 +117,15 @@ Resources:
         EnvironmentVariables:
           - Name: REACT_APP_ROLE_ARN
             Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
+          - Name: ArtifactBucketName
+            Value: !Ref ArtifactStorage
       Source:
         Type: CODEPIPELINE
       Artifacts:
         Type: CODEPIPELINE
+      SecondaryArtifacts:
+        - Name: transformed-template
+          Type: CODEPIPELINE
   BuildDevProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -131,10 +139,15 @@ Resources:
         EnvironmentVariables:
           - Name: REACT_APP_ROLE_ARN
             Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
+          - Name: ArtifactBucketName
+            Value: !Ref ArtifactStorage
       Source:
         Type: CODEPIPELINE
       Artifacts:
         Type: CODEPIPELINE
+      SecondaryArtifacts:
+        - Name: transformed-template
+          Type: CODEPIPELINE
   PipelineWebhook:
     Type: AWS::CodePipeline::Webhook
     Properties:
@@ -177,93 +190,111 @@ Resources:
                 Branch: !Ref GithubBranch
                 OAuthToken: !Ref GithubAccessToken
                 PollForSourceChanges: false
-        - Name: BuildAndDeployDev
-          Actions:
-            - Name: DeployInfrastructure
-              RunOrder: 1
-              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: CloudFormation
-                Version: 1
-              InputArtifacts:
-                - Name: sourceCode
-              Configuration:
-                StackName: sai-librarian
-                ActionMode: REPLACE_ON_FAILURE
-                TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
-                TemplateConfiguration: sourceCode::infrastructure/dev.config.json
-                RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
-            - Name: Build
-              RunOrder: 1
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: 1
-              InputArtifacts:
-                - Name: sourceCode
-              OutputArtifacts:
-                - Name: devBuildResults
-              Configuration:
-                ProjectName: !Ref BuildDevProject
-            - Name: DeploySite
-              RunOrder: 2
-              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: S3
-                Version: 1
-              InputArtifacts:
-                - Name: devBuildResults
-              Configuration:
-                BucketName: library.dev.sourceallies.com
-                Extract: true
-        - Name: BuildAndDeployProd
-          Actions:
-            - Name: DeployInfrastructure
-              RunOrder: 1
-              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: CloudFormation
-                Version: 1
-              InputArtifacts:
-                - Name: sourceCode
-              Configuration:
-                StackName: sai-librarian
-                ActionMode: CREATE_UPDATE
-                TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
-                TemplateConfiguration: sourceCode::infrastructure/prod.config.json
-                RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
-            - Name: Build
-              RunOrder: 1
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: 1
-              InputArtifacts:
-                - Name: sourceCode
-              OutputArtifacts:
-                - Name: prodBuildResults
-              Configuration:
-                ProjectName: !Ref BuildProdProject
-            - Name: DeploySite
-              RunOrder: 2
-              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: S3
-                Version: 1
-              InputArtifacts:
-                - Name: prodBuildResults
-              Configuration:
-                BucketName: library.sourceallies.com
-                Extract: true
+          - Name: BuildAndPackageBackend
+            Actions:
+              - Name: Build
+                RunOrder: 1
+                ActionTypeId:
+                  Category: Build
+                  Owner: AWS
+                  Provider: CodeBuild
+                  Version: 1
+                InputArtifacts:
+                  - Name: sourceCode
+                OutputArtifacts:
+                  - Name: devBuildResults
+                  - Name: transformed-template
+                Configuration:
+                  ProjectName: !Ref BuildDevProject
+
+        #   Actions:
+        # - Name: BuildAndDeployDev
+        #   Actions:
+        #     - Name: DeployInfrastructure
+        #       RunOrder: 1
+        #       RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+        #       ActionTypeId:
+        #         Category: Deploy
+        #         Owner: AWS
+        #         Provider: CloudFormation
+        #         Version: 1
+        #       InputArtifacts:
+        #         - Name: sourceCode
+        #       Configuration:
+        #         StackName: sai-librarian
+        #         ActionMode: REPLACE_ON_FAILURE
+        #         TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
+        #         TemplateConfiguration: sourceCode::infrastructure/dev.config.json
+        #         RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+        #         Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+        #     - Name: Build
+        #       RunOrder: 1
+        #       ActionTypeId:
+        #         Category: Build
+        #         Owner: AWS
+        #         Provider: CodeBuild
+        #         Version: 1
+        #       InputArtifacts:
+        #         - Name: sourceCode
+        #       OutputArtifacts:
+        #         - Name: devBuildResults
+        #       Configuration:
+        #         ProjectName: !Ref BuildDevProject
+        #     - Name: DeploySite
+        #       RunOrder: 2
+        #       RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+        #       ActionTypeId:
+        #         Category: Deploy
+        #         Owner: AWS
+        #         Provider: S3
+        #         Version: 1
+        #       InputArtifacts:
+        #         - Name: devBuildResults
+        #       Configuration:
+        #         BucketName: library.dev.sourceallies.com
+        #         Extract: true
+        # - Name: BuildAndDeployProd
+        #   Actions:
+        #     - Name: DeployInfrastructure
+        #       RunOrder: 1
+        #       RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+        #       ActionTypeId:
+        #         Category: Deploy
+        #         Owner: AWS
+        #         Provider: CloudFormation
+        #         Version: 1
+        #       InputArtifacts:
+        #         - Name: sourceCode
+        #       Configuration:
+        #         StackName: sai-librarian
+        #         ActionMode: CREATE_UPDATE
+        #         TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
+        #         TemplateConfiguration: sourceCode::infrastructure/prod.config.json
+        #         RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+        #         Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+        #     - Name: Build
+        #       RunOrder: 1
+        #       ActionTypeId:
+        #         Category: Build
+        #         Owner: AWS
+        #         Provider: CodeBuild
+        #         Version: 1
+        #       InputArtifacts:
+        #         - Name: sourceCode
+        #       OutputArtifacts:
+        #         - Name: prodBuildResults
+        #       Configuration:
+        #         ProjectName: !Ref BuildProdProject
+        #     - Name: DeploySite
+        #       RunOrder: 2
+        #       RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+        #       ActionTypeId:
+        #         Category: Deploy
+        #         Owner: AWS
+        #         Provider: S3
+        #         Version: 1
+        #       InputArtifacts:
+        #         - Name: prodBuildResults
+        #       Configuration:
+        #         BucketName: library.sourceallies.com
+        #         Extract: true

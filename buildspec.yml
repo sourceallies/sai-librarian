@@ -13,7 +13,21 @@ phases:
       - npm run eslint
       - npm test
       - npm run build
+      - |
+        aws cloudformation package \
+          --template-file=infrastructure/cloudformation.template.yml \
+          --s3-bucket=$ArtifactBucketName \
+          --s3-prefix=cf-package \
+          --output-template-file=cloudformation.transformed.yml
 artifacts:
-  base-directory: build
-  files:
-    - '**/*'
+  secondary-artifacts:
+    site:
+      name: site
+      base-directory: build
+      files:
+        - '**/*'
+    transformed-template:
+      name: transformed-template
+      discard-paths: yes
+      files:
+        - cloudformation.transformed.yml
