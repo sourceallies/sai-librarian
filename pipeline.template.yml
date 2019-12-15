@@ -145,9 +145,6 @@ Resources:
         Type: CODEPIPELINE
       Artifacts:
         Type: CODEPIPELINE
-      SecondaryArtifacts:
-        - Name: transformed-template
-          Type: CODEPIPELINE
   PipelineWebhook:
     Type: AWS::CodePipeline::Webhook
     Properties:
@@ -206,6 +203,12 @@ Resources:
                 - Name: transformed-template
               Configuration:
                 ProjectName: !Ref BuildDevProject
+                EnvironmentVariables: |
+                  [
+                    "Name": "REACT_APP_ROLE_ARN",
+                    "Value": "arn:aws:iam::729161019481:role/sai-librarian-user"
+                  ]
+
 
           # Actions:
           #   - Name: Build
