@@ -229,51 +229,52 @@ Resources:
               Configuration:
                 BucketName: library.dev.sourceallies.com
                 Extract: true
-        #
-        #
-        #
-        # - Name: BuildAndDeployProd
-        #   Actions:
-        #     - Name: DeployInfrastructure
-        #       RunOrder: 1
-        #       RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-        #       ActionTypeId:
-        #         Category: Deploy
-        #         Owner: AWS
-        #         Provider: CloudFormation
-        #         Version: 1
-        #       InputArtifacts:
-        #         - Name: sourceCode
-        #       Configuration:
-        #         StackName: sai-librarian
-        #         ActionMode: CREATE_UPDATE
-        #         TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
-        #         TemplateConfiguration: sourceCode::infrastructure/prod.config.json
-        #         RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-        #         Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
-        #     - Name: Build
-        #       RunOrder: 1
-        #       ActionTypeId:
-        #         Category: Build
-        #         Owner: AWS
-        #         Provider: CodeBuild
-        #         Version: 1
-        #       InputArtifacts:
-        #         - Name: sourceCode
-        #       OutputArtifacts:
-        #         - Name: prodBuildResults
-        #       Configuration:
-        #         ProjectName: !Ref BuildProdProject
-        #     - Name: DeploySite
-        #       RunOrder: 2
-        #       RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
-        #       ActionTypeId:
-        #         Category: Deploy
-        #         Owner: AWS
-        #         Provider: S3
-        #         Version: 1
-        #       InputArtifacts:
-        #         - Name: prodBuildResults
-        #       Configuration:
-        #         BucketName: library.sourceallies.com
-        #         Extract: true
+        - Name: DeployProd
+          Actions:
+            - Name: ReplaceChangeset
+              RunOrder: 1
+              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: sourceCode
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: CHANGE_SET_REPLACE
+                ChangeSetName: pipeline-changeset
+                TemplatePath: cloudformation_resources::cloudformation.transformed.yml
+                TemplateConfiguration: cloudformation_resources::prod.config.json
+                RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+            - Name: ExecuteChangeset
+              RunOrder: 2
+              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: cloudformation_resources
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: pipeline-changeset
+                RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+            - Name: DeploySite
+              RunOrder: 3
+              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: S3
+                Version: 1
+              InputArtifacts:
+                - Name: prod_site
+              Configuration:
+                BucketName: library.sourceallies.com
+                Extract: true
