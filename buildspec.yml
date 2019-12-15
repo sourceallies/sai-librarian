@@ -24,14 +24,15 @@ phases:
           --output-template-file=cloudformation.transformed.yml
 artifacts:
   secondary-artifacts:
-    dev-site:
+    dev_site:
       base-directory: dev-site
       files:
         - '**/*'
-    prod-site:
+    prod_site:
       base-directory: prod-site
       files:
         - '**/*'
-    transformed-template:
+    cloudformation_resources:
       files:
         - cloudformation.transformed.yml
+        - 'infrastructure/*.config.json'

@@ -175,11 +175,30 @@ Resources:
               InputArtifacts:
                 - Name: sourceCode
               OutputArtifacts:
-                - Name: dev-site
-                - Name: transformed-template
+                - Name: dev_site
+                - Name: prod_site
+                - Name: cloudformation_resources
               Configuration:
                 ProjectName: !Ref BuildProject
-
+        - Name: DeployDev
+          Actions:
+            - Name: DeployCloudformation
+              RunOrder: 1
+              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: cloudformation_resources
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: REPLACE_ON_FAILURE
+                TemplatePath: cloudformation_resources::infrastructure/cloudformation.template.yml
+                TemplateConfiguration: cloudformation_resources::infrastructure/dev.config.json
+                RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
 
           # Actions:
           #   - Name: Build
@@ -198,23 +217,7 @@ Resources:
           #       ProjectName: !Ref BuildDevProject
 
 
-        #     - Name: DeployInfrastructure
-        #       RunOrder: 1
-        #       RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-        #       ActionTypeId:
-        #         Category: Deploy
-        #         Owner: AWS
-        #         Provider: CloudFormation
-        #         Version: 1
-        #       InputArtifacts:
-        #         - Name: sourceCode
-        #       Configuration:
-        #         StackName: sai-librarian
-        #         ActionMode: REPLACE_ON_FAILURE
-        #         TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
-        #         TemplateConfiguration: sourceCode::infrastructure/dev.config.json
-        #         RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-        #         Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+        #
         #
         #     - Name: DeploySite
         #       RunOrder: 2
