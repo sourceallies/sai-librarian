@@ -240,7 +240,7 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               InputArtifacts:
-                - Name: sourceCode
+                - Name: cloudformation_resources
               Configuration:
                 StackName: sai-librarian
                 ActionMode: CHANGE_SET_REPLACE
