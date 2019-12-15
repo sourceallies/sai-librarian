@@ -190,22 +190,22 @@ Resources:
                 Branch: !Ref GithubBranch
                 OAuthToken: !Ref GithubAccessToken
                 PollForSourceChanges: false
-          - Name: BuildAndPackageBackend
-            Actions:
-              - Name: Build
-                RunOrder: 1
-                ActionTypeId:
-                  Category: Build
-                  Owner: AWS
-                  Provider: CodeBuild
-                  Version: 1
-                InputArtifacts:
-                  - Name: sourceCode
-                OutputArtifacts:
-                  - Name: devBuildResults
-                  - Name: transformed-template
-                Configuration:
-                  ProjectName: !Ref BuildDevProject
+        - Name: BuildAndPackageBackend
+          Actions:
+            - Name: Build
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: sourceCode
+              OutputArtifacts:
+                - Name: devBuildResults
+                - Name: transformed-template
+              Configuration:
+                ProjectName: !Ref BuildDevProject
 
         #   Actions:
         # - Name: BuildAndDeployDev
