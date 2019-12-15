@@ -182,7 +182,7 @@ Resources:
                 ProjectName: !Ref BuildProject
         - Name: DeployDev
           Actions:
-            - Name: DeployCloudformation
+            - Name: ReplaceChangeset
               RunOrder: 1
               RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
               ActionTypeId:
@@ -194,13 +194,30 @@ Resources:
                 - Name: cloudformation_resources
               Configuration:
                 StackName: sai-librarian
-                ActionMode: REPLACE_ON_FAILURE
+                ActionMode: CHANGE_SET_REPLACE
+                ChangeSetName: pipeline-changeset
                 TemplatePath: cloudformation_resources::cloudformation.transformed.yml
                 TemplateConfiguration: cloudformation_resources::dev.config.json
                 RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
                 Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
-            - Name: DeploySite
+            - Name: ExecuteChangeset
               RunOrder: 2
+              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: cloudformation_resources
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: pipeline-changeset
+                RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+            - Name: DeploySite
+              RunOrder: 3
               RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
               ActionTypeId:
                 Category: Deploy
