@@ -126,7 +126,7 @@ Resources:
       SecondaryArtifacts:
         - Name: transformed-template
           Type: CODEPIPELINE
-  BuildDevProject:
+  BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub ${AWS::StackName}-build-dev
@@ -137,8 +137,6 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
         EnvironmentVariables:
-          # - Name: REACT_APP_ROLE_ARN
-          #   Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
           - Name: ArtifactBucketName
             Value: !Ref ArtifactStore
       Source:
@@ -187,7 +185,7 @@ Resources:
                 Branch: !Ref GithubBranch
                 OAuthToken: !Ref GithubAccessToken
                 PollForSourceChanges: false
-        - Name: BuildAndDeployDev
+        - Name: Build
           Actions:
             - Name: Build
               RunOrder: 1
@@ -199,15 +197,10 @@ Resources:
               InputArtifacts:
                 - Name: sourceCode
               OutputArtifacts:
-                - Name: devBuildResults
+                - Name: dev-site
                 - Name: transformed-template
               Configuration:
-                ProjectName: !Ref BuildDevProject
-                EnvironmentVariables: |
-                  [
-                    "Name": "REACT_APP_ROLE_ARN",
-                    "Value": "arn:aws:iam::729161019481:role/sai-librarian-user"
-                  ]
+                ProjectName: !Ref BuildProject
 
 
           # Actions:
