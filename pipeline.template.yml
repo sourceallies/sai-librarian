@@ -84,7 +84,7 @@ Resources:
         Image: aws/codebuild/standard:2.0
         EnvironmentVariables:
           - Name: ArtifactBucketName
-            Value: !Ref ArtifactStorage
+            Value: !Ref ArtifactStore
       Cache:
         Type: LOCAL
         Modes:
@@ -118,7 +118,7 @@ Resources:
           - Name: REACT_APP_ROLE_ARN
             Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
           - Name: ArtifactBucketName
-            Value: !Ref ArtifactStorage
+            Value: !Ref ArtifactStore
       Source:
         Type: CODEPIPELINE
       Artifacts:
@@ -137,10 +137,10 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
         EnvironmentVariables:
-          - Name: REACT_APP_ROLE_ARN
-            Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
+          # - Name: REACT_APP_ROLE_ARN
+          #   Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
           - Name: ArtifactBucketName
-            Value: !Ref ArtifactStorage
+            Value: !Ref ArtifactStore
       Source:
         Type: CODEPIPELINE
       Artifacts:
