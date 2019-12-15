@@ -14,6 +14,8 @@ phases:
       - npm test
       - REACT_APP_ROLE_ARN="arn:aws:iam::729161019481:role/sai-librarian-user" npm run build
       - mv build dev-site
+      - REACT_APP_ROLE_ARN="arn:aws:iam::487696863217:role/sai-librarian-user" npm run build
+      - mv build prod-site
       - |
         aws cloudformation package \
           --template-file=infrastructure/cloudformation.template.yml \
@@ -24,6 +26,10 @@ artifacts:
   secondary-artifacts:
     dev-site:
       base-directory: dev-site
+      files:
+        - '**/*'
+    prod-site:
+      base-directory: prod-site
       files:
         - '**/*'
     transformed-template:

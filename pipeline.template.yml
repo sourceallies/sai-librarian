@@ -104,28 +104,6 @@ Resources:
               Type: HEAD_REF
             - Pattern: PUSH,PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED
               Type: EVENT
-  BuildProdProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Sub ${AWS::StackName}-build-prod
-      ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
-      EncryptionKey: !GetAtt ArtifactKey.Arn
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:2.0
-        EnvironmentVariables:
-          - Name: REACT_APP_ROLE_ARN
-            Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
-          - Name: ArtifactBucketName
-            Value: !Ref ArtifactStore
-      Source:
-        Type: CODEPIPELINE
-      Artifacts:
-        Type: CODEPIPELINE
-      SecondaryArtifacts:
-        - Name: transformed-template
-          Type: CODEPIPELINE
   BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
