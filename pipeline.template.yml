@@ -190,7 +190,7 @@ Resources:
                 Branch: !Ref GithubBranch
                 OAuthToken: !Ref GithubAccessToken
                 PollForSourceChanges: false
-        - Name: BuildAndPackageBackend
+        - Name: BuildAndDeployDev
           Actions:
             - Name: Build
               RunOrder: 1
@@ -207,9 +207,23 @@ Resources:
               Configuration:
                 ProjectName: !Ref BuildDevProject
 
-        #   Actions:
-        # - Name: BuildAndDeployDev
-        #   Actions:
+          # Actions:
+          #   - Name: Build
+          #     RunOrder: 1
+          #     ActionTypeId:
+          #       Category: Build
+          #       Owner: AWS
+          #       Provider: CodeBuild
+          #       Version: 1
+          #     InputArtifacts:
+          #       - Name: sourceCode
+          #     OutputArtifacts:
+          #       - Name: devBuildResults
+          #       - Name: transformed-template
+          #     Configuration:
+          #       ProjectName: !Ref BuildDevProject
+
+
         #     - Name: DeployInfrastructure
         #       RunOrder: 1
         #       RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
@@ -227,19 +241,7 @@ Resources:
         #         TemplateConfiguration: sourceCode::infrastructure/dev.config.json
         #         RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
         #         Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
-        #     - Name: Build
-        #       RunOrder: 1
-        #       ActionTypeId:
-        #         Category: Build
-        #         Owner: AWS
-        #         Provider: CodeBuild
-        #         Version: 1
-        #       InputArtifacts:
-        #         - Name: sourceCode
-        #       OutputArtifacts:
-        #         - Name: devBuildResults
-        #       Configuration:
-        #         ProjectName: !Ref BuildDevProject
+        #
         #     - Name: DeploySite
         #       RunOrder: 2
         #       RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
