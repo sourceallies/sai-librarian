@@ -33,6 +33,7 @@ artifacts:
       files:
         - '**/*'
     cloudformation_resources:
+      discard-paths: true
       files:
         - cloudformation.transformed.yml
         - 'infrastructure/*.config.json'
