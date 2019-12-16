@@ -45,17 +45,12 @@ const updateBookStatus = async (bookId, checkedOutBy) => {
 };
 
 const AvailablityParagraph = ({book}) => {
-    if (book.checkedOutBy) {
-        return <p>Currently checked out by {book.checkedOutBy}</p>;
-    }
-    return <p>This book is available</p>;
-};
+    const {checkedOutBy, shelf} = book;
 
-const ShelfParagraph = ({book}) => {
-    if (book.checkedOutBy) {
-        return <p>Return this book to shelf {book.shelf}</p>;
+    if (checkedOutBy) {
+        return <p>This book is currently checked out by {book.checkedOutBy}. Return it to shelf {shelf} when complete.</p>;
     }
-    return <p>This book is located on shelf {book.shelf}</p>;
+    return <p>This book is available and located on shelf {shelf}.</p>;
 };
 
 const Books = ({match, history, user}) => {
@@ -100,7 +95,6 @@ const Books = ({match, history, user}) => {
             {successMessage && <p>{successMessage}</p>}
 
             <AvailablityParagraph book={book} />
-            <ShelfParagraph book={book} />
 
             <button className={styles.checkInOutButton} onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
         </main>
