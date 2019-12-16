@@ -82,6 +82,9 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
+        EnvironmentVariables:
+          - Name: ArtifactBucketName
+            Value: !Ref ArtifactStore
       Cache:
         Type: LOCAL
         Modes:
@@ -101,10 +104,10 @@ Resources:
               Type: HEAD_REF
             - Pattern: PUSH,PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED
               Type: EVENT
-  BuildProdProject:
+  BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub ${AWS::StackName}-build-prod
+      Name: !Sub ${AWS::StackName}-build
       ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
       EncryptionKey: !GetAtt ArtifactKey.Arn
       Environment:
@@ -112,25 +115,8 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:2.0
         EnvironmentVariables:
-          - Name: REACT_APP_ROLE_ARN
-            Value: "arn:aws:iam::487696863217:role/sai-librarian-user"
-      Source:
-        Type: CODEPIPELINE
-      Artifacts:
-        Type: CODEPIPELINE
-  BuildDevProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Sub ${AWS::StackName}-build-dev
-      ServiceRole: !FindInMap [Accounts, Shared, PipelineRoleArn]
-      EncryptionKey: !GetAtt ArtifactKey.Arn
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:2.0
-        EnvironmentVariables:
-          - Name: REACT_APP_ROLE_ARN
-            Value: "arn:aws:iam::729161019481:role/sai-librarian-user"
+          - Name: ArtifactBucketName
+            Value: !Ref ArtifactStore
       Source:
         Type: CODEPIPELINE
       Artifacts:
@@ -177,25 +163,8 @@ Resources:
                 Branch: !Ref GithubBranch
                 OAuthToken: !Ref GithubAccessToken
                 PollForSourceChanges: false
-        - Name: BuildAndDeployDev
+        - Name: Build
           Actions:
-            - Name: DeployInfrastructure
-              RunOrder: 1
-              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: CloudFormation
-                Version: 1
-              InputArtifacts:
-                - Name: sourceCode
-              Configuration:
-                StackName: sai-librarian
-                ActionMode: REPLACE_ON_FAILURE
-                TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
-                TemplateConfiguration: sourceCode::infrastructure/dev.config.json
-                RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
-                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
             - Name: Build
               RunOrder: 1
               ActionTypeId:
@@ -206,11 +175,49 @@ Resources:
               InputArtifacts:
                 - Name: sourceCode
               OutputArtifacts:
-                - Name: devBuildResults
+                - Name: dev_site
+                - Name: prod_site
+                - Name: cloudformation_resources
               Configuration:
-                ProjectName: !Ref BuildDevProject
-            - Name: DeploySite
+                ProjectName: !Ref BuildProject
+        - Name: DeployDev
+          Actions:
+            - Name: ReplaceChangeset
+              RunOrder: 1
+              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: cloudformation_resources
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: CHANGE_SET_REPLACE
+                ChangeSetName: pipeline-changeset
+                TemplatePath: cloudformation_resources::cloudformation.transformed.yml
+                TemplateConfiguration: cloudformation_resources::dev.config.json
+                RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+            - Name: ExecuteChangeset
               RunOrder: 2
+              RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: cloudformation_resources
+              Configuration:
+                StackName: sai-librarian
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: pipeline-changeset
+                RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+            - Name: DeploySite
+              RunOrder: 3
               RoleArn: !FindInMap [Accounts, Dev, DeployerRoleArn]
               ActionTypeId:
                 Category: Deploy
@@ -218,13 +225,13 @@ Resources:
                 Provider: S3
                 Version: 1
               InputArtifacts:
-                - Name: devBuildResults
+                - Name: dev_site
               Configuration:
                 BucketName: library.dev.sourceallies.com
                 Extract: true
-        - Name: BuildAndDeployProd
+        - Name: DeployProd
           Actions:
-            - Name: DeployInfrastructure
+            - Name: ReplaceChangeset
               RunOrder: 1
               RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
               ActionTypeId:
@@ -233,29 +240,33 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               InputArtifacts:
-                - Name: sourceCode
+                - Name: cloudformation_resources
               Configuration:
                 StackName: sai-librarian
-                ActionMode: CREATE_UPDATE
-                TemplatePath: sourceCode::infrastructure/cloudformation.template.yml
-                TemplateConfiguration: sourceCode::infrastructure/prod.config.json
+                ActionMode: CHANGE_SET_REPLACE
+                ChangeSetName: pipeline-changeset
+                TemplatePath: cloudformation_resources::cloudformation.transformed.yml
+                TemplateConfiguration: cloudformation_resources::prod.config.json
                 RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
                 Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
-            - Name: Build
-              RunOrder: 1
+            - Name: ExecuteChangeset
+              RunOrder: 2
+              RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
               ActionTypeId:
-                Category: Build
+                Category: Deploy
                 Owner: AWS
-                Provider: CodeBuild
+                Provider: CloudFormation
                 Version: 1
               InputArtifacts:
-                - Name: sourceCode
-              OutputArtifacts:
-                - Name: prodBuildResults
+                - Name: cloudformation_resources
               Configuration:
-                ProjectName: !Ref BuildProdProject
+                StackName: sai-librarian
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: pipeline-changeset
+                RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
+                Capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
             - Name: DeploySite
-              RunOrder: 2
+              RunOrder: 3
               RoleArn: !FindInMap [Accounts, Prod, DeployerRoleArn]
               ActionTypeId:
                 Category: Deploy
@@ -263,7 +274,7 @@ Resources:
                 Provider: S3
                 Version: 1
               InputArtifacts:
-                - Name: prodBuildResults
+                - Name: prod_site
               Configuration:
                 BucketName: library.sourceallies.com
                 Extract: true

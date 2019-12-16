@@ -12,8 +12,28 @@ phases:
     commands:
       - npm run eslint
       - npm test
-      - npm run build
+      - REACT_APP_ROLE_ARN="arn:aws:iam::729161019481:role/sai-librarian-user" npm run build
+      - mv build dev-site
+      - REACT_APP_ROLE_ARN="arn:aws:iam::487696863217:role/sai-librarian-user" npm run build
+      - mv build prod-site
+      - |
+        aws cloudformation package \
+          --template-file=infrastructure/cloudformation.template.yml \
+          --s3-bucket=$ArtifactBucketName \
+          --s3-prefix=cf-package \
+          --output-template-file=cloudformation.transformed.yml
 artifacts:
-  base-directory: build
-  files:
-    - '**/*'
+  secondary-artifacts:
+    dev_site:
+      base-directory: dev-site
+      files:
+        - '**/*'
+    prod_site:
+      base-directory: prod-site
+      files:
+        - '**/*'
+    cloudformation_resources:
+      discard-paths: true
+      files:
+        - cloudformation.transformed.yml
+        - 'infrastructure/*.config.json'
