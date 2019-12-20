@@ -1,0 +1,53 @@
+Description: sai-librarian analytics spike (Paul)
+Resources:
+  DBCluster:
+    Properties:
+      DatabaseName: sai_library
+      EnableHttpEndpoint: true
+      Engine: aurora-postgresql
+      EngineMode: serverless
+      EngineVersion: '10.7'
+      MasterUserPassword:
+        Fn::Sub: '{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}'
+      MasterUsername:
+        Fn::Sub: '{{resolve:secretsmanager:${RDSSecret}:SecretString:username}}'
+    Type: AWS::RDS::DBCluster
+  MigrateDBFunction:
+    Properties:
+      CodeUri: s3://prowe-deploy-bucket/0a73e94231e314f626598cc7e5753845
+      Environment:
+        Variables:
+          CREDENTIALS_ARN:
+            Ref: RDSSecret
+          DATABASE_ARN:
+            Ref: DBCluster
+          DATABASE_NAME: sai_library
+      Handler: src/DatabaseMigrator.handle
+      Policies:
+        Statement:
+        - Action:
+          - secretsmanager:*
+          Effect: Allow
+          Resource:
+            Ref: RDSSecret
+          Sid: DecryptSecret
+      Runtime: nodejs12.x
+    Type: AWS::Serverless::Function
+  RDSSecret:
+    Properties:
+      Description: This is a Secrets Manager secret for the DB
+      GenerateSecretString:
+        ExcludeCharacters: '"@/\'
+        GenerateStringKey: password
+        PasswordLength: 16
+        SecretStringTemplate: '{"username": "sai_admin"}'
+    Type: AWS::SecretsManager::Secret
+  SecretRDSAttachment:
+    Properties:
+      SecretId:
+        Ref: RDSSecret
+      TargetId:
+        Ref: DBCluster
+      TargetType: AWS::RDS::DBCluster
+    Type: AWS::SecretsManager::SecretTargetAttachment
+Transform: AWS::Serverless-2016-10-31
