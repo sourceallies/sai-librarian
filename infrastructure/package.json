@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db-migrate:create": "db-migrate create"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.594.0"
+    "aws-sdk": "^2.594.0",
+    "cfn-response-promise": "^1.0.1",
+    "db-migrate": "^0.11.6",
+    "db-migrate-pg": "^1.0.0"
   }
 }

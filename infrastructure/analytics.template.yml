@@ -1,6 +1,15 @@
 Description: sai-librarian analytics spike (Paul)
 Transform: AWS::Serverless-2016-10-31
 Resources:
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the RDS DB
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/32
   DBCluster:
     Type: AWS::RDS::DBCluster
     Properties:
@@ -11,7 +20,8 @@ Resources:
       EnableHttpEndpoint: true
       MasterUsername: !Sub "{{resolve:secretsmanager:${RDSSecret}:SecretString:username}}"
       MasterUserPassword: !Sub "{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}"
-
+      VpcSecurityGroupIds:
+        - !GetAtt DBSecurityGroup.GroupId
   RDSSecret:
     Type: "AWS::SecretsManager::Secret"
     Properties:
@@ -21,20 +31,17 @@ Resources:
         GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\'
-
   SecretRDSAttachment:
     Type: "AWS::SecretsManager::SecretTargetAttachment"
     Properties:
       SecretId: !Ref RDSSecret
       TargetId: !Ref DBCluster
       TargetType: AWS::RDS::DBCluster
-
   MigrateDBFunction:
     Type: "AWS::Serverless::Function"
     Properties:
       Runtime: "nodejs12.x"
       Handler: src/DatabaseMigrator.handle
-      # CodeUri: ./src
       Policies:
         Statement:
           - Sid: "DecryptSecret"
@@ -47,3 +54,8 @@ Resources:
           DATABASE_ARN: !Ref DBCluster
           DATABASE_NAME: sai_library
           CREDENTIALS_ARN: !Ref RDSSecret
+  DatabaseMigration:
+    Type: "Custom::MigrateDatabase"
+    Version: "1.0"
+    Properties:
+      ServiceToken: !GetAtt MigrateDBFunction.Arn
