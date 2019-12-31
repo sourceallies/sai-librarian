@@ -138,9 +138,7 @@ describe('Book detail page', () => {
 
         beforeEach(async () => {
             jest.spyOn(global.Date, 'now')
-                .mockImplementation(() =>
-                    new Date('2019-05-14T11:01:58.135Z').valueOf()
-                );
+                .mockReturnValue(new Date('2019-05-14T11:01:58.135Z').valueOf());
 
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
@@ -224,6 +222,8 @@ describe('Book detail page', () => {
         let rendered;
 
         beforeEach(async () => {
+            jest.spyOn(global.Date, 'now')
+                .mockReturnValue(new Date('2019-05-14T11:01:58.135Z').valueOf());
             book.checkedOutBy = 'Ben';
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
@@ -236,9 +236,17 @@ describe('Book detail page', () => {
                 Key: {
                     bookId: 'abc123'
                 },
-                UpdateExpression: "set checkedOutBy=:l",
+                UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :returnEvents)",
                 ExpressionAttributeValues: {
-                    ':l': null
+                    ':l': null,
+                    ':emptyList': [],
+                    ':returnEvents': [
+                        {
+                            timestamp: '2019-05-14T11:01:58.135Z',
+                            name: 'Ben',
+                            email: 'ben@sourceallies.com'
+                        }
+                    ]
                 },
                 ReturnValues: 'UPDATED_NEW'
             });

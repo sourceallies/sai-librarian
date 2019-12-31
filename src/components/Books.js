@@ -29,15 +29,22 @@ const useGetBook = (bookId) => {
     };
 };
 
-const updateBookStatus = async (bookId, checkedOutBy) => {
+const updateBookToReturned = async (bookId, userProfile) => {
+    const event = {
+        timestamp: new Date(Date.now()).toJSON(),
+        name: userProfile.name,
+        email: userProfile.email
+    };
     return await documentClient.update({
         TableName: process.env.REACT_APP_BOOK_TABLE,
         Key: {
             bookId
         },
-        UpdateExpression: "set checkedOutBy=:l",
+        UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :returnEvents)",
         ExpressionAttributeValues: {
-            ':l': checkedOutBy
+            ':l': null,
+            ':emptyList': [],
+            ':returnEvents': [event]
         },
         ReturnValues: 'UPDATED_NEW'
     }).promise();
@@ -107,19 +114,14 @@ const Books = ({match, history, user}) => {
     };
 
     const onReturnBook = async () => {
-        const newCheckedOutBy = book.checkedOutBy ? null : user.profile.name;
-        const response = await updateBookStatus(book.bookId, newCheckedOutBy);
+        const response = await updateBookToReturned(book.bookId, user.profile);
         setBook((prevState) => {
             return {
                 ...prevState,
                 ...response.Attributes
             };
         });
-        if (newCheckedOutBy) {
-            setSuccessMessage('Book successfully checked out');
-        } else {
-            setSuccessMessage('Book successfully returned');
-        }
+        setSuccessMessage('Book successfully returned');
     };
 
     return (
