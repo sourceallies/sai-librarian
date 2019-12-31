@@ -43,6 +43,27 @@ const updateBookStatus = async (bookId, checkedOutBy) => {
     }).promise();
 };
 
+const updateBookToCheckedOut = async (bookId, userProfile) => {
+    const event = {
+        timestamp: new Date(Date.now()).toJSON(),
+        name: userProfile.name,
+        email: userProfile.email
+    };
+    return await documentClient.update({
+        TableName: process.env.REACT_APP_BOOK_TABLE,
+        Key: {
+            bookId
+        },
+        UpdateExpression: "set checkedOutBy=:l, checkOutEvents=list_append(if_not_exists(checkOutEvents, :emptyList), :checkedOutEvents)",
+        ExpressionAttributeValues: {
+            ':l': event.name,
+            ':emptyList': [],
+            ':checkedOutEvents': [event]
+        },
+        ReturnValues: 'UPDATED_NEW'
+    }).promise();
+}
+
 const AvailablityParagraph = ({book}) => {
     if (book.checkedOutBy) {
         return <p>Currently checked out by {book.checkedOutBy}</p>;
@@ -74,7 +95,18 @@ const Books = ({match, history, user}) => {
         return null;
     }
 
-    const onToggleAvailability = async () => {
+    const onCheckoutBook = async () => {
+        const response = await updateBookToCheckedOut(book.bookId, user.profile);
+        setBook((prevState) => {
+            return {
+                ...prevState,
+                ...response.Attributes
+            };
+        });
+        setSuccessMessage('Book successfully checked out');
+    };
+
+    const onReturnBook = async () => {
         const newCheckedOutBy = book.checkedOutBy ? null : user.profile.name;
         const response = await updateBookStatus(book.bookId, newCheckedOutBy);
         setBook((prevState) => {
@@ -99,7 +131,10 @@ const Books = ({match, history, user}) => {
             <AvailablityParagraph book={book} />
             <ShelfParagraph book={book} />
 
-            <button onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
+            {book.checkedOutBy
+                ? <button onClick={onReturnBook}>Return</button>
+                : <button onClick={onCheckoutBook}>Check Out</button>
+            }
         </main>
     );
 };
