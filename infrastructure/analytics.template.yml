@@ -1,5 +1,9 @@
 Description: sai-librarian analytics spike (Paul)
 Transform: AWS::Serverless-2016-10-31
+Parameters:
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-a0fa9bf8,subnet-dd1a49e0,subnet-1fd84335,subnet-7d6d270b
 Resources:
   DBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -9,7 +13,16 @@ Resources:
         - IpProtocol: tcp
           FromPort: 5432
           ToPort: 5432
-          CidrIp: 0.0.0.0/32
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIpv6: ::/0
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets for the RDS Instance
+      SubnetIds: !Ref SubnetIds
   DBCluster:
     Type: AWS::RDS::DBCluster
     Properties:
@@ -42,13 +55,19 @@ Resources:
     Properties:
       Runtime: "nodejs12.x"
       Handler: src/DatabaseMigrator.handle
+      Timeout: 120
       Policies:
-        Statement:
-          - Sid: "DecryptSecret"
-            Effect: Allow
-            Resource: !Ref RDSSecret
-            Action:
-              - secretsmanager:*
+        - Statement:
+            - Sid: "DecryptSecret"
+              Effect: Allow
+              Resource: !Ref RDSSecret
+              Action:
+                - secretsmanager:*
+            - Sid: "DatabaseAccess"
+              Effect: Allow
+              Resource: '*'
+              Action:
+                - rds-data:*
       Environment:
         Variables:
           DATABASE_ARN: !Ref DBCluster
@@ -59,3 +78,4 @@ Resources:
     Version: "1.0"
     Properties:
       ServiceToken: !GetAtt MigrateDBFunction.Arn
+      Version: 1

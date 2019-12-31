@@ -1,4 +1,8 @@
 Description: sai-librarian analytics spike (Paul)
+Parameters:
+  SubnetIds:
+    Default: subnet-a0fa9bf8,subnet-dd1a49e0,subnet-1fd84335,subnet-7d6d270b
+    Type: List<AWS::EC2::Subnet::Id>
 Resources:
   DBCluster:
     Properties:
@@ -11,10 +15,42 @@ Resources:
         Fn::Sub: '{{resolve:secretsmanager:${RDSSecret}:SecretString:password}}'
       MasterUsername:
         Fn::Sub: '{{resolve:secretsmanager:${RDSSecret}:SecretString:username}}'
+      VpcSecurityGroupIds:
+      - Fn::GetAtt:
+        - DBSecurityGroup
+        - GroupId
     Type: AWS::RDS::DBCluster
+  DBSecurityGroup:
+    Properties:
+      GroupDescription: Security group for the RDS DB
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 5432
+        IpProtocol: tcp
+        ToPort: 5432
+      - CidrIpv6: ::/0
+        FromPort: 5432
+        IpProtocol: tcp
+        ToPort: 5432
+    Type: AWS::EC2::SecurityGroup
+  DBSubnetGroup:
+    Properties:
+      DBSubnetGroupDescription: Subnets for the RDS Instance
+      SubnetIds:
+        Ref: SubnetIds
+    Type: AWS::RDS::DBSubnetGroup
+  DatabaseMigration:
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+        - MigrateDBFunction
+        - Arn
+      Version: 1
+    Type: Custom::MigrateDatabase
+    Version: '1.0'
   MigrateDBFunction:
     Properties:
-      CodeUri: s3://prowe-deploy-bucket/0a73e94231e314f626598cc7e5753845
+      CodeUri: s3://prowe-deploy-bucket/c2e85416e98bb2f9cb4b2c205af61eb1
       Environment:
         Variables:
           CREDENTIALS_ARN:
@@ -24,14 +60,20 @@ Resources:
           DATABASE_NAME: sai_library
       Handler: src/DatabaseMigrator.handle
       Policies:
-        Statement:
+      - Statement:
         - Action:
           - secretsmanager:*
           Effect: Allow
           Resource:
             Ref: RDSSecret
           Sid: DecryptSecret
+        - Action:
+          - rds-data:*
+          Effect: Allow
+          Resource: '*'
+          Sid: DatabaseAccess
       Runtime: nodejs12.x
+      Timeout: 120
     Type: AWS::Serverless::Function
   RDSSecret:
     Properties:

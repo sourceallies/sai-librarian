@@ -1,6 +1,10 @@
+const fs = require('fs');
+const util = require('util');
+const readFileAsync = util.promisify(fs.readFile);
 const AWS = require('aws-sdk');
 const response = require('cfn-response-promise');
-const DBMigrate = require('db-migrate');
+
+// const DBMigrate = require('db-migrate');
 
 async function getDBSecrets() {
     const secretsmanager = new AWS.SecretsManager();
@@ -18,14 +22,28 @@ async function setupEnvironment() {
 }
 
 module.exports.runMigrations = async function() {
-    await setupEnvironment();
-    const dbm = DBMigrate.getInstance(true);
-    await dbm.up();
+    // await setupEnvironment();
+    // console.log("Environment setup")
+    // const dbm = DBMigrate.getInstance(true);
+    // await dbm.up();
+    // console.log('Migration complete');
+
+    const createSchemaScript = await readFileAsync(__dirname + '/create-schema.sql', 'UTF-8');
+    console.log('About to execute', createSchemaScript);
+
+    const dataService = new AWS.RDSDataService();
+    await dataService.executeStatement({
+        resourceArn: process.env.DATABASE_ARN,
+        secretArn: process.env.CREDENTIALS_ARN,
+        database: process.env.DATABASE_NAME,
+        sql: createSchemaScript
+    }).promise();
+    console.log('Migration complete');
 };
 
 module.exports.handle = async function(event, context) {
     try {
-        // await this.runMigrations();
+        await this.runMigrations();
         return await response.send(event, context, response.SUCCESS, {});
     } catch (e) {
         console.error('Error migrating', e);
