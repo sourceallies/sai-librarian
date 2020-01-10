@@ -119,12 +119,8 @@ describe('Book detail page', () => {
             expect(rendered.container).toHaveTextContent('0201634554');
         });
 
-        it('should show the book as available', () => {
-            expect(rendered.container).toHaveTextContent('This book is available');
-        });
-
-        it('should show the shelf the book is on', () => {
-            expect(rendered.container).toHaveTextContent('This book is located on shelf Alpha');
+        it('should show the book available message', () => {
+            expect(rendered.container).toHaveTextContent('This book is available and located on shelf Alpha');
         });
 
         it('should have a checkout button', () => {
@@ -160,11 +156,7 @@ describe('Book detail page', () => {
         }));
 
         it('should show the book is Unvailable', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('Currently checked out by Ben');
-        }));
-
-        it('should show the shelf the book', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('Return this book to shelf Alpha');
+            expect(rendered.container).toHaveTextContent('This book is currently checked out by Ben. Return it to shelf Alpha when complete.');
         }));
 
         it('should have a return button', () => wait(() => {
@@ -189,16 +181,12 @@ describe('Book detail page', () => {
             expect(rendered.container).toHaveTextContent('0201634554');
         });
 
-        it('should show the book is not available', () => {
+        it('should show the checked out message', () => {
             expect(rendered.container).not.toHaveTextContent('This book is available');
         });
 
         it('should show the book is Unvailable', () => {
-            expect(rendered.container).toHaveTextContent('Currently checked out by Ben');
-        });
-
-        it('should show the shelf the book', () => {
-            expect(rendered.container).toHaveTextContent('Return this book to shelf Alpha');
+            expect(rendered.container).toHaveTextContent('This book is currently checked out by Ben. Return it to shelf Alpha when complete.');
         });
 
         it('should have a return button', () => {
@@ -234,12 +222,8 @@ describe('Book detail page', () => {
             expect(rendered.queryByText('Book successfully returned')).toBeInTheDocument();
         }));
 
-        it('should show the book as available', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('This book is available');
-        }));
-
-        it('should show the shelf the book is on', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('This book is located on shelf Alpha');
+        it('should show the book available message', () => wait(() => {
+            expect(rendered.container).toHaveTextContent('This book is available and located on shelf Alpha');
         }));
 
         it('should have a checkout button', () => wait(() => {
