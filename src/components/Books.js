@@ -29,13 +29,13 @@ const useGetBook = (bookId) => {
     };
 };
 
-const updateBookToReturned = async (bookId, userProfile) => {
+const updateBookToReturned = (bookId, userProfile) => {
     const event = {
         timestamp: new Date(Date.now()).toJSON(),
         name: userProfile.name,
         email: userProfile.email
     };
-    return await documentClient.update({
+    return documentClient.update({
         TableName: process.env.REACT_APP_BOOK_TABLE,
         Key: {
             bookId
@@ -50,13 +50,13 @@ const updateBookToReturned = async (bookId, userProfile) => {
     }).promise();
 };
 
-const updateBookToCheckedOut = async (bookId, userProfile) => {
+const updateBookToCheckedOut = (bookId, userProfile) => {
     const event = {
         timestamp: new Date(Date.now()).toJSON(),
         name: userProfile.name,
         email: userProfile.email
     };
-    return await documentClient.update({
+    return documentClient.update({
         TableName: process.env.REACT_APP_BOOK_TABLE,
         Key: {
             bookId
