@@ -40,11 +40,11 @@ const updateBookToReturned = (bookId, userProfile) => {
         Key: {
             bookId
         },
-        UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :returnEvents)",
+        UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :newEvents)",
         ExpressionAttributeValues: {
             ':l': null,
             ':emptyList': [],
-            ':returnEvents': [event]
+            ':newEvents': [event]
         },
         ReturnValues: 'UPDATED_NEW'
     }).promise();
@@ -61,11 +61,11 @@ const updateBookToCheckedOut = (bookId, userProfile) => {
         Key: {
             bookId
         },
-        UpdateExpression: "set checkedOutBy=:l, checkOutEvents=list_append(if_not_exists(checkOutEvents, :emptyList), :checkedOutEvents)",
+        UpdateExpression: "set checkedOutBy=:l, checkOutEvents=list_append(if_not_exists(checkOutEvents, :emptyList), :newEvents)",
         ExpressionAttributeValues: {
             ':l': event.name,
             ':emptyList': [],
-            ':checkedOutEvents': [event]
+            ':newEvents': [event]
         },
         ReturnValues: 'UPDATED_NEW'
     }).promise();

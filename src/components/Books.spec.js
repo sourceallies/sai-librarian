@@ -151,11 +151,11 @@ describe('Book detail page', () => {
                 Key: {
                     bookId: 'abc123'
                 },
-                UpdateExpression: "set checkedOutBy=:l, checkOutEvents=list_append(if_not_exists(checkOutEvents, :emptyList), :checkedOutEvents)",
+                UpdateExpression: "set checkedOutBy=:l, checkOutEvents=list_append(if_not_exists(checkOutEvents, :emptyList), :newEvents)",
                 ExpressionAttributeValues: {
                     ':l': 'Ben',
                     ':emptyList': [],
-                    ':checkedOutEvents': [
+                    ':newEvents': [
                             {
                             timestamp: '2019-05-14T11:01:58.135Z',
                             name: 'Ben',
@@ -236,11 +236,11 @@ describe('Book detail page', () => {
                 Key: {
                     bookId: 'abc123'
                 },
-                UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :returnEvents)",
+                UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :newEvents)",
                 ExpressionAttributeValues: {
                     ':l': null,
                     ':emptyList': [],
-                    ':returnEvents': [
+                    ':newEvents': [
                         {
                             timestamp: '2019-05-14T11:01:58.135Z',
                             name: 'Ben',
