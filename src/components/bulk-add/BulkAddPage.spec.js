@@ -31,7 +31,7 @@ describe('Bulk Add Page', () => {
 
     describe('User scans an ISBN', () => {
         beforeEach(async () => {
-            fetch.mockResponse(JSON.stringify({
+            fetchMock.mockResponse(JSON.stringify({
                 'ISBN:0201634554': {
                     title: 'Java'
                 }
@@ -46,7 +46,7 @@ describe('Bulk Add Page', () => {
         });
 
         it('should attempt to fetch the book title', () => {
-            expect(fetch).toHaveBeenCalledWith('/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json', expect.anything());
+            expect(fetchMock).toHaveBeenCalledWith('/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json', expect.anything());
         });
 
         it('should populate the book title', () => wait(() => {
@@ -69,7 +69,7 @@ describe('Bulk Add Page', () => {
         });
 
         it('should not attempt to fetch the book title', () => {
-            expect(fetch).not.toHaveBeenCalled();
+            expect(fetchMock).not.toHaveBeenCalled();
         });
 
         it('should not attempt to save', () => {
@@ -79,7 +79,7 @@ describe('Bulk Add Page', () => {
 
     describe('User scans all pieces successfully', () => {
         beforeEach(async () => {
-            fetch.mockResponse(JSON.stringify({
+            fetchMock.mockResponse(JSON.stringify({
                 'ISBN:0201634554': {
                     title: 'Java'
                 }
@@ -139,7 +139,7 @@ describe('Bulk Add Page', () => {
 
     describe('User enters all pieces and clicks Save', () => {
         beforeEach(async () => {
-            fetch.mockResponse(JSON.stringify({
+            fetchMock.mockResponse(JSON.stringify({
                 'ISBN:0201634554': {
                     title: 'Java'
                 }
