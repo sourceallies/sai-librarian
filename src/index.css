@@ -18,94 +18,9 @@
 html, body {
     margin: 0;
     background: var(--dark-blue);
-}
-
-/*
-h1 {
-
-    font-size: 30px;
-    margin: 25px 15px 35px 15px;
-    color: #EAEAEA;
-    text-align: center;
-}
-
-h2 {
-    font-size: 25px;
-    margin: 25px 15px 25px 15px;
-    color: #2AF598;
-    text-align: center;
-}
-
-h3 {
-    font-size: 20px;
-    margin: 25px 15px 25px 15px;
-    color: #EAEAEA;
-    text-align: center;
-}
-
-h4 {
-    font-size: 18px;
-    color: #EAEAEA;
-    text-align: left;
-    margin-top: 0px;
-    margin-bottom: 8px;
-}
-
-h5 {
-    font-size: 14px;
-    font-weight: normal;
-    font-style: italic;
-    color: #EAEAEA;
-    text-align: left;
-    margin-top: 8px;
-    margin-bottom: 16px;
-}
-
-
-p {
-    color: #EAEAEA;
-    text-decoration: none;
-    font-size: 16px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
-label {
-    color: #EAEAEA;
-    font-size: 18px;
-    margin-left: 20px;
-    line-height: 1.75;
-}
-
-form {
-    margin-top: 25px;
-    margin-right: 20px;
-    margin-left: 20px;
-    margin-bottom: 20px;
-}
-
-input[type=text] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 35px;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     box-sizing: border-box;
-    font-size: 14px;
 }
 
-input[type=submit], button {
-    color: #EAEAEA;
-    background: #2185d0;
-    border-radius: 5px;
-    font-size: 25px;
-    text-align: center;
-    border-color: transparent;
-    width: 150px;
-    height: 50px;
-    margin-top: 30px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-} */
+* {
+    box-sizing: inherit;
+}

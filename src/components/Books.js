@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import styles from './Books.module.css';
 import documentClient from '../configuredDocumentClient';
 
 const useGetBook = (bookId) => {
@@ -44,17 +45,12 @@ const updateBookStatus = async (bookId, checkedOutBy) => {
 };
 
 const AvailablityParagraph = ({book}) => {
-    if (book.checkedOutBy) {
-        return <p>Currently checked out by {book.checkedOutBy}</p>;
-    }
-    return <p>This book is available</p>;
-};
+    const {checkedOutBy, shelf} = book;
 
-const ShelfParagraph = ({book}) => {
-    if (book.checkedOutBy) {
-        return <p>Return this book to shelf {book.shelf}</p>;
+    if (checkedOutBy) {
+        return <p>This book is currently checked out by {book.checkedOutBy}. Return it to shelf {shelf} when complete.</p>;
     }
-    return <p>This book is located on shelf {book.shelf}</p>;
+    return <p>This book is available and located on shelf {shelf}.</p>;
 };
 
 const Books = ({match, history, user}) => {
@@ -91,15 +87,16 @@ const Books = ({match, history, user}) => {
     };
 
     return (
-        <main>
-            <h1>{book.title} <small>{book.isbn}</small></h1>
+        <main className={styles.bookDetails}>
+            <h1>{book.title}</h1>
 
-            <p>{successMessage}</p>
+            <p><strong>ISBN:</strong> {book.isbn}</p>
+
+            {successMessage && <p>{successMessage}</p>}
 
             <AvailablityParagraph book={book} />
-            <ShelfParagraph book={book} />
 
-            <button onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
+            <button className={styles.checkInOutButton} onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
         </main>
     );
 };
