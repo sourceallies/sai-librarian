@@ -30,19 +30,47 @@ const useGetBook = (bookId) => {
     };
 };
 
-const updateBookStatus = async (bookId, checkedOutBy) => {
-    return await documentClient.update({
+const updateBookToReturned = (bookId, userProfile) => {
+    const event = {
+        timestamp: new Date(Date.now()).toJSON(),
+        name: userProfile.name,
+        email: userProfile.email
+    };
+    return documentClient.update({
         TableName: process.env.REACT_APP_BOOK_TABLE,
         Key: {
             bookId
         },
-        UpdateExpression: "set checkedOutBy=:l",
+        UpdateExpression: "set checkedOutBy=:l, returnEvents=list_append(if_not_exists(returnEvents, :emptyList), :newEvents)",
         ExpressionAttributeValues: {
-            ':l': checkedOutBy
+            ':l': null,
+            ':emptyList': [],
+            ':newEvents': [event]
         },
         ReturnValues: 'UPDATED_NEW'
     }).promise();
 };
+
+const updateBookToCheckedOut = (bookId, userProfile) => {
+    const event = {
+        timestamp: new Date(Date.now()).toJSON(),
+        name: userProfile.name,
+        email: userProfile.email
+    };
+    return documentClient.update({
+        TableName: process.env.REACT_APP_BOOK_TABLE,
+        Key: {
+            bookId
+        },
+        UpdateExpression: "set checkedOutBy=:l, checkOutEvents=list_append(if_not_exists(checkOutEvents, :emptyList), :newEvents)",
+        ExpressionAttributeValues: {
+            ':l': event.name,
+            ':emptyList': [],
+            ':newEvents': [event]
+        },
+        ReturnValues: 'UPDATED_NEW'
+    }).promise();
+}
 
 const AvailablityParagraph = ({book}) => {
     const {checkedOutBy, shelf} = book;
@@ -70,20 +98,26 @@ const Books = ({match, history, user}) => {
         return null;
     }
 
-    const onToggleAvailability = async () => {
-        const newCheckedOutBy = book.checkedOutBy ? null : user.profile.name;
-        const response = await updateBookStatus(book.bookId, newCheckedOutBy);
+    const onCheckoutBook = async () => {
+        const response = await updateBookToCheckedOut(book.bookId, user.profile);
         setBook((prevState) => {
             return {
                 ...prevState,
                 ...response.Attributes
             };
         });
-        if (newCheckedOutBy) {
-            setSuccessMessage('Book successfully checked out');
-        } else {
-            setSuccessMessage('Book successfully returned');
-        }
+        setSuccessMessage('Book successfully checked out');
+    };
+
+    const onReturnBook = async () => {
+        const response = await updateBookToReturned(book.bookId, user.profile);
+        setBook((prevState) => {
+            return {
+                ...prevState,
+                ...response.Attributes
+            };
+        });
+        setSuccessMessage('Book successfully returned');
     };
 
     return (
@@ -96,7 +130,10 @@ const Books = ({match, history, user}) => {
 
             <AvailablityParagraph book={book} />
 
-            <button className={styles.checkInOutButton} onClick={onToggleAvailability}>{book.checkedOutBy ? 'Return' : 'Check Out'}</button>
+            {book.checkedOutBy
+                ? <button onClick={onReturnBook}>Return</button>
+                : <button onClick={onCheckoutBook}>Check Out</button>
+            }
         </main>
     );
 };
