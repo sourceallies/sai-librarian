@@ -7,7 +7,7 @@ function getSigninRedirectUrl() {
 }
 
 export default function wrapWithAuth(WrappedComponent) {
-  return (props) => {
+  const AuthWrappedComponent = (props) => {
     const [ isAuthenticated, setIsAuthenticated ] = useState(false);
     const [thing, setUser] = useState(null);
 
@@ -30,4 +30,6 @@ export default function wrapWithAuth(WrappedComponent) {
 
     return isAuthenticated && <WrappedComponent user={thing} {...props} />;
   };
+
+  return AuthWrappedComponent;
 }
