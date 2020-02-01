@@ -20,6 +20,10 @@
   border-bottom: var(--off-white) solid thin;
 }
 
+.listItem > img {
+  margin-right: 1rem;
+}
+
 .checkedOutIcon {
   height: 1rem;
   color: var(--red);
@@ -58,5 +62,5 @@
 }
 
 .loading {
-    text-align: center;
+  text-align: center;
 }

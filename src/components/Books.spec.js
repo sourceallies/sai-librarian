@@ -127,6 +127,14 @@ describe('Book detail page', () => {
         it('should have a checkout button', () => {
             expect(rendered.queryByText('Check Out')).toBeInTheDocument();
         });
+
+        it('should fetch the book details from openlibrary', () => {
+            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json`, expect.anything());
+        });
+
+        it('should properly set the img alt tags', () => {
+            expect(rendered.getByTestId('0201634554-cover')).toHaveAttribute('alt', 'Cover for A Great Project');
+        });
     });
 
     describe('The user clicks the check out button', () => {

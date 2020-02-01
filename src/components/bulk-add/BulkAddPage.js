@@ -1,27 +1,9 @@
 import React, { useState } from 'react';
 import ScannerInput from './ScannerInput';
 import documentClient from '../../configuredDocumentClient';
-import styles from './BulkAddPage.module.css';
+import {getBookData} from '../../utils/book-api';
 
-async function getBookData(isbn) {
-    const searchParams = new URLSearchParams();
-    searchParams.set('bibkeys', `ISBN:${isbn}`);
-    searchParams.set('jscmd', 'data');
-    searchParams.set('format', 'json');
-    const response = await fetch(`/api/books?${searchParams}`, {
-        headers: {
-            'accept': 'application/json'
-        }
-    });
-    if (response.ok) {
-        const body = await response.json();
-        return body[`ISBN:${isbn}`];
-    }
-    if (response.status === 404) {
-        return '';
-    }
-    throw new Error('Error: ' + response.status);
-}
+import styles from './BulkAddPage.module.css';
 
 function createEmptyBookWithShelf(shelf) {
     return {

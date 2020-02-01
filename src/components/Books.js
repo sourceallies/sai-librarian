@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styles from './Books.module.css';
 import documentClient from '../configuredDocumentClient';
+import { useBookData } from '../utils/book-api';
 
 const useGetBook = (bookId) => {
     const [loading, setLoading] = useState(true);
@@ -85,6 +86,9 @@ const Books = ({match, history, user}) => {
     const {loading, book, error, setBook} = useGetBook(match.params.id);
     const [successMessage, setSuccessMessage] = useState();
 
+    const bookData = useBookData(book && book.isbn);
+    const imageUrl = (bookData && bookData.cover) ? bookData.cover.large : '';
+
     if (loading) {
         return (<div>Loading...</div>);
     }
@@ -125,6 +129,8 @@ const Books = ({match, history, user}) => {
             <h1>{book.title}</h1>
 
             <p><strong>ISBN:</strong> {book.isbn}</p>
+
+            <img src={imageUrl} alt={`Cover for ${book.title}`} data-testid={`${book.isbn}-cover`} />
 
             {successMessage && <p>{successMessage}</p>}
 

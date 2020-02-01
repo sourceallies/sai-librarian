@@ -67,6 +67,7 @@ describe('Book list page', () => {
 
         beforeEach(async () => {
             rendered = render(<BookList {...props} />, {wrapper: MemoryRouter});
+
             await wait(() =>  expect(rendered.container).not.toHaveTextContent('Loading...'));
         });
 
@@ -82,8 +83,17 @@ describe('Book list page', () => {
 
         it('should automatically focus on the search box', () => {
             expect(rendered.getByPlaceholderText('Search')).toHaveFocus();
-        })
+        });
 
+        it('should fetch the book details from openlibrary', () => {
+            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json`, expect.anything());
+            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A12323124&jscmd=data&format=json`, expect.anything());
+        });
+
+        it('should properly set the img alt tags', () => {
+            expect(rendered.getByTestId('0201634554-cover')).toHaveAttribute('alt', 'Cover for A Great Project');
+            expect(rendered.getByTestId('12323124-cover')).toHaveAttribute('alt', 'Cover for The Senior Software Engineer');
+        });
     });
 
     describe('Books are unavailable', () => {

@@ -30,23 +30,26 @@ describe('Bulk Add Page', () => {
     });
 
     describe('User scans an ISBN', () => {
+        let fakeIsbn;
         beforeEach(async () => {
+            fakeIsbn = (Math.random() * 100000000).toString();
+
             fetchMock.mockResponse(JSON.stringify({
-                'ISBN:0201634554': {
+                [`ISBN:${fakeIsbn}`]: {
                     title: 'Java'
                 }
             }));
 
-            await act(() =>  getScannerInputProps().onIsbnScanned('0201634554'));
+            await act(() =>  getScannerInputProps().onIsbnScanned(fakeIsbn));
             await wait();
         });
 
         it('should populate the ISBN field', () => {
-            expect(rendered.getByLabelText('ISBN')).toHaveValue('0201634554');
+            expect(rendered.getByLabelText('ISBN')).toHaveValue(fakeIsbn);
         });
 
         it('should attempt to fetch the book title', () => {
-            expect(fetchMock).toHaveBeenCalledWith('/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json', expect.anything());
+            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A${fakeIsbn}&jscmd=data&format=json`, expect.anything());
         });
 
         it('should populate the book title', () => wait(() => {
