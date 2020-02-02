@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styles from './Books.module.css';
 import documentClient from '../configuredDocumentClient';
-import { useBookData } from '../utils/book-api';
+import { useBookData } from '../utils/useBookData';
 
 const useGetBook = (bookId) => {
     const [loading, setLoading] = useState(true);

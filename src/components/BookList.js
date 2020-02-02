@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import {Link} from "react-router-dom";
 import { MdDoNotDisturb, MdCheckCircle, MdSearch } from "react-icons/md";
 import documentClient from '../configuredDocumentClient';
-import {useBookData} from '../utils/book-api';
+import {useBookData} from '../utils/useBookData';
 import styles from './BookList.module.css';
 
 const AvailablilityIcon = ({checkedOutBy}) => {

@@ -3,9 +3,11 @@ import { render, wait, fireEvent, act } from '@testing-library/react';
 import documentClient from '../../configuredDocumentClient';
 import BulkAddPage from './BulkAddPage';
 import ScannerInput from './ScannerInput';
+import {getBookData} from '../../utils/book-api';
 
 jest.mock('../../configuredDocumentClient');
 jest.mock('./ScannerInput', () => jest.fn());
+jest.mock('../../utils/book-api');
 
 describe('Bulk Add Page', () => {
     let rendered;
@@ -32,11 +34,9 @@ describe('Bulk Add Page', () => {
     describe('User scans an ISBN', () => {
         beforeEach(async () => {
 
-            fetchMock.mockResponse(JSON.stringify({
-                'ISBN:0201634554': {
-                    title: 'Java'
-                }
-            }));
+            getBookData.mockResolvedValue({
+                title: 'Java'
+            });
 
             await act(() =>  getScannerInputProps().onIsbnScanned('0201634554'));
             await wait();
@@ -44,10 +44,6 @@ describe('Bulk Add Page', () => {
 
         it('should populate the ISBN field', () => {
             expect(rendered.getByLabelText('ISBN')).toHaveValue('0201634554');
-        });
-
-        it('should attempt to fetch the book title', () => {
-            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json`, expect.anything());
         });
 
         it('should populate the book title', () => wait(() => {
@@ -69,10 +65,6 @@ describe('Bulk Add Page', () => {
             expect(rendered.getByLabelText('Id')).toHaveValue('abc123');
         });
 
-        it('should not attempt to fetch the book title', () => {
-            expect(fetchMock).not.toHaveBeenCalled();
-        });
-
         it('should not attempt to save', () => {
             expect(documentClient.put).not.toHaveBeenCalled();
         });
@@ -80,15 +72,13 @@ describe('Bulk Add Page', () => {
 
     describe('User scans all pieces successfully', () => {
         beforeEach(async () => {
-            fetchMock.mockResponse(JSON.stringify({
-                'ISBN:0201634554': {
-                    title: 'Java'
-                }
-            }));
+            getBookData.mockResolvedValue({
+                title: 'Java'
+            });
 
             fireEvent.change(rendered.getByLabelText('Shelf'), {target: {value: 'Alpha'}});
             await act(() => getScannerInputProps().onIsbnScanned('0201634554'));
-            act(() => getScannerInputProps().onIdScanned('abc123'));
+            await act(() => getScannerInputProps().onIdScanned('abc123'));
             await wait();
         });
 
@@ -140,11 +130,9 @@ describe('Bulk Add Page', () => {
 
     describe('User enters all pieces and clicks Save', () => {
         beforeEach(async () => {
-            fetchMock.mockResponse(JSON.stringify({
-                'ISBN:0201634554': {
-                    title: 'Java'
-                }
-            }));
+            getBookData.mockResolvedValue({
+                title: 'Java'
+            });
 
             fireEvent.change(rendered.getByLabelText('Shelf'), {target: {value: 'Alpha'}});
             fireEvent.change(rendered.getByLabelText('ISBN'), {target: {value: '0201634554'}});

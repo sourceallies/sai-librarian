@@ -4,10 +4,10 @@ import documentClient from '../configuredDocumentClient';
 import BookList from './BookList';
 import { createMemoryHistory } from "history";
 import { Router, MemoryRouter } from 'react-router-dom';
-import {useBookData} from '../utils/book-api.js';
+import {useBookData} from '../utils/useBookData';
 
 jest.mock('../configuredDocumentClient');
-jest.mock('../utils/book-api.js');
+jest.mock('../utils/useBookData');
 
 describe('Book list page', () => {
     let props;

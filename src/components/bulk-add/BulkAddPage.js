@@ -37,7 +37,7 @@ export default function BulkAddPage() {
         if (!isComplete(bookToSubmit)) {
             return bookToSubmit;
         }
-
+        
         documentClient.put({
             TableName: process.env.REACT_APP_BOOK_TABLE,
             Item: bookToSubmit

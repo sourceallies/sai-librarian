@@ -1,5 +1,3 @@
-import {useEffect, useState} from 'react';
-
 export async function getBookData(isbn) {
     const searchParams = new URLSearchParams();
     searchParams.set('bibkeys', `ISBN:${isbn}`);
@@ -19,22 +17,4 @@ export async function getBookData(isbn) {
         return {};
     }
     throw new Error('Error: ' + response.status);
-}
-
-export function useBookData(isbn) {
-    const [bookData, setBookData] = useState({});
-
-    useEffect(() => {
-        if (isbn) {
-            getBookData(isbn)
-                .then((book) => setBookData(book))
-                .catch((error) => {
-                    console.error(`There was an issue fetching ${isbn} from the books api. ISBN: ${isbn}`, error);
-                });
-        } else {
-            setBookData({});
-        }
-    }, [isbn, setBookData]);
-
-    return bookData;
 }
