@@ -4,8 +4,10 @@ import documentClient from '../configuredDocumentClient';
 import BookList from './BookList';
 import { createMemoryHistory } from "history";
 import { Router, MemoryRouter } from 'react-router-dom';
+import {useBookData} from '../utils/book-api.js';
 
 jest.mock('../configuredDocumentClient');
+jest.mock('../utils/book-api.js');
 
 describe('Book list page', () => {
     let props;
@@ -31,8 +33,33 @@ describe('Book list page', () => {
                 isbn: '12323124',
                 shelf: 'Alpha',
                 checkedOutBy: undefined
+            },
+            {
+                bookId: 'xyz987',
+                title: 'No Image Book',
+                isbn: '00011122',
+                shelf: 'Alpha',
+                checkedOutBy: undefined
             }
         ];
+
+        useBookData.mockImplementation((isbn) => {
+            const returnMap = {
+                '0201634554': {
+                    cover: {
+                        small: 'https://example.org/a-great-project.png'
+                    }
+                },
+                '12323124': {
+                    cover: {
+                        small: 'https://example.org/senior-software-engineer.png'
+                    }
+                }
+            }
+            
+            return returnMap[isbn];
+        });
+
         process.env.REACT_APP_BOOK_TABLE = 'books';
         documentClient.scan.mockReturnValue({
             async promise() {
@@ -85,14 +112,19 @@ describe('Book list page', () => {
             expect(rendered.getByPlaceholderText('Search')).toHaveFocus();
         });
 
-        it('should fetch the book details from openlibrary', () => {
-            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json`, expect.anything());
-            expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A12323124&jscmd=data&format=json`, expect.anything());
+        it('should properly render the images', () => {
+            const greatProjectImage = rendered.getByTestId('0201634554-cover');
+            const seniorSoftwareImage = rendered.getByTestId('12323124-cover');
+
+            expect(greatProjectImage).toHaveAttribute('alt', 'Cover for A Great Project');
+            expect(greatProjectImage).toHaveAttribute('src', 'https://example.org/a-great-project.png');
+
+            expect(seniorSoftwareImage).toHaveAttribute('alt', 'Cover for The Senior Software Engineer');
+            expect(seniorSoftwareImage).toHaveAttribute('src', 'https://example.org/senior-software-engineer.png');
         });
 
-        it('should properly set the img alt tags', () => {
-            expect(rendered.getByTestId('0201634554-cover')).toHaveAttribute('alt', 'Cover for A Great Project');
-            expect(rendered.getByTestId('12323124-cover')).toHaveAttribute('alt', 'Cover for The Senior Software Engineer');
+        it('should not render an image if one is not found', () => {
+            expect(rendered.queryByTestId('00011122-cover')).not.toBeInTheDocument();
         });
     });
 

@@ -16,11 +16,11 @@ const BookLink = (props) => {
     const { bookId, title, checkedOutBy, isbn } = props.book;
     const bookData = useBookData(isbn);
 
-    const imageUrl = (bookData && bookData.cover) ? bookData.cover.small : '';
+    const imageUrl = (bookData && bookData.cover) ? bookData.cover.small : undefined;
 
     return (
         <li className={styles.listItem}>
-            <img src={imageUrl} alt={`Cover for ${title}`} data-testid={`${isbn}-cover`} />
+            {imageUrl && <img src={imageUrl} alt={`Cover for ${title}`} data-testid={`${isbn}-cover`} />}
             <AvailablilityIcon checkedOutBy={checkedOutBy} />
             <Link to={`/books/${bookId}`} className={styles.bookLink}>{title}</Link>
         </li>

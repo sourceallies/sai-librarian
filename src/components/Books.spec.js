@@ -129,6 +129,7 @@ describe('Book detail page', () => {
         });
 
         it('should fetch the book details from openlibrary', () => {
+            //TODO Mock the hook return value and test the fetch independently
             expect(fetchMock).toHaveBeenCalledWith(`/api/books?bibkeys=ISBN%3A0201634554&jscmd=data&format=json`, expect.anything());
         });
 

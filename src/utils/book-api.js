@@ -1,9 +1,6 @@
 import {useEffect, useState} from 'react';
 
-const books = {};
-
 export async function getBookData(isbn) {
-    if (books[isbn]) return books[isbn];
     const searchParams = new URLSearchParams();
     searchParams.set('bibkeys', `ISBN:${isbn}`);
     searchParams.set('jscmd', 'data');
@@ -15,11 +12,11 @@ export async function getBookData(isbn) {
     });
     if (response.ok) {
         const body = await response.json();
-        books[isbn] = body[`ISBN:${isbn}`];
-        return books[isbn];
+
+        return body[`ISBN:${isbn}`];
     }
     if (response.status === 404) {
-        return '';
+        return {};
     }
     throw new Error('Error: ' + response.status);
 }
