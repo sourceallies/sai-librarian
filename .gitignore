@@ -25,3 +25,5 @@ yarn-error.log*
 creds.json
 /src/creds
 .idea/
+
+yarn.lock
