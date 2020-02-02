@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import {Link} from "react-router-dom";
 import { MdDoNotDisturb, MdCheckCircle, MdSearch } from "react-icons/md";
 import documentClient from '../configuredDocumentClient';
+import {useBookData} from '../utils/useBookData';
 import styles from './BookList.module.css';
 
 const AvailablilityIcon = ({checkedOutBy}) => {
@@ -12,9 +13,14 @@ const AvailablilityIcon = ({checkedOutBy}) => {
 }
 
 const BookLink = (props) => {
-    const { bookId, title, checkedOutBy } = props.book;
+    const { bookId, title, checkedOutBy, isbn } = props.book;
+    const bookData = useBookData(isbn);
+
+    const imageUrl = (bookData && bookData.cover) ? bookData.cover.small : undefined;
+
     return (
         <li className={styles.listItem}>
+            {imageUrl && <img src={imageUrl} alt={`Cover for ${title}`} data-testid={`${isbn}-cover`} />}
             <AvailablilityIcon checkedOutBy={checkedOutBy} />
             <Link to={`/books/${bookId}`} className={styles.bookLink}>{title}</Link>
         </li>

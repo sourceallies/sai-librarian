@@ -4,8 +4,10 @@ import documentClient from '../configuredDocumentClient';
 import BookList from './BookList';
 import { createMemoryHistory } from "history";
 import { Router, MemoryRouter } from 'react-router-dom';
+import {useBookData} from '../utils/useBookData';
 
 jest.mock('../configuredDocumentClient');
+jest.mock('../utils/useBookData');
 
 describe('Book list page', () => {
     let props;
@@ -31,8 +33,33 @@ describe('Book list page', () => {
                 isbn: '12323124',
                 shelf: 'Alpha',
                 checkedOutBy: undefined
+            },
+            {
+                bookId: 'xyz987',
+                title: 'No Image Book',
+                isbn: '00011122',
+                shelf: 'Alpha',
+                checkedOutBy: undefined
             }
         ];
+
+        useBookData.mockImplementation((isbn) => {
+            const returnMap = {
+                '0201634554': {
+                    cover: {
+                        small: 'https://example.org/a-great-project.png'
+                    }
+                },
+                '12323124': {
+                    cover: {
+                        small: 'https://example.org/senior-software-engineer.png'
+                    }
+                }
+            }
+            
+            return returnMap[isbn];
+        });
+
         process.env.REACT_APP_BOOK_TABLE = 'books';
         documentClient.scan.mockReturnValue({
             async promise() {
@@ -67,6 +94,7 @@ describe('Book list page', () => {
 
         beforeEach(async () => {
             rendered = render(<BookList {...props} />, {wrapper: MemoryRouter});
+
             await wait(() =>  expect(rendered.container).not.toHaveTextContent('Loading...'));
         });
 
@@ -82,8 +110,22 @@ describe('Book list page', () => {
 
         it('should automatically focus on the search box', () => {
             expect(rendered.getByPlaceholderText('Search')).toHaveFocus();
-        })
+        });
 
+        it('should properly render the images', () => {
+            const greatProjectImage = rendered.getByTestId('0201634554-cover');
+            const seniorSoftwareImage = rendered.getByTestId('12323124-cover');
+
+            expect(greatProjectImage).toHaveAttribute('alt', 'Cover for A Great Project');
+            expect(greatProjectImage).toHaveAttribute('src', 'https://example.org/a-great-project.png');
+
+            expect(seniorSoftwareImage).toHaveAttribute('alt', 'Cover for The Senior Software Engineer');
+            expect(seniorSoftwareImage).toHaveAttribute('src', 'https://example.org/senior-software-engineer.png');
+        });
+
+        it('should not render an image if one is not found', () => {
+            expect(rendered.queryByTestId('00011122-cover')).not.toBeInTheDocument();
+        });
     });
 
     describe('Books are unavailable', () => {

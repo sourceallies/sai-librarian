@@ -1,9 +1,11 @@
 import React from 'react';
 import { render, wait, fireEvent } from '@testing-library/react';
 import documentClient from '../configuredDocumentClient';
+import {useBookData} from '../utils/useBookData';
 import Books from './Books';
 
 jest.mock('../configuredDocumentClient');
+jest.mock('../utils/useBookData');
 
 describe('Book detail page', () => {
     let props;
@@ -110,6 +112,12 @@ describe('Book detail page', () => {
             book.checkedOutBy = undefined;
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
+
+            useBookData.mockReturnValue({
+                cover: {
+                    large: 'https://example.org/image.png'
+                }
+            })
         });
 
         it('should show the book title', () => {
@@ -126,6 +134,18 @@ describe('Book detail page', () => {
 
         it('should have a checkout button', () => {
             expect(rendered.queryByText('Check Out')).toBeInTheDocument();
+        });
+
+        it('should fetch the book details using the useBookData hook', () => {
+            expect(useBookData).toHaveBeenCalledWith('0201634554');
+        });
+
+        it('should set the image src tag', () => {
+            expect(rendered.getByTestId('0201634554-cover')).toHaveAttribute('src', 'https://example.org/image.png');
+        });
+
+        it('should properly set the img alt tags', () => {
+            expect(rendered.getByTestId('0201634554-cover')).toHaveAttribute('alt', 'Cover for A Great Project');
         });
     });
 
