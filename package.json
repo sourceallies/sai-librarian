@@ -46,7 +46,7 @@
     "eslint": "^6.8.0",
     "eslint-plugin-jest": "^23.8.0",
     "eslint-plugin-react": "^7.18.3",
-    "jest-fetch-mock": "^3.0.1",
+    "jest-fetch-mock": "^3.0.3",
     "react-test-renderer": "^16.12.0"
   }
 }
