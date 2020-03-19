@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "aws-sdk": "^2.570.0",
+    "aws-sdk": "^2.642.0",
     "history": "^4.10.1",
     "js-file-download": "^0.4.9",
     "oidc-client": "^1.10.1",
