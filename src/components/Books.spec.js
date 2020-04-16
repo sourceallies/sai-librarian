@@ -33,7 +33,8 @@ describe('Book detail page', () => {
             title: 'A Great Project',
             isbn: '0201634554',
             shelf: 'Alpha',
-            checkedOutBy: undefined
+            checkedOutBy: undefined,
+            checkedOutEvents: []
         };
         process.env.REACT_APP_BOOK_TABLE = 'books';
         documentClient.get.mockReturnValue({
@@ -188,7 +189,7 @@ describe('Book detail page', () => {
         }));
 
         it('should show the book is Unvailable', () => wait(() => {
-            expect(rendered.container).toHaveTextContent('This book is currently checked out by Ben. Return it to shelf Alpha when complete.');
+            expect(rendered.container).toHaveTextContent('This book was checked out by Ben. Return it to shelf Alpha when complete.');
         }));
 
         it('should have a return button', () => wait(() => {
@@ -201,6 +202,11 @@ describe('Book detail page', () => {
 
         beforeEach(async () => {
             book.checkedOutBy = 'Ben';
+            book.checkOutEvents = [
+                {
+                    timestamp: '2020-04-11T18:43:00Z'
+                }
+            ]
             rendered = render(<Books {...props} />);
             await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
         });
@@ -217,12 +223,26 @@ describe('Book detail page', () => {
             expect(rendered.container).not.toHaveTextContent('This book is available');
         });
 
-        it('should show the book is Unvailable', () => {
-            expect(rendered.container).toHaveTextContent('This book is currently checked out by Ben. Return it to shelf Alpha when complete.');
+        it('should show the book is Unvailable with the correct timestamp', () => {
+            expect(rendered.container).toHaveTextContent('This book was checked out by Ben on April 11, 2020. Return it to shelf Alpha when complete.');
         });
 
         it('should have a return button', () => {
             expect(rendered.queryByText('Return')).toBeInTheDocument();
+        });
+    });
+
+    describe('The book is loaded successfully and is checked out, but there are no checkOutEvents', () => {
+        let rendered;
+
+        beforeEach(async () => {
+            book.checkedOutBy = 'Ben';
+            rendered = render(<Books {...props} />);
+            await wait(() => expect(rendered.container).not.toHaveTextContent('Loading...'));
+        });
+
+        it('should show the book is Unvailable with the correct timestamp', () => {
+            expect(rendered.container).toHaveTextContent('This book was checked out by Ben. Return it to shelf Alpha when complete.');
         });
     });
 

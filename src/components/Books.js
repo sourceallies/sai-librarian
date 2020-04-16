@@ -73,11 +73,37 @@ const updateBookToCheckedOut = (bookId, userProfile) => {
     }).promise();
 }
 
+const getCheckoutDate = (book) => {
+    if (book.checkOutEvents) {
+        const length = book.checkOutEvents.length;
+        const timestamp = book.checkOutEvents[length - 1].timestamp;
+
+        return timestamp;
+    }
+
+    return null;
+}
+
 const AvailablityParagraph = ({book}) => {
     const {checkedOutBy, shelf} = book;
 
     if (checkedOutBy) {
-        return <p>This book is currently checked out by {book.checkedOutBy}. Return it to shelf {shelf} when complete.</p>;
+        let checkedOutMessage = `This book was checked out by ${book.checkedOutBy}`;
+
+        const checkoutTimestamp = getCheckoutDate(book);
+
+        if (checkoutTimestamp) {
+            const checkoutDate = new Date(checkoutTimestamp);
+            const formattedCheckoutTime =checkoutDate.toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric',
+                day: '2-digit'
+            });
+
+            checkedOutMessage = `${checkedOutMessage} on ${formattedCheckoutTime}`
+        }
+
+        return <p>{checkedOutMessage}. Return it to shelf {shelf} when complete.</p>;
     }
     return <p>This book is available and located on shelf {shelf}.</p>;
 };
