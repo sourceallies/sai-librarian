@@ -1,0 +1,26 @@
+version = 0.1
+
+[dev.deploy.parameters]
+stack_name = "sai-librarian"
+resolve_s3 = true
+s3_prefix = "sai-librarian"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+parameter_overrides = [
+    "DomainName=library.dev.sourceallies.com", 
+    "HostedZone=dev.sourceallies.com.",
+    "OpenIdAud=242865329519-oa7lva9ueokgomi7ehlrdk0meuvu9nfb.apps.googleusercontent.com"
+]
+
+[prod.deploy.parameters]
+stack_name = "sai-librarian"
+resolve_s3 = true
+s3_prefix = "sai-librarian"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+parameter_overrides = [
+    "DomainName=library.sourceallies.com", 
+    "HostedZone=sourceallies.com.",
+    "OpenIdAud=242865329519-oa7lva9ueokgomi7ehlrdk0meuvu9nfb.apps.googleusercontent.com"
+]
+
