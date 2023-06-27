@@ -15,15 +15,24 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref DomainName
+
   CloudfrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: Origin access identity for the SAI Library
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties: 
+      OriginAccessControlConfig:
+        Name: sai-library
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+        
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
-    DependsOn:
-      - IssuedCertificate
     Properties:
       DistributionConfig:
         Enabled: true
@@ -33,6 +42,7 @@ Resources:
         Origins:
           - DomainName: !GetAtt SiteBucket.DomainName
             Id: S3Origin
+            OriginAccessControlId: !Ref OriginAccessControl
             S3OriginConfig:
               OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
           - Id: OpenLibrary
@@ -67,9 +77,10 @@ Resources:
             QueryString: true
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
-        ViewerCertificate:
-          AcmCertificateArn: !Ref Certificate
-          SslSupportMethod: sni-only
+        # ViewerCertificate:
+        #   AcmCertificateArn: !Ref Certificate
+        #   SslSupportMethod: sni-only
+
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     DependsOn: CloudFrontDistribution
@@ -80,40 +91,48 @@ Resources:
               - Sid: CloudFrontRead
                 Effect: Allow
                 Principal:
-                  CanonicalUser: !GetAtt CloudfrontOriginAccessIdentity.S3CanonicalUserId
+                  Service: cloudfront.amazonaws.com
                 Action:
                   - s3:ListBucket
                   - s3:GetObject
                 Resource:
                   - !Sub arn:aws:s3:::${SiteBucket}
                   - !Sub arn:aws:s3:::${SiteBucket}/*
-  Certificate:
-    Type: Custom::Certificate
-    Properties:
-      DomainName: !Ref DomainName
-      ValidationMethod: DNS
-      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
-  IssuedCertificate:
-    Type: Custom::IssuedCertificate
-    Properties:
-      CertificateArn: !Ref Certificate
-      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
-  SSLCertificateDNSRecord:
-    Type: Custom::CertificateDNSRecord
-    Properties:
-      CertificateArn: !Ref Certificate
-      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
-  SSLValidationRecordSet:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneName: !Ref HostedZone
-      Name: !GetAtt SSLCertificateDNSRecord.Name
-      Type: !GetAtt SSLCertificateDNSRecord.Type
-      SetIdentifier: !Ref Certificate
-      TTL: 60
-      Weight: 1
-      ResourceRecords:
-        - !GetAtt SSLCertificateDNSRecord.Value
+                Condition:
+                  StringEquals:
+                    "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  # Certificate:
+  #   Type: Custom::Certificate
+  #   Properties:
+  #     DomainName: !Ref DomainName
+  #     ValidationMethod: DNS
+  #     ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+
+  # IssuedCertificate:
+  #   Type: Custom::IssuedCertificate
+  #   Properties:
+  #     CertificateArn: !Ref Certificate
+  #     ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+
+  # SSLCertificateDNSRecord:
+  #   Type: Custom::CertificateDNSRecord
+  #   Properties:
+  #     CertificateArn: !Ref Certificate
+  #     ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+
+  # SSLValidationRecordSet:
+  #   Type: AWS::Route53::RecordSet
+  #   Properties:
+  #     HostedZoneName: !Ref HostedZone
+  #     Name: !GetAtt SSLCertificateDNSRecord.Name
+  #     Type: !GetAtt SSLCertificateDNSRecord.Type
+  #     SetIdentifier: !Ref Certificate
+  #     TTL: 60
+  #     Weight: 1
+  #     ResourceRecords:
+  #       - !GetAtt SSLCertificateDNSRecord.Value
+
   RecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
     Properties:
@@ -129,6 +148,7 @@ Resources:
           AliasTarget:
             DNSName: !GetAtt [ CloudFrontDistribution, DomainName ]
             HostedZoneId: !Ref CloudFrontHostedZoneId
+
   BooksTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -142,6 +162,7 @@ Resources:
           KeyType: HASH
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+
   LibraryUserRole:
     Type: AWS::IAM::Role
     Properties:
