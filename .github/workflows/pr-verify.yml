@@ -39,3 +39,27 @@ jobs:
 
       - name: Unit Tests
         run: npm test
+
+  create-changesets:
+    runs-on: ubuntu-latest
+    concurrency: "deploy-${{ matrix.env }}"
+    strategy:
+      matrix:
+        env:
+          - dev
+          - prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: "arn:aws:iam::729161019481:role/Deployer"
+          role-session-name: DeployToDev
+
+      - name: Create Cloudformation Changeset
+        run: sam deploy --config-env=${{ matrix.env }} --no-execute-changeset
