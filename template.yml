@@ -104,8 +104,8 @@ Resources:
       DomainName: !Ref DomainName
       ValidationMethod: DNS
       DomainValidationOptions:
-        DomainName: !Ref DomainName
-        HostedZoneId: !Ref HostedZoneId
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
 
   RecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
