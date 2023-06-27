@@ -66,7 +66,7 @@ jobs:
         with:
           aws-region: us-east-1
           role-to-assume: "arn:aws:iam::729161019481:role/Deployer"
-          role-session-name: DeployToDev
+          role-session-name: Changeset
 
       - name: Create Cloudformation Changeset
         run: sam deploy --config-env=${{ matrix.env }} --no-execute-changeset
