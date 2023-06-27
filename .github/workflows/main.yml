@@ -45,10 +45,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/setup-sam@v2
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
           role-to-assume: "arn:aws:iam::729161019481:role/Deployer"
@@ -85,10 +85,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/setup-sam@v2
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
           role-to-assume: "arn:aws:iam::487696863217:role/Deployer"
