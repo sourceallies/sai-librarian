@@ -73,9 +73,9 @@ Resources:
             QueryString: true
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
-        # ViewerCertificate:
-        #   AcmCertificateArn: !Ref Certificate
-        #   SslSupportMethod: sni-only
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: sni-only
 
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -98,38 +98,14 @@ Resources:
                   StringEquals:
                     "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
 
-  # Certificate:
-  #   Type: "AWS::CertificateManager::Certificate"
-  #   Properties: 
-  #     DomainName: !Ref DomainName
-  #     ValidationMethod: DNS
-  #     DomainValidationOptions:
-  #       DomainName: !Ref DomainName
-  #       HostedZoneId: !Ref HostedZoneId
-
-  # IssuedCertificate:
-  #   Type: Custom::IssuedCertificate
-  #   Properties:
-  #     CertificateArn: !Ref Certificate
-  #     ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
-
-  # SSLCertificateDNSRecord:
-  #   Type: Custom::CertificateDNSRecord
-  #   Properties:
-  #     CertificateArn: !Ref Certificate
-  #     ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
-
-  # SSLValidationRecordSet:
-  #   Type: AWS::Route53::RecordSet
-  #   Properties:
-  #     HostedZoneName: !Ref HostedZone
-  #     Name: !GetAtt SSLCertificateDNSRecord.Name
-  #     Type: !GetAtt SSLCertificateDNSRecord.Type
-  #     SetIdentifier: !Ref Certificate
-  #     TTL: 60
-  #     Weight: 1
-  #     ResourceRecords:
-  #       - !GetAtt SSLCertificateDNSRecord.Value
+  Certificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties: 
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        DomainName: !Ref DomainName
+        HostedZoneId: !Ref HostedZoneId
 
   RecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
