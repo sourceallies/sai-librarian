@@ -57,10 +57,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       
-      - name: Install Dependencies
-        run: npm ci
-
       - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
