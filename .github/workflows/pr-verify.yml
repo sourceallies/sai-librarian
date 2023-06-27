@@ -52,16 +52,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: aws-actions/setup-sam@v2
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          use-installer: true
+          node-version-file: '.nvmrc'
+      
+      - name: Install Dependencies
+        run: npm ci
+
+      - uses: aws-actions/setup-sam@v2
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-east-1
           role-to-assume: "arn:aws:iam::729161019481:role/Deployer"
-          role-session-name: changeset
+          role-session-name: CreateChangeset
 
-      - name: Create Cloudformation Changeset
+      - name: Deploy Cloudformation
         run: sam deploy --config-env=${{ matrix.env }} --no-execute-changeset
