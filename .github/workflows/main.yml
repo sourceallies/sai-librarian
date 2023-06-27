@@ -92,10 +92,10 @@ jobs:
         with:
           aws-region: us-east-1
           role-to-assume: "arn:aws:iam::487696863217:role/Deployer"
-          role-session-name: DeployToDev
+          role-session-name: DeployToProd
 
       - name: Deploy Cloudformation
-        run: sam deploy --config-env=dev
+        run: sam deploy --config-env=prod
 
       - name: Build
         env:
