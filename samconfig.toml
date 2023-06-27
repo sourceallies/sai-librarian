@@ -9,7 +9,7 @@ capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
 fail_on_empty_changeset = false
 parameter_overrides = [
     "DomainName=library.dev.sourceallies.com", 
-    "HostedZone=dev.sourceallies.com.",
+    "HostedZoneId=Z2LBG8W17PXZI7",
     "OpenIdAud=242865329519-oa7lva9ueokgomi7ehlrdk0meuvu9nfb.apps.googleusercontent.com"
 ]
 
@@ -22,7 +22,7 @@ capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
 fail_on_empty_changeset = false
 parameter_overrides = [
     "DomainName=library.sourceallies.com", 
-    "HostedZone=sourceallies.com.",
+    "HostedZoneId=Z8S32S7A9WVD6",
     "OpenIdAud=242865329519-oa7lva9ueokgomi7ehlrdk0meuvu9nfb.apps.googleusercontent.com"
 ]
 

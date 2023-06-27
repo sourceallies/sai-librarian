@@ -2,7 +2,7 @@ Description: sai-librarian
 Parameters:
   DomainName:
     Type: String
-  HostedZone:
+  HostedZoneId:
     Type: String
   OpenIdAud:
     Type: String
@@ -10,18 +10,13 @@ Parameters:
     Type: String
     Default: Z2FDTNDATAQYW2
     Description: The default HostedZoneId for CloudFront. This is set by AWS.
+
 Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref DomainName
-
-  CloudfrontOriginAccessIdentity:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: Origin access identity for the SAI Library
-
+      
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties: 
@@ -42,9 +37,10 @@ Resources:
         Origins:
           - DomainName: !GetAtt SiteBucket.DomainName
             Id: S3Origin
-            OriginAccessControlId: !Ref OriginAccessControl
+            DomainName: !Sub "${SiteBucket}.s3.${AWS::Region}.amazonaws.com"
             S3OriginConfig:
-              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudfrontOriginAccessIdentity}
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
           - Id: OpenLibrary
             DomainName: openlibrary.org
             CustomOriginConfig:
@@ -102,12 +98,14 @@ Resources:
                   StringEquals:
                     "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
 
-  # Certificate:
-  #   Type: Custom::Certificate
-  #   Properties:
-  #     DomainName: !Ref DomainName
-  #     ValidationMethod: DNS
-  #     ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-certificate-provider
+  Certificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties: 
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        DomainName: !Ref DomainName
+        HostedZoneId: !Ref HostedZoneId
 
   # IssuedCertificate:
   #   Type: Custom::IssuedCertificate
@@ -136,7 +134,7 @@ Resources:
   RecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
     Properties:
-      HostedZoneName: !Ref HostedZone
+      HostedZoneId: !Ref HostedZoneId
       RecordSets:
         - Name: !Ref DomainName
           Type: A
