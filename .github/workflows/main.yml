@@ -99,7 +99,7 @@ jobs:
           role-session-name: DeployToProd
 
       - name: Deploy Cloudformation
-        run: sam deploy --config-env=prod
+        run: sam deploy --config-env=prod --no-execute-changeset
 
       - name: Build
         env:
