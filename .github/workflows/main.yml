@@ -46,6 +46,8 @@ jobs:
         run: npm ci
 
       - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -86,6 +88,8 @@ jobs:
         run: npm ci
 
       - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
