@@ -98,14 +98,14 @@ Resources:
                   StringEquals:
                     "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
 
-  Certificate:
-    Type: "AWS::CertificateManager::Certificate"
-    Properties: 
-      DomainName: !Ref DomainName
-      ValidationMethod: DNS
-      DomainValidationOptions:
-        DomainName: !Ref DomainName
-        HostedZoneId: !Ref HostedZoneId
+  # Certificate:
+  #   Type: "AWS::CertificateManager::Certificate"
+  #   Properties: 
+  #     DomainName: !Ref DomainName
+  #     ValidationMethod: DNS
+  #     DomainValidationOptions:
+  #       DomainName: !Ref DomainName
+  #       HostedZoneId: !Ref HostedZoneId
 
   # IssuedCertificate:
   #   Type: Custom::IssuedCertificate
