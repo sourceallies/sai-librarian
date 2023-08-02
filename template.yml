@@ -137,14 +137,29 @@ Resources:
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
 
+  # AzureADProvider:
+  #   Type: AWS::IAM::OIDCProvider
+  #   Properties:
+  #     Url: 'https://login.microsoftonline.com/772f497a-f0cb-47c2-a5ef-118bb35e3703/v2.0'
+  #     ThumbprintList:
+  #       - 626d44e704d1ceabe3bf0d53397464ac8080142c
+
   LibraryUserRole:
-    Type: AWS::IAM::Role
+    Type: AWS::IAM::Role  
     Properties:
       RoleName: !Sub "${AWS::StackName}-user"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Sid: LoginWithGoogle
+            Effect: Allow
+            Principal:
+              Federated: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/login.microsoftonline.com/772f497a-f0cb-47c2-a5ef-118bb35e3703/v2.0"
+            Action: "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                "login.microsoftonline.com/772f497a-f0cb-47c2-a5ef-118bb35e3703/v2.0:aud": "2c5608d2-366b-4591-ae06-ad8ebd1e54a7"
+          - Sid: LoginWithAzure
             Effect: Allow
             Principal:
               Federated: "accounts.google.com"

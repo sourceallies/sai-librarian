@@ -6,6 +6,7 @@ export default function BookList() {
 
     return (
         <main>
+            <h1>Books</h1>
             <ul>
 
             </ul>

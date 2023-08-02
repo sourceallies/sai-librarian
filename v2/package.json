@@ -12,10 +12,13 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.379.1",
+    "@aws-sdk/credential-providers": "^3.382.0",
     "@aws-sdk/lib-dynamodb": "^3.379.1",
+    "@react-oauth/google": "^0.11.1",
     "oidc-react": "^3.2.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-oauth2-code-pkce": "^1.14.0"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
